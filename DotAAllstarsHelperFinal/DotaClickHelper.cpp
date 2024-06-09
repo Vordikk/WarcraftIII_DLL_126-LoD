@@ -28,6 +28,13 @@ unsigned long SingleShift = 0;
 bool SkipAllMessages = false;
 
 
+/**
++ * –ù–∞–∂–∏–º–∞–µ—Ç –∫–ª–∞–≤–∏—à—É –Ω–∞ –∫–ª–∞–≤–∏–∞—Ç—É—Ä–µ, —É–∫–∞–∑–∞–Ω–Ω—É—é –∫–æ–¥–æ–º –≤–∏—Ä—Ç—É–∞–ª—å–Ω–æ–π –∫–ª–∞–≤–∏—à–∏.
++ *
++ * @param VK –∫–æ–¥ –≤–∏—Ä—Ç—É–∞–ª—å–Ω–æ–π –∫–ª–∞–≤–∏—à–∏, –∫–æ—Ç–æ—Ä—É—é –Ω—É–∂–Ω–æ –Ω–∞–∂–∞—Ç—å
++ *
++ * @return void
++ */
 void PressKeyboard(int VK)
 {
 	bool PressedKey = false;
@@ -1141,7 +1148,9 @@ unsigned long latDisableTargetCurcor = 0;
 void  DisableTargetCurcor()
 {
 	if (DisableTargetCurcorWORK <= 0)
+	{
 		return;
+	}
 
 	if (GetTickCount() - latDisableTargetCurcor > 25)
 	{
@@ -1408,6 +1417,15 @@ POINTS GlobalMousePos = { 0,0 };
 bool InitTestValues = false;
 unsigned int TestValues[10];
 
+/* GetTestValue(0) - –µ—Å–ª–∏ –∑–Ω–∞—á–µ–Ω–∏–µ –º–µ–Ω—è–µ—Ç—Å—è - –∑–Ω–∞—á–∏—Ç –æ–±—Ä–∞–±–æ—Ç—á–∏–∫ —Ö–æ—Ç–∫–µ–µ–≤ —Ä–∞–±–æ—Ç–∞–µ—Ç –∏ –¥–æ—Å—Ç—É–ø–µ–Ω
+GetTestValue(1) - –µ—Å–ª–∏ –Ω–µ –º–µ–Ω—è–µ—Ç—Å—è, —Ç–æ –≤–∫–ª—é—á–µ–Ω–∞ —Ñ—É–Ω–∫—Ü–∏—è –±–ª–æ–∫–∏—Ä–æ–≤–∫–∏ –≤–≤–æ–¥–∞
+GetTestValue(2) - –µ—Å–ª–∏ –Ω–µ –º–µ–Ω—è–µ—Ç—Å—è —Ç–æ —á–∞—Ç –∞–∫—Ç–∏–≤–µ–Ω, –∏–ª–∏ –∂–µ –æ—Ç–ø—Ä–∞–≤–ª—è–µ—Ç—Å—è –ø–æ–≤—Ç–æ—Ä —Ö–æ—Ç–∫–µ–µ–≤ (–Ω–∞–∂–∞—Ç–∏–µ –∏ —É–¥–µ—Ä–∂–∞–Ω–∏–µ)
+GetTestValue(3) - –µ—Å–ª–∏ –Ω–µ –º–µ–Ω—è–µ—Ç—Å—è, —Ç–æ –æ–∫–Ω–æ —Å–≤–µ—Ä–Ω—É—Ç–æ
+GetTestValue(4) - –µ—Å–ª–∏ –Ω–µ –º–µ–Ω—è–µ—Ç—Å—è —Ç–æ –∞–∫—Ç–∏–≤–∏—Ä–æ–≤–∞–Ω –ø—Ä–æ–ø—É—Å–∫ —Å–æ–æ–±—â–µ–Ω–∏–µ –≤ SkipMessagesList, –∏–ª–∏ –∂–µ –≤–∫–ª—é—á–µ–Ω–∞ –±–ª–æ–∫–∏—Ä–æ–≤–∫–∞ –º—ã—à–∏
+GetTestValue(5) - –µ—Å–ª–∏ –Ω–µ –º–µ–Ω—è–µ—Ç—Å—è —Ç–æ –∞–∫—Ç–∏–≤–µ–Ω —á–∞—Ç –∏–ª–∏ –∂–µ –Ω–µ –∞–∫—Ç–∏–≤–µ–Ω –≥–ª–∞–≤–Ω—ã–π —Ñ—Ä–µ–π–º –∏–≥—Ä—ã
+GetTestValue(6) - –µ—Å–ª–∏ –º–µ–Ω—è–µ—Ç—Å—è —Ç–æ –≤—ã–∑–≤—ã–∞—é—Ç—Å—è —Ö–æ—Ç–∫–µ–∏ –≤ ProcessHotkey
+GetTestValue(7) - –Ω–µ —Å–¥–µ–ª–∞–Ω–æ, –Ω–æ –¥–æ–ª–∂–Ω–æ –±—ã–ª–æ –ø—Ä–æ–≤–µ—Ä—è—Ç—å –µ—Å–ª–∏ –≤—ã–∑—ã–≤–∞—é—Ç—Å—è ProcessKeyCallbackActions*/
+
 void GetMousePosition(float* x, float* y, float* z)
 {
 #ifdef BOTDEBUG
@@ -1496,6 +1514,13 @@ unsigned int __stdcall GetTestValue(int id)
 {
 	if (DEBUG_FULL)
 		std::cout << __func__ << std::endl;
+
+	if (!InitTestValues)
+	{
+		InitTestValues = true;
+		memset(TestValues, 0, sizeof(TestValues));
+	}
+
 	if (id >= 0 && id <= 7)
 	{
 		return TestValues[id];
@@ -1514,7 +1539,7 @@ void __stdcall SetForceHotkeyProcess(int lvl1, int lvl2, int lvl3)
 	ForceLvl3 = lvl3;
 }
 
-// «‡ÏÂÌˇÂÚ ÚÂÍÒÚ ‚ ÒÚÓÍÂ 
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ 
 bool replaceAll(std::string& str, const std::string& from, const std::string& to, int addtofrom = 0)
 {
 	if (from.empty())
@@ -1751,7 +1776,7 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 	/*__try
 	{*/
 	bool incooldown = false;
-	std::string incooldownmessage = "";
+	std::string incooldownmessage;
 
 	unsigned char* selectedunit = 0;
 	char PrintAbilState[2048];
@@ -2545,6 +2570,8 @@ int ProcessCallbackHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM&
 {
 	int selectedunits = GetSelectedUnitCountBigger(GetLocalPlayerId());
 
+	TestValues[7]++;
+
 	unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
 	if (selectedunit && selectedunits > 0)
 	{
@@ -3103,7 +3130,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 		if (InitFunctionCalled && GAME_START_CALLED)
 		{
 			GAME_START_CALLED = false;
-			DisableAllHooks();
+			DisableAllHooks(0);
 			if (SELF_UNLOAD_DLL_AFTER_GAME_END)
 			{
 				DllSelfUnloading(GetCurrentModule);
@@ -3133,8 +3160,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 	{
 		return WarcraftRealWNDProc_ptr(hWnd, _Msg, _wParam, lParam);
 	}
-
-	//DreamUI_WarWindow3Proc(hWnd, _Msg, _wParam, lParam);
 
 	if (!InitTestValues)
 	{
@@ -3224,7 +3249,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 			PrintText("@2");
 		}
 	}
-	if (usedcustomframes && *(int*)ChatFound == 0 && IsGameFrameActive())
+	if (usedcustomframes && /**(int*)ChatFound == 0*/ !IsChatActive() && IsGameFrameActive())
 	{
 		*(int*)pCurrentFrameFocusedAddr = 0;
 	}
@@ -3333,7 +3358,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 	//}
 
 
-	if ((lParam & 0x40000000) > 0 && Msg == WM_KEYDOWN && !*(int*)ChatFound)
+	if ((lParam & 0x40000000) > 0 && Msg == WM_KEYDOWN && !IsChatActive()/*!*(int*)ChatFound*/)
 	{
 		if (SetInfoObjDebugVal)
 		{
@@ -3471,7 +3496,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 		}
 
 
-
 		for (unsigned int i = 0; i < SkipMessagesList.size(); i++)
 		{
 			if (SkipMessagesList[i].Msg == Msg && SkipMessagesList[i].wParam == wParam)
@@ -3497,7 +3521,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 		TestValues[4]++;
 
 
-		if ((*(int*)ChatFound == 0 || ForceLvl3) && (IsGameFrameActive() || ForceLvl1))
+		if ((/**(int*)ChatFound == 0*/ !IsChatActive() || ForceLvl3) && (IsGameFrameActive() || ForceLvl1))
 		{
 			TestValues[5]++;
 
@@ -4078,7 +4102,7 @@ int sub_6F339F00Offset = 0;
 int sub_6F339F80Offset = 0;
 int sub_6F33A010Offset = 0;
 
-// ¬ÍÎ˛˜ËÚ¸ ÙËÍÒ ¯ËÙÚ‡ ‰Îˇ ÔËÍ‡ÁÓ‚
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 void IssueFixerInit()
 {
 	IssueWithoutTargetOrderorg = (IssueWithoutTargetOrder)(GameDll + IssueWithoutTargetOrderOffset);
@@ -4123,7 +4147,7 @@ void IssueFixerInit()
 
 }
 
-// ŒÚÍÎ˛˜ËÚ¸ ÙËÍÒ ¯ËÙÚ‡ ‰Îˇ ÔËÍ‡ÁÓ‚
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 void IssueFixerDisable()
 {
 	memset(LastPressedKeysTime, 0, sizeof(LastPressedKeysTime));
@@ -4168,7 +4192,7 @@ void IssueFixerDisable()
 	SkipAllMessages = false;
 }
 
-// ÔÓÒÚÓÂÌËÂ ÚÂÍÛ˘Ëı Ì‡Ê‡Ú˚ı ÍÌÓÔÓÍ ‚ ÍÓ‰ ÍÎ‡‚Ë¯
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 unsigned int BuildKeyCode()
 {
 	unsigned int code = 0;
@@ -4218,7 +4242,7 @@ unsigned int BuildKeyCode()
 
 }
 
-// ÍÓÌ‚ÂÚËÓ‚‡Ú¸ ÒÚÓÍÛ ‚ ÍÓ‰ ÍÎ‡‚Ë¯Ë
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 int _StrToVKey(const std::string& skey) {
 	if (skey == "LBTN") return VK_LBUTTON; // Left mouse button
 	if (skey == "RBTN") return VK_RBUTTON; // Right mouse button
@@ -4400,7 +4424,7 @@ int _StrToVKey(const std::string& skey) {
 	return 0;
 }
 
-// ÍÓÌ‚ÂÚËÓ‚‡Ú¸ ÍÓ‰ ÍÎ‡‚Ë¯Ë ‚ ÒÚÓÍÛ
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 std::string _VKeyToStr(int vkey) {
 	switch (vkey) {
 	case VK_LBUTTON: return "LBTN"; // Left mouse button
@@ -4584,9 +4608,8 @@ std::string _VKeyToStr(int vkey) {
 	return "NOTHING";
 }
 
-// ÍÓÌ‚ÂÚËÓ‚‡Ú¸ ÍÓ‰ ÍÎ‡‚Ë¯Ë ‚ ÒÚÓÍÛ
-
-std::string CovertKeyCodeToString(unsigned int val)
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
+std::string ConvertKeyCodeToString(unsigned int val)
 {
 	std::string outstr;
 
@@ -4618,7 +4641,7 @@ std::string CovertKeyCodeToString(unsigned int val)
 	return outstr;
 }
 
-// ÍÓÌ‚ÂÚËÓ‚‡Ú¸ ÒÚÓÍÛ ‚ ÍÓ‰ ÍÎ‡‚Ë¯Ë (ÍÓÏ·ËÌ‡ˆËË ÍÎ‡‚Ë¯)
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ (ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ)
 unsigned int CovertStringToKeyCode(std::string code)
 {
 	if (code.length() == 0)
@@ -4660,7 +4683,7 @@ unsigned int CovertStringToKeyCode(std::string code)
 
 std::string tmpkeycode;
 
-// ÍÓÌ‚ÂÚËÓ‚‡Ú¸ ÒÚÓÍÛ ‚ ÍÓ‰ ÍÎ‡‚Ë¯Ë (ÍÓÏ·ËÌ‡ˆËË ÍÎ‡‚Ë¯)
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ (ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ)
 int __stdcall ConvertKeyStringToKeyCode(const char* str)
 {
 	if (DEBUG_FULL)
@@ -4670,9 +4693,9 @@ int __stdcall ConvertKeyStringToKeyCode(const char* str)
 	return CovertStringToKeyCode(str);
 }
 
-// ÍÓÌ‚ÂÚËÓ‚‡Ú¸ ÍÓ‰ ÍÎ‡‚Ë¯Ë ‚ ÒÚÓÍÛ
+// ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 const char* __stdcall ConvertKeyCodeToKeyString(unsigned int code)
 {
-	tmpkeycode = CovertKeyCodeToString(code);
+	tmpkeycode = ConvertKeyCodeToString(code);
 	return tmpkeycode.c_str();
 }

@@ -140,7 +140,7 @@ int __stdcall SendMessageToChat(const char* msg, int toAll)
 
 	BlockInput(true);
 
-	if (*(int*)ChatFound)
+	if (/**(int*)ChatFound*/IsChatActive())
 	{
 		UsingCustomChatTarget = true;
 		if (toAll)

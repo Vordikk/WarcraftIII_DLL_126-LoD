@@ -11,7 +11,7 @@ int __stdcall GetUnitOwnerSlot(unsigned char* unitaddr)
 }
 
 
-std::vector< unsigned char*> GetUnitsFromGroup(int grouphandle)
+std::vector<unsigned char*> GetUnitsFromGroup(int grouphandle)
 {
 	std::vector< unsigned char*> localvector;
 
@@ -30,7 +30,6 @@ std::vector< unsigned char*> GetUnitsFromGroup(int grouphandle)
 
 	if (GroupAddr)
 	{
-
 		// Set group offset
 		GroupAddr += 0x24;
 		// Set group data
@@ -39,10 +38,10 @@ std::vector< unsigned char*> GetUnitsFromGroup(int grouphandle)
 			PrintText("Search units...");
 		}
 		int GroupData = *(int*)(GroupAddr + 0xC);
+
 		GroupData = *(int*)(GroupAddr + 0xC);
 		while (GroupData > 0)
 		{
-
 			// Get unit 
 			unsigned char* UnitAddr = *(unsigned char**)(GroupData + 0x8);
 
@@ -62,7 +61,6 @@ std::vector< unsigned char*> GetUnitsFromGroup(int grouphandle)
 		GroupData = *(int*)(GroupAddr + 0xC);
 		while (GroupData > 0)
 		{
-
 			// Get unit 
 			unsigned char* UnitAddr = *(unsigned char**)(GroupData + 0x8);
 
@@ -73,17 +71,14 @@ std::vector< unsigned char*> GetUnitsFromGroup(int grouphandle)
 
 			// Get next data
 			GroupData = *(int*)(GroupData + 0x4);
-
 			if (UnitAddr &&/* IsNotBadUnit( UnitAddr ) &&*/ !IsHero(UnitAddr) && !IsUnitIllusion(UnitAddr))
 				// save unit to list
 				localvector.push_back(UnitAddr);
 		}
 
-
 		GroupData = *(int*)(GroupAddr + 0xC);
 		while (GroupData > 0)
 		{
-
 			// Get unit 
 			unsigned char* UnitAddr = *(unsigned char**)(GroupData + 0x8);
 
@@ -103,7 +98,6 @@ std::vector< unsigned char*> GetUnitsFromGroup(int grouphandle)
 		GroupData = *(int*)(GroupAddr + 0xC);
 		while (GroupData > 0)
 		{
-
 			// Get unit 
 			unsigned char* UnitAddr = *(unsigned char**)(GroupData + 0x8);
 
@@ -137,7 +131,7 @@ int __stdcall IsHero(unsigned char* unitaddr)
 		ishero = ishero - 64;
 		return ishero < 0x19;
 	}
-	return false;
+	return FALSE;
 }
 
 
@@ -149,7 +143,7 @@ int __stdcall IsTower(unsigned char* unitaddr)
 		unsigned int istower = *(unsigned int*)(unitaddr + 0x5C);
 		return (istower & 0x10000) > 0;
 	}
-	return false;
+	return TRUE;
 }
 
 
@@ -171,13 +165,13 @@ int __stdcall IsNotBadUnit(unsigned char* unitaddr, int onlymem)
 		int xaddraddr = (int)&UnitVtable;
 
 		if (*(unsigned char*)xaddraddr != *(unsigned char*)unitaddr)
-			return false;
+			return FALSE;
 		else if (*(unsigned char*)(xaddraddr + 1) != *(unsigned char*)(unitaddr + 1))
-			return false;
+			return FALSE;
 		else if (*(unsigned char*)(xaddraddr + 2) != *(unsigned char*)(unitaddr + 2))
-			return false;
+			return FALSE;
 		else if (*(unsigned char*)(xaddraddr + 3) != *(unsigned char*)(unitaddr + 3))
-			return false;
+			return FALSE;
 
 		unsigned int x1 = *(unsigned int*)(unitaddr + 0xC);
 		unsigned int y1 = *(unsigned int*)(unitaddr + 0x10);
@@ -191,11 +185,11 @@ int __stdcall IsNotBadUnit(unsigned char* unitaddr, int onlymem)
 			{
 				PrintText("Coordinates or 0x28 offset bad");
 			}
-			return false;
+			return FALSE;
 		}
 
 		if (onlymem)
-			return true;
+			return TRUE;
 
 		unsigned int unitflag = *(unsigned int*)(unitaddr + 0x20);
 		unsigned int unitflag2 = *(unsigned int*)(unitaddr + 0x5C);
@@ -206,7 +200,7 @@ int __stdcall IsNotBadUnit(unsigned char* unitaddr, int onlymem)
 			{
 				PrintText("Flag 1 bad");
 			}
-			return false;
+			return FALSE;
 		}
 
 		if (!(unitflag & 2u))
@@ -215,7 +209,7 @@ int __stdcall IsNotBadUnit(unsigned char* unitaddr, int onlymem)
 			{
 				PrintText("Flag 2 bad");
 			}
-			return false;
+			return FALSE;
 		}
 
 		if ((unitflag2 & 0x100u) > 0)
@@ -224,25 +218,16 @@ int __stdcall IsNotBadUnit(unsigned char* unitaddr, int onlymem)
 			{
 				PrintText("Flag 3 bad");
 			}
-			return false;
+			return FALSE;
 		}
 
-		/*	if ( unitflag2 == 0x1001u )
-			{
-				if ( SetInfoObjDebugVal )
-				{
-					PrintText( "Flag 4 bad" );
-				}
-				return false;
-			}
-	*/
-		return true;
+		return TRUE;
 	}
 	if (SetInfoObjDebugVal)
 	{
 		PrintText("FATAL ERROR. NO UNIT ADDRESS FOUND");
 	}
-	return false;
+	return FALSE;
 }
 
 
@@ -255,7 +240,7 @@ int __stdcall IsEnemy( unsigned char * UnitAddr)
 
 		if (GetLocalPlayerId() == unitownerslot || IsPlayerObserver(GetLocalPlayerId()))
 		{
-			return false;
+			return FALSE;
 		}
 
 		if (unitownerslot <= 15 && unitownerslot >= 0 && GetLocalPlayerId() <= 15 && GetLocalPlayerId() >= 0)
@@ -265,18 +250,18 @@ int __stdcall IsEnemy( unsigned char * UnitAddr)
 
 			if (Player1 == Player2)
 			{
-				return false;
+				return FALSE;
 			}
 			if (Player1 == 0 || Player2 == 0)
 			{
-				return false;
+				return FALSE;
 			}
 
 			int retval = IsPlayerEnemy(Player1, Player2);
 			return retval;
 		}
 	}
-	return false;
+	return FALSE;
 }
 
 
@@ -288,13 +273,13 @@ int __stdcall IsNotBadItem(unsigned char * itemaddr, int extracheck)
 		int xaddraddr = (int)&ItemVtable;
 
 		if (*(unsigned char*)xaddraddr != *(unsigned char*)itemaddr)
-			return false;
+			return FALSE;
 		else if (*(unsigned char*)(xaddraddr + 1) != *(unsigned char*)(itemaddr + 1))
-			return false;
+			return FALSE;
 		else if (*(unsigned char*)(xaddraddr + 2) != *(unsigned char*)(itemaddr + 2))
-			return false;
+			return FALSE;
 		else if (*(unsigned char*)(xaddraddr + 3) != *(unsigned char*)(itemaddr + 3))
-			return false;
+			return FALSE;
 
 		if (extracheck)
 		{
@@ -303,10 +288,10 @@ int __stdcall IsNotBadItem(unsigned char * itemaddr, int extracheck)
 			return hitpoint != 0.0f;
 		}
 
-		return true;
+		return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
 
 
@@ -436,7 +421,7 @@ unsigned char** FindUnitAbils(unsigned char* unitaddr, unsigned int* count, int 
 			//PrintText( "Found abils ... 1" );
 			unsigned char* pData = GetObjectDataAddr(pAddr1);
 
-			while ((long long)pData > 0)
+			while (pData)
 			{
 				//	PrintText( "Found abils ... 2" );
 				unsigned char* pData2 = *(unsigned char**)(pData + 0x54);

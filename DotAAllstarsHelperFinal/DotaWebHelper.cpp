@@ -54,7 +54,7 @@ std::string SendHttpPostRequest(const char* ulr, const char* data)
 	std::string postdata = data;
 	client.SetAdditionalDataToSend((unsigned char*)postdata.c_str(), postdata.size());
 	wchar_t szSize[50] = L"";
-	swprintf_s(szSize, L"%d", postdata.size());
+	swprintf_s(szSize, L"%u", postdata.size());
 	std::wstring headers = L"Content-Length: ";
 	headers += szSize;
 	headers += L"\r\nContent-Type: application/x-www-form-urlencoded\r\n";
@@ -192,17 +192,17 @@ void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 	return;
 }
 
-std::string _addr = "";
-std::string _request = "";
-std::string _filepath = "";
+std::string _addr;
+std::string _request;
+std::string _filepath;
 
 unsigned long __stdcall SENDGETREQUEST(LPVOID)
 {
 	try
 	{
 		LatestDownloadedString = SendHttpGetRequest(_addr.c_str(), _request.c_str());
-		_addr = "";
-		_request = "";
+		_addr.clear();
+		_request.clear();
 	}
 	catch (...)
 	{
@@ -217,8 +217,8 @@ unsigned long __stdcall SENDPOSTREQUEST(LPVOID)
 	try
 	{
 		LatestDownloadedString = SendHttpPostRequest(_addr.c_str(), _request.c_str());
-		_addr = "";
-		_request = "";
+		_addr.clear();
+		_request.clear();
 	}
 	catch (...)
 	{
@@ -232,9 +232,9 @@ unsigned long __stdcall SENDPOSTREQUEST(LPVOID)
 unsigned long __stdcall SENDSAVEFILEREQUEST(LPVOID)
 {
 	DownloadNewMapToFile(_addr.c_str(), _filepath.c_str());
-	_addr = "";
-	_request = "";
-	_filepath = "";
+	_addr.clear();
+	_request.clear();
+	_filepath.clear();
 	return 0;
 }
 

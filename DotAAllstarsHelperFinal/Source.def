@@ -208,3 +208,10 @@ SLOW_DEBUG_INIT
 SetCustomWinCallback
 GetMPBarUnlockNumber
 SetMPBarUnlocked
+HookTickTimer
+HookTickTimerAccurate
+SetAutoFpsLimit
+SetAutoFpsLimitFloat
+ShowSkillPanelForEnemyNeurals
+GetEspValue
+GetEspValueStdCall

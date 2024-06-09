@@ -15,7 +15,7 @@ pShowThisFrame ShowThisFrame;
 pDestructThisFrame DestructThisFrame;//Without clean memory
 pGetFrameItemAddress GetFrameItemAddress;
 
-int usedcustomframes = false;
+bool usedcustomframes = false;
 
 char ConfigPath[MAX_PATH];
 
@@ -100,7 +100,7 @@ struct FrameDefStatus
 };
 FrameDefStatus fStatus;
 
-int FrameDefFileUpdated = false;
+bool FrameDefFileUpdated = false;
 
 void LoadCustomFramesIfNeed()
 {
@@ -112,7 +112,7 @@ void LoadCustomFramesIfNeed()
 }
 
 
-int ConfigWindowCreated = false;
+bool ConfigWindowCreated = false;
 unsigned char* ConfigFrameAddr = 0;
 
 int __stdcall ShowConfigWindow(const char* filename)
@@ -136,14 +136,14 @@ int __stdcall ShowConfigWindow(const char* filename)
 		DestroyFrame(ConfigFrameAddr);
 		ConfigFrameAddr = 0;
 	}
-	return true;
+	return TRUE;
 }
 
 pUpdateFrameFlags UpdateFrameFlags;
 
 
-int GlyphButtonEnabled = true;
-int GlyphButtonCreated = false;
+bool GlyphButtonEnabled = true;
+bool GlyphButtonCreated = false;
 unsigned char* GlyphButtonAddr = 0;
 
 jRCString CallBackFuncName;

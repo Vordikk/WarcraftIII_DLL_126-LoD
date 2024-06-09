@@ -52,7 +52,7 @@ int* InGame = 0;
 unsigned char* _GlobalGlueObj = 0;
 unsigned char* _GameUI = 0;
 int* IsWindowActive = 0;
-unsigned char* ChatFound = 0;
+//unsigned char* ChatFound = 0;
 
 unsigned char* pW3XGlobalClass = 0;
 unsigned char* pGameClass1 = 0;
@@ -128,9 +128,20 @@ bool isChatBoxOn() {
 	return false;
 }
 
+bool OldChatState = false;
+
 int IsChatActive()
 {
-	return isChatBoxOn();
+	bool NewChatState = isChatBoxOn();
+
+	if (NewChatState != OldChatState)
+	{
+		ShiftPressed = 0;
+	}
+
+	OldChatState = NewChatState;
+
+	return NewChatState;
 	//return  *(int*)pCurrentFrameFocusedAddr  && **(int**)pCurrentFrameFocusedAddr == GameDll + ChatEditBoxVtable;
 }
 
@@ -1029,15 +1040,11 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 			}
 		}
 
-
 		// new 
 		if (*(int*)(UnitAddr + 0x158))
 		{
 			indmg *= 1.4f;
 		}
-
-
-
 	}
 
 	return (float)(100.0f - indmg);
@@ -1070,8 +1077,8 @@ int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned cha
 	__asm mov retval, eax;
 	if (AmovAddr)
 	{
-
 		float MagicProtection = GetMagicProtectionForHero_by_abiladdr(AmovAddr);
+		
 		bufferaddr = buffer;
 
 		if (MagicProtection == 0.0f)
@@ -1930,7 +1937,7 @@ void __stdcall UnloadHWNDHandler(int Force = false)
 	ClickHelperDisabled = true;
 }
 
-void __stdcall DisableAllHooks()
+void __stdcall DisableAllHooks(int)
 {
 	if (!InitFunctionCalled)
 	{
@@ -2017,10 +2024,10 @@ void __stdcall DisableAllHooks()
 
 	UninitializePacketHandler();
 
-	LatestDownloadedString = "";
+	LatestDownloadedString.clear();
 
 	//UninitializeDreamDotaAPI();
-	//	UninitializeVoiceClient( );
+	//UninitializeVoiceClient( );
 
 	//UnInitDreamRawImages();
 
@@ -2042,7 +2049,14 @@ void __stdcall DisableAllHooks()
 	protect_integer2 = -1;
 
 	MH_DisableHook(MH_ALL_HOOKS);
-	MH_Uninitialize();
+
+	if (TICK_HOOK_ENABLED)
+	{
+		HookTickTimer(4);
+	}
+
+	tick_accuracy = 5;
+	start_point_latest = 0;
 }
 
 void PatchOffset(void* addr, void* lpbuffer, unsigned int size)
@@ -2226,7 +2240,7 @@ unsigned int __stdcall InitDotaHelper(int)
 {
 	if (InitFunctionCalled)
 	{
-		DisableAllHooks();
+		DisableAllHooks(0);
 	}
 
 	//MessageBoxA(0, "INI", "T", 0);
@@ -2237,7 +2251,6 @@ unsigned int __stdcall InitDotaHelper(int)
 		std::cout << __func__ << std::endl;
 	UnloadAllOldHelpers(0);
 
-	MH_Initialize();
 	InitThreadCpuUsage();
 
 	//RemoveMapSizeLimit( );
@@ -2346,7 +2359,7 @@ unsigned int __stdcall InitDotaHelper(int)
 	GetPlayerName = (p_GetPlayerName)(GameDll + 0x2F8F90);
 	_BarVTable = GameDll + 0x93E604;
 	IsWindowActive = (int*)(GameDll + 0xA9E7A4);
-	ChatFound = GameDll + 0xAD15F0;
+	//ChatFound = GameDll + 0xAD15F0;
 	TriggerExecute = (_TriggerExecute)(GameDll + 0x3C3F40);
 	ExecuteFunc = (pExecuteFunc)(GameDll + 0x3D3F30);
 	StormErrorHandlerOffset = StormDll + 0x28F0;
@@ -2781,6 +2794,21 @@ int __stdcall SLOW_DEBUG_INIT(int)
 	return 0;
 }
 
+int __declspec(naked) __fastcall GetEspValue(int val)
+{
+	__asm {
+		mov eax, esp;
+		ret;
+	}
+}
+
+int __stdcall GetEspValueStdCall(int)
+{
+	int value;
+	__asm mov value, esp;
+	return value;
+}
+
 int __stdcall DllMain(HINSTANCE Module, unsigned int reason, LPVOID)
 {
 	if (reason == DLL_PROCESS_ATTACH)
@@ -2815,6 +2843,7 @@ int __stdcall DllMain(HINSTANCE Module, unsigned int reason, LPVOID)
 	//cout << "Dota Helper Debug Log out" << endl;
 	// 
 		DisableThreadLibraryCalls(Module);
+		MH_Initialize();
 
 
 		GameDllModule = GetModuleHandleA(GameDllName);
@@ -2842,20 +2871,13 @@ int __stdcall DllMain(HINSTANCE Module, unsigned int reason, LPVOID)
 	}
 	else if (reason == DLL_PROCESS_DETACH)
 	{
-		if (IsGameDllAndStormFound())
+		if (IsGameDllAndStormFound() && !TICK_HOOK_ENABLED)
 		{
-			DisableAllHooks();
+			DisableAllHooks(0);
 			MH_DisableHook(MH_ALL_HOOKS);
 			MH_Uninitialize();
 		}
 		else
-		{
-			StormAvailable = false;
-		}
-
-		// Если нет Game.dll/Storm.dll и то уничтожить процесс 
-		// на всякий случай дважды уничтожить :)
-		if (/*(!DLL_SELF_UNLOADED && GetCurrentThreadId() == GetGameDllThread) || */!IsGameDllAndStormFound())
 		{
 			TerminateProcess(GetCurrentProcess(), 0);
 			ExitProcess(0);

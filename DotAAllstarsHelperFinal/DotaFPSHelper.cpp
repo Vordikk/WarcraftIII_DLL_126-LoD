@@ -3,6 +3,7 @@
 #include <gl/GLU.h>
 #include <wglext.h>
 
+#include <chrono>
 
 unsigned int(__thiscall* DestroyUnitHpBar)(int HpBarAddr);
 
@@ -19,6 +20,118 @@ int __stdcall SetMaxFps(int fps)
 {
 	_SetMaxFps(fps);
 	return fps;
+}
+
+
+
+
+typedef DWORD(__stdcall* GetTickCount_p)();
+GetTickCount_p GetTickCount_ptr;
+
+
+unsigned int tick_accuracy = 5;
+
+unsigned long start_point = GetTickCount();
+unsigned long start_point_latest = 0;
+int offset_point = 0;
+
+
+auto timer1 = std::chrono::high_resolution_clock::now();
+unsigned long GetTickCount1()
+{
+	auto t2 = std::chrono::high_resolution_clock::now();
+	auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - timer1);
+	timer1 = t2;
+	start_point += (unsigned long)int_ms.count();
+
+	if (start_point > start_point_latest + tick_accuracy)
+	{
+		start_point_latest = start_point;
+	}
+
+	return start_point_latest;
+}
+
+
+auto timer2 = std::chrono::steady_clock::now();
+unsigned long GetTickCount2()
+{
+	auto t2 = std::chrono::steady_clock::now();
+	auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - timer2);
+	timer2 = t2;
+	start_point += (unsigned long)int_ms.count();
+
+	if (start_point > start_point_latest + tick_accuracy)
+	{
+		start_point_latest = start_point;
+	}
+
+	return start_point_latest;
+}
+
+auto timer3 = std::chrono::steady_clock::now();
+unsigned long GetTickCount3()
+{
+	auto t2 = std::chrono::steady_clock::now();
+	auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - timer3);
+
+
+	if (int_ms.count() > start_point_latest + tick_accuracy)
+	{
+		start_point_latest = (unsigned long)int_ms.count();
+	}
+
+	return start_point + start_point_latest;
+}
+
+int TickTimerVal = 0;
+
+DWORD __stdcall GetTickCountMy()
+{
+	switch (TickTimerVal)
+	{
+	case 1:
+		return GetTickCount1() + offset_point;
+	case 2:
+		return GetTickCount2() + offset_point;
+	case 3:
+		return GetTickCount3() + offset_point;
+	default:
+		break;
+	}
+	return GetTickCount_ptr() + offset_point;
+}
+
+BOOL TICK_HOOK_ENABLED = FALSE;
+
+// 0-100 precision
+int __stdcall HookTickTimerAccurate(unsigned int val)
+{
+	tick_accuracy = val;
+	if (tick_accuracy > 100)
+		val = 100;
+	return 0;
+}
+// val 0 - Disable
+// val 1 - Enable (Periodic timer)
+// val 1 - Enable (Diff timer)
+// val 3 - Enable (Diff timer fast)
+int __stdcall HookTickTimer(int val)
+{
+	if (!TICK_HOOK_ENABLED)
+	{
+		TICK_HOOK_ENABLED = TRUE;
+		MH_CreateHook(&GetTickCount, &GetTickCountMy, reinterpret_cast<void**>(&GetTickCount_ptr));
+		MH_EnableHook(&GetTickCount);
+	}
+	start_point_latest = 0;
+	start_point = GetTickCount();
+	offset_point = (((long long)GetTickCount_ptr()) - ((long long)start_point));
+	timer1 = std::chrono::high_resolution_clock::now();
+	timer2 = std::chrono::steady_clock::now();
+	timer3 = std::chrono::steady_clock::now();
+	TickTimerVal = val;
+	return 0;
 }
 
 
@@ -92,7 +205,7 @@ void InitThreadCpuUsage() {
 	std::memcpy(&lastUserCPU, &fuser, sizeof(FILETIME));
 }
 
-double GetWar3CpuUsage() {
+float GetWar3CpuUsage() {
 	FILETIME ftime, fsys, fuser;
 	ULARGE_INTEGER now, sys, user;
 	double percent;
@@ -107,34 +220,49 @@ double GetWar3CpuUsage() {
 	lastCPU = now;
 	lastUserCPU = user;
 	lastSysCPU = sys;
-	return percent * 100.0;
+	return (float)percent * 100.0f;
 }
 
 
-#define MAX_WAR3_FPS 80
-#define MIN_WAR3_FPS 24
-int CurrentFps = 64;
+float MAX_WAR3_FPS = 251.5f;
+float MIN_WAR3_FPS = 24.0f;
+
+void __stdcall SetAutoFpsLimit(int min, int max)
+{
+	MAX_WAR3_FPS = max * 1.0f;
+	MIN_WAR3_FPS = min * 1.0f;
+	_SetMaxFps(max);
+}
+
+void __stdcall SetAutoFpsLimitFloat(float min, float max)
+{
+	MAX_WAR3_FPS = max;
+	MIN_WAR3_FPS = min;
+	_SetMaxFps((int)max);
+}
+
+float CurrentFps = 64.0f;
 void UpdateFPS()
 {
-	double currentcpuusage = GetWar3CpuUsage();
-	if (currentcpuusage > 88.0)
+	float currentcpuusage = GetWar3CpuUsage();
+	if (currentcpuusage > 88.0f)
 	{
 		if (CurrentFps > MIN_WAR3_FPS)
 		{
-			CurrentFps -= 4;
+			CurrentFps -= 7.5f;
 			if (IsGame())
-				_SetMaxFps(CurrentFps);
-			sprintf_s(MyFpsString, 512, "%s%i.0 CPU:%.1f", "|nFPS: %.1f/", CurrentFps, currentcpuusage);
+				_SetMaxFps((int)CurrentFps);
+			sprintf_s(MyFpsString, 512, "%s%i.0 CPU:%.1f", "|nFPS: %.1f/", (int)CurrentFps, currentcpuusage);
 		}
 	}
-	else if (currentcpuusage < 70.0)
+	else if (currentcpuusage < 70.0f)
 	{
 		if (CurrentFps < MAX_WAR3_FPS)
 		{
-			CurrentFps += 4;
+			CurrentFps += 7.5f;
 			if (IsGame())
-				_SetMaxFps(CurrentFps);
-			sprintf_s(MyFpsString, 512, "%s%i.0 CPU:%.1f", "|nFPS: %.1f/", CurrentFps, currentcpuusage);
+				_SetMaxFps((int)CurrentFps);
+			sprintf_s(MyFpsString, 512, "%s%i.0 CPU:%.1f", "|nFPS: %.1f/", (int)CurrentFps, currentcpuusage);
 		}
 	}
 }

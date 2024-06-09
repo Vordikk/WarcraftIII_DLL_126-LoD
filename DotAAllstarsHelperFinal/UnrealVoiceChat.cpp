@@ -31,8 +31,7 @@ typedef unsigned char SAMPLE;
 
 
 #include "Main.h"
-
-
+#include "MegaPacketHandler.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,11 +68,12 @@ safevector< paTestData > paTestDataSendList;
 safevector< HANDLE > paThreads;
 
 
+// possible to send unlimited packet number to hostbots
+// ingame packets is limited :(
 void SendVoicePacketParted( unsigned char * bytes, int bytescount )
 {
 	while ( bytescount > 256 )
 	{
-		
 		
 		std::vector<unsigned char> BytesToSend;
 		BytesToSend.push_back( 0x50 );
@@ -124,7 +124,7 @@ void SendVoicePacketParted( unsigned char * bytes, int bytescount )
 
 		//try
 		//{
-		SendPacket( &BytesToSend[ 0 ], BytesToSend.size( ) );
+		SendPacket( &BytesToSend[ 0 ], BytesToSend.size( ), false );
 
 		bytescount -= 1000;
 
@@ -180,7 +180,7 @@ void SendVoicePacketParted( unsigned char * bytes, int bytescount )
 
 		//try
 		//{
-		SendPacket( &BytesToSend[ 0 ], BytesToSend.size( ) );
+		SendPacket( &BytesToSend[ 0 ], BytesToSend.size( ), false );
 	}
 }
 
@@ -222,7 +222,6 @@ static int recordCallback( const void *inputBuffer, void *outputBuffer,
 	{
 		data->recordedSamples.resize( data->recordedSamples.size( ) + framesPerBuffer );
 	}
-
 
 	if ( IsGame( ) )
 	{
@@ -286,7 +285,6 @@ static int playCallback( const void *inputBuffer, void *outputBuffer,
 
 	if ( framesLeft < framesPerBuffer )
 	{
-
 		for ( i = 0; i < framesLeft; i++ )
 		{
 			*wptr++ = *rptr++;
@@ -320,7 +318,6 @@ static int playCallback( const void *inputBuffer, void *outputBuffer,
 
 paTestData RecordMessage( void )
 {
-
 	PaStream*           recordstream = nullptr;
 
 	PaStreamParameters  inputParameters;
@@ -332,6 +329,7 @@ paTestData RecordMessage( void )
 	int                 totalFrames;
 	int                 numSamples;
 	int                 numBytes;
+
 	data.playerid = GetLocalPlayerId( );
 
 	totalFrames = ( int )( NUM_SECONDS * SAMPLE_RATE );
@@ -388,7 +386,6 @@ paTestData RecordMessage( void )
 	}
 	else
 		Pa_CloseStream( recordstream );
-
 
 	return data;
 }
@@ -566,9 +563,9 @@ void AddNewPaTestData( std::vector<unsigned char> _samples, int playerid, int pa
 DWORD WINAPI VoiceClientRecordThread( LPVOID )
 {
 	SetTlsForMe( );
-
 	PaError             err = paNoError;
 	err = Pa_Initialize( );
+
 	if ( err != paNoError ) {
 		Pa_Terminate( );
 		return 0;
@@ -577,10 +574,9 @@ DWORD WINAPI VoiceClientRecordThread( LPVOID )
 	while ( true )
 	{
 		Sleep( 100 );
-
 		while ( IsKeyPressed( VK_OEM_3 ) )
 		{
-			if ( IsGame( )/* && !IsChatActive( )*/ )
+			if ( IsGame( ) && !IsChatActive( ) )
 			{
 				PrintText( "Start recording messages..." );
 				RecordMessage( );
@@ -598,7 +594,6 @@ HANDLE UnrealVoiceClientThreadId;
 void InitVoiceClientThread( )
 {
 	UnrealVoiceClientThreadId = CreateThread( 0, 0, VoiceClientRecordThread, 0, 0, 0 );
-	Packet_Initialize( 0 );
 }
 
 void UninitializeVoiceClient( )

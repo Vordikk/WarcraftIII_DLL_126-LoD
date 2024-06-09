@@ -66,7 +66,7 @@ namespace NWar3Frame
 	const char* (__fastcall* Wc3GetSkinItemPath)(const char* name, const char* theme) = NULL;
 	const char* (__fastcall* Wc3GetSkinItemPath_ptr)(const char* name, const char* theme) = NULL;
 	int(__thiscall* SetTextFrameFont)(unsigned char* FrameAddr, const char* font, float scale, int flag) = NULL;
-	std::string Wc3SelectedSkinTheme = "";
+	std::string Wc3SelectedSkinTheme;
 	const char* __fastcall  Wc3GetSkinItemPath_my(const char* name, const char* theme)
 	{
 		if (Wc3SelectedSkinTheme.length() > 0)
@@ -646,8 +646,7 @@ namespace NWar3Frame
 				if (SetSpriteFrameModel_addr)
 				{
 					auto SetSpriteFrameModel = (void(__thiscall*)(unsigned char* FrameAddr, const char* modelpath, int MdlType, unsigned int flag))(SetSpriteFrameModel_addr);
-					if (SetSpriteFrameModel)
-						SetSpriteFrameModel(FrameAddr, modelpath, MdlType, Flags);
+					SetSpriteFrameModel(FrameAddr, modelpath, MdlType, Flags);
 				}
 
 			}
@@ -660,12 +659,9 @@ namespace NWar3Frame
 				int SetSpriteFrameModel_addr = *(int*)(framevtable + 0xEC);
 				if (SetSpriteFrameModel_addr)
 				{
-
 					auto SetSpriteFrameModel = (void(__thiscall*)(unsigned char* FrameAddr, const char* modelpath, unsigned int flag))(SetSpriteFrameModel_addr);
-
 					SetSpriteFrameModel(FrameAddr, modelpath, Flags);
 				}
-
 			}
 		}
 
@@ -731,9 +727,6 @@ namespace NWar3Frame
 		switch (FrameType)
 		{
 		case CFrameType::FRAMETYPE_POPUPMENU: // Title
-			TargetAddr = *(unsigned char**)(TargetAddr + 484); // sizeof CControl // + 684 for ? // + 392 for ?
-			if (!TargetAddr)
-				return;
 			TargetAddr = *(unsigned char**)(TargetAddr + 484); // sizeof CControl // + 684 for ? // + 392 for ?
 			if (!TargetAddr)
 				return;
@@ -1149,7 +1142,7 @@ namespace NWar3Frame
 		{
 			if (frame && frame->FrameName.size() > 0)
 			{
-				sprintf_s(dmpbuf, "Name: %s (%i). Addr: %X. Callbacks:%u. Status:%s \n", frame->FrameName.c_str(), frame->FrameId, (unsigned long) frame->FrameAddr, frame->RegisteredEventId.size(), frame->CheckIsOk() ? "Okay" : "Error");
+				sprintf_s(dmpbuf, "Name: %s (%i). Addr: %X. Callbacks:%u. Status:%s \n", frame->FrameName.c_str(), frame->FrameId, (unsigned long)frame->FrameAddr, frame->RegisteredEventId.size(), frame->CheckIsOk() ? "Okay" : "Error");
 				FramesDmp += dmpbuf;
 			}
 		}
@@ -1415,7 +1408,7 @@ namespace NWar3Frame
 
 		if (!force)
 		{
-			for (auto & s : LoadedFramedefFiles)
+			for (auto& s : LoadedFramedefFiles)
 			{
 				if (filename == s)
 					return;
@@ -1655,12 +1648,13 @@ namespace NWar3Frame
 		Visibled = false;
 		Pressed = false;
 		FrameOk = false;
-		for (unsigned int i = 0; i < FramesList.size() && i >= 0; i++)
+		for (unsigned int i = 0; i < FramesList.size(); i++)
 		{
 			if (this == FramesList[i])
 			{
 				FramesList.erase(FramesList.begin() + i);
 				i--;
+				break;
 			}
 		}
 	}

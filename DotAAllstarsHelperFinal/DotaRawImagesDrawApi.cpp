@@ -99,7 +99,7 @@ int __stdcall CreateRawImage(int width, int height, COLOR4 defaultcolor)
 
 	RawImageStruct tmpRawImage = RawImageStruct();
 #ifdef OLD_CODE
-	StormBuffer tmpRawImageBuffer = StormBuffer();
+	StormBuffer tmpRawImageBuffer;
 	tmpRawImageBuffer.Resize(width * height * 4);
 
 	if (defaultcolor.A == defaultcolor.B && defaultcolor.B == defaultcolor.R && defaultcolor.R == defaultcolor.G)
@@ -186,7 +186,7 @@ int __stdcall LoadRawImage(const char* filename)
 		int w = 0, h = 0, bpp = 0, mipmaps = 0, alphaflag = 8, compress = 1, alphaenconding = 5;
 		unsigned long rawImageSize = 0;
 
-		StormBuffer OutBuffer = StormBuffer();
+		StormBuffer OutBuffer;
 		StormBuffer InBuffer(PatchFileData, PatchFileSize);
 
 		if (!IsBlp)
@@ -1196,7 +1196,7 @@ int __stdcall SaveRawImageToGameFile(unsigned int RawImage, const char* filename
 	strcpy_s(tmpRawImage.filename, filename);
 
 	StormBuffer inbuffer = tmpRawImage.img;
-	StormBuffer ResultBuffer = StormBuffer();
+	StormBuffer ResultBuffer;
 
 	if (tmpRawImage.ingamebuffer.buf)
 	{
@@ -1308,7 +1308,7 @@ int __stdcall RawImage_Resize(unsigned int RawImage, unsigned int newwidth, unsi
 #ifdef OLD_CODE
 
 	StormBuffer tmpOldBuffer = tmpRawImage.img;
-	StormBuffer tmpNewBuffer = StormBuffer();
+	StormBuffer tmpNewBuffer;
 	ScaleImage((unsigned char*)tmpOldBuffer.buf, tmpRawImage.width, tmpRawImage.height, newwidth, newheight, 4, tmpNewBuffer);
 	tmpOldBuffer.Clear();
 	tmpRawImage.img = tmpNewBuffer;

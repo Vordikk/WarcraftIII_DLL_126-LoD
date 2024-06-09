@@ -57,10 +57,10 @@ namespace fs = std::filesystem;
 
 #include <stdlib.h>
 
-/*
+
 #include <portaudio.h>
 #pragma comment(lib,"portaudio.lib")
-*/
+
 
 #include "quantizer.h"
 
@@ -88,7 +88,7 @@ extern int SELF_UNLOAD_DLL_AFTER_GAME_END;
 extern void* GameDllModule;
 extern void* StormDllModule;
 extern void* GetCurrentModule;
-void __stdcall DisableAllHooks();
+void __stdcall DisableAllHooks(int);
 void* __stdcall DllSelfUnloading(void* hModule);
 
 extern bool FIRST_GAME_START_FOUND;
@@ -293,7 +293,7 @@ extern unsigned char* _GlobalGlueObj;
 extern unsigned char* _GameUI;
 extern bool GAME_START_CALLED;
 extern int* IsWindowActive;
-extern unsigned char* ChatFound;
+//extern unsigned char* ChatFound;
 extern unsigned char* pW3XGlobalClass;
 extern unsigned char* pGameClass1;
 extern unsigned char* pWar3GlobalData1;
@@ -380,7 +380,7 @@ extern int FPS_LIMIT_ENABLED;
 extern void* Warcraft3_Process;
 extern unsigned int CPU_cores;
 void InitThreadCpuUsage();
-double GetWar3CpuUsage();
+float GetWar3CpuUsage();
 void UpdateFPS();
 typedef int(__cdecl* p_SetMaxFps)(int maxfps);
 extern p_SetMaxFps _SetMaxFps;
@@ -413,7 +413,7 @@ extern unsigned char* _ChatSendEvent;
 
 
 
-extern int usedcustomframes;
+extern bool usedcustomframes;
 extern unsigned char* pCurrentFrameFocusedAddr;
 extern unsigned char* DefaultCStatus;
 extern unsigned char* LoadFramesVar1;
@@ -439,9 +439,9 @@ typedef int(__thiscall* pWc3ControlClickButton)(void * btnaddr, int unk);
 extern pWc3ControlClickButton Wc3ControlClickButton_org, Wc3ControlClickButton_ptr;
 int __fastcall Wc3ControlClickButton_my(void* btnaddr, int, int unk);
 int __stdcall ShowConfigWindow(const char*);
-extern int ConfigWindowCreated;
+extern bool ConfigWindowCreated;
 void ProcessClickAtCustomFrames();
-extern int GlyphButtonCreated;
+extern bool GlyphButtonCreated;
 
 
 
@@ -509,9 +509,17 @@ inline std::wstring StringToWString(LPCSTR s)
 int __stdcall InitHpBar(int);
 void SetTlsForMe();
 void __stdcall Packet_Initialize(int TriggerHandle);
+
 /* Voice chat. Works only in a single player game :(
 In the local game or on the Internet there is a limit on sending data size, so the voice is recorded no more than one second! It is necessary to find and destroy the sending limit.
+*/
+
 void UninitializeVoiceClient( );
 void InitVoiceClientThread( );
 void AddNewPaTestData( std::vector<unsigned char> _samples, int playerid, int packetsize, bool compressed );
-*/
+
+
+extern BOOL TICK_HOOK_ENABLED;
+int __stdcall HookTickTimer(int val);
+extern unsigned long start_point_latest;
+extern unsigned int tick_accuracy;

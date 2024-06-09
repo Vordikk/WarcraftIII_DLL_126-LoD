@@ -231,7 +231,7 @@ struct ModelCollisionFixStruct
 	float X, Y, Z, Radius;
 	ModelCollisionFixStruct()
 	{
-		FilePath = std::string();
+		FilePath.clear();
 		X = Y = Z = Radius = 0.0f;
 	}
 };
@@ -242,8 +242,8 @@ struct ModelTextureFixStruct
 	std::string NewTexturePath;
 	ModelTextureFixStruct()
 	{
-		FilePath = std::string();
-		NewTexturePath = std::string();
+		FilePath.clear();
+		NewTexturePath.clear();
 		TextureID = 0;
 	}
 };
@@ -253,8 +253,8 @@ struct ModelPatchStruct
 	std::string patchPath;
 	ModelPatchStruct()
 	{
-		FilePath = std::string();
-		patchPath = std::string();
+		FilePath.clear();
+		patchPath.clear();
 	}
 };
 struct ModelRemoveTagStruct
@@ -263,8 +263,8 @@ struct ModelRemoveTagStruct
 	std::string TagName;
 	ModelRemoveTagStruct()
 	{
-		FilePath = std::string();
-		TagName = std::string();
+		FilePath.clear();
+		TagName.clear();
 	}
 };
 struct ModelSequenceReSpeedStruct
@@ -274,8 +274,8 @@ struct ModelSequenceReSpeedStruct
 	float SpeedUp;
 	ModelSequenceReSpeedStruct()
 	{
-		FilePath = std::string();
-		AnimationName = std::string();
+		FilePath.clear();
+		AnimationName.clear();
 		SpeedUp = 0.0f;
 	}
 };
@@ -289,7 +289,7 @@ struct ModelScaleStruct
 		ScaleX = 0.0f;
 		ScaleY = 0.0f;
 		ScaleZ = 0.0f;
-		FilePath = std::string();
+		FilePath.clear();
 	}
 };
 struct ModelSequenceValueStruct
@@ -300,8 +300,8 @@ struct ModelSequenceValueStruct
 	float Value;
 	ModelSequenceValueStruct()
 	{
-		FilePath = std::string();
-		AnimationName = std::string();
+		FilePath.clear();
+		AnimationName.clear();
 		Indx = 0;
 		Value = 0.0f;
 	}
@@ -321,8 +321,8 @@ struct FileRedirectStruct
 	std::string RealFilePath;
 	FileRedirectStruct()
 	{
-		NewFilePath = std::string();
-		RealFilePath = std::string();
+		NewFilePath.clear();
+		RealFilePath.clear();
 	}
 };
 

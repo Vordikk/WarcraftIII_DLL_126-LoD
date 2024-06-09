@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "cppcrc.h"
 
 #define MAX_PACKET_SIZE 1024
 
@@ -61,11 +62,90 @@ unsigned char* pGAME_SendPacket;
 typedef void* (__fastcall* GAME_SendPacket_p) (CDataStore* packet, unsigned long);
 GAME_SendPacket_p GAME_SendPacket = NULL;
 
+typedef int(__cdecl* p_6F53E6B0)();
+p_6F53E6B0 sub_6F53E6B0;
+typedef int(__fastcall* pGetBnetSockStr)(unsigned char* a1/*&stru_6FAD0090*/, int unk/*zero*/, int net_addr, int a3/*0*/, int* ptr_net_addr, int a5 /*0*/, int a6 /* 1 */);
+pGetBnetSockStr GetBnetSockStr;
+
+unsigned char* GetBnetChatSock()
+{
+	sub_6F53E6B0 = (p_6F53E6B0)(GameDll + 0x53E6B0);
+	GetBnetSockStr = (pGetBnetSockStr)(GameDll + 0x688F30);
+	int netaddr = sub_6F53E6B0();
+	int bnetChat = GetBnetSockStr(GameDll + 0xAD0090, 0, netaddr, 0, &netaddr, 0, 1);
+	if (bnetChat > 0)
+	{
+		return *(unsigned char**)(bnetChat + 0x414);
+	}
+	return 0;
+}
+
+
+unsigned char* GetHostBotChatSock()
+{
+	int hostbotsock = *(int*)(GameDll + 0xACFFA4);
+	if (hostbotsock > 0)
+	{
+		hostbotsock = *(int*)(hostbotsock + 0x148);
+		if (hostbotsock > 0)
+		{
+			return *(unsigned char**)(hostbotsock + 0x3C);
+		}
+	}
+	return 0;
+}
+
+
+typedef void(__fastcall* GAME_SendPacketDir_p) (unsigned char* tcpoffs, unsigned char* zero, unsigned char* packetData, int len);
+GAME_SendPacketDir_p GAME_SendPacketDir;
+
+
+std::vector<unsigned char> send_data_buf;
+
+void SendData(unsigned char* sockstr, unsigned char header, unsigned char packetid, unsigned char* data, int datalen)
+{
+	if (!sockstr)
+		return;
+	send_data_buf.clear();
+	short totallen = datalen + 4;
+	send_data_buf.push_back(header);
+	send_data_buf.push_back(packetid);
+	send_data_buf.push_back(((unsigned char*)&totallen)[0]);
+	send_data_buf.push_back(((unsigned char*)&totallen)[1]);
+	for (int i = 0; i < datalen; i++)
+	{
+		send_data_buf.push_back(data[i]);
+	}
+	GAME_SendPacketDir = (GAME_SendPacketDir_p)(GameDll + 0x6DF040);
+	EnterCriticalSection((LPCRITICAL_SECTION) * (unsigned char**)(sockstr + 0x44));
+	GAME_SendPacketDir(sockstr, sockstr, &send_data_buf[0], (int)send_data_buf.size());
+	LeaveCriticalSection((LPCRITICAL_SECTION) * (unsigned char**)(sockstr + 0x44));
+	WSAGetLastError();
+}
+
+void SendIngameAction(unsigned char* data, int datalen)
+{
+	unsigned char* hostbotsocket = GetHostBotChatSock();
+	if (hostbotsocket)
+	{
+		int crc32 = 0;
+		uint32_t crc_value = CRC32::CRC32::calc(data, datalen);
+		std::vector<unsigned char> senddata;
+		senddata.push_back(((unsigned char*)&crc_value)[0]);
+		senddata.push_back(((unsigned char*)&crc_value)[1]);
+		senddata.push_back(((unsigned char*)&crc_value)[2]);
+		senddata.push_back(((unsigned char*)&crc_value)[3]);
+		for (int i = 0; i < datalen; i++)
+		{
+			senddata.push_back(data[i]);
+		}
+		SendData(hostbotsocket, 0xF7, 0x26, &senddata[0], (int)senddata.size());
+	}
+}
 
 
 
-
-void SendPacket(unsigned char* packetData, unsigned int  size)
+void SendPacket(unsigned char* packetData, unsigned int  size, bool asyns)
 {
 	// @warning: this function thread-unsafe, do not use it in other thread.
 	// note: this is very useful function, in fact this function
@@ -73,17 +153,24 @@ void SendPacket(unsigned char* packetData, unsigned int  size)
 	// including unit commands and and gameplay commands,
 	// i suppose its wc3 single action W3GS_INCOMING_ACTION (c) wc3noobpl.
 
-	CDataStore packet;
-	memset(&packet, 0, sizeof(CDataStore));
-	packet.vtable = (void**)PacketClassPtr; // Packet Class
-	packet.packet = packetData;
-	packet.sizePacket = size;
-	packet.unk_8 = 0;
-	packet.unk_C = 0x5B4;
-	packet.recvbytes = -1;
-	if (!GAME_SendPacket)
-		GAME_SendPacket = (GAME_SendPacket_p)(pGAME_SendPacket);
-	GAME_SendPacket(&packet, 0);
+	if (asyns)
+	{
+		CDataStore packet;
+		memset(&packet, 0, sizeof(CDataStore));
+		packet.vtable = (void**)PacketClassPtr; // Packet Class
+		packet.packet = packetData;
+		packet.sizePacket = size;
+		packet.unk_8 = 0;
+		packet.unk_C = 0x5B4;
+		packet.recvbytes = -1;
+		if (!GAME_SendPacket)
+			GAME_SendPacket = (GAME_SendPacket_p)(pGAME_SendPacket);
+		GAME_SendPacket(&packet, 0);
+	}
+	else
+	{
+		SendIngameAction(packetData, (int)size);
+	}
 }
 
 
@@ -216,21 +303,21 @@ int Handle_Jass_Packet(unsigned char* packetraw, size_t _packetsize, int pid)
 		if (packetsize >= 0 && packetsize <= MAX_PACKET_SIZE && BytesToRecv.size() >= packetsize)
 		{
 			readdata += packetsize;
-			/*if ( packetsize >= 4  )
+			if (packetsize >= 4)
 			{
 				readdata += packetsize + 4 + 2;
 
 				//PrintText( "Get id!" );
-				int packetid = *( int* )&BytesToRecv[ 0 ];
+				int packetid = *(int*)&BytesToRecv[0];
 
-				if ( packetid == 0xA1A2A3A0 && packetsize >= 8 )
+				if (packetid == 0xA1A2A3A0 && packetsize >= 8)
 				{
-					int packetid2 = *( int* )&BytesToRecv[ 4 ];
+					int packetid2 = *(int*)&BytesToRecv[4];
 
-					if ( packetid2 == 0xA1A2A3A0 || packetid == 0xA1A2A3A1 )
+					if (packetid2 == 0xA1A2A3A0 || packetid == 0xA1A2A3A1)
 					{
-						BytesToRecv.erase( BytesToRecv.begin( ), BytesToRecv.begin( ) + 4 );
-						BytesToRecv.erase( BytesToRecv.begin( ), BytesToRecv.begin( ) + 4 );
+						BytesToRecv.erase(BytesToRecv.begin(), BytesToRecv.begin() + 4);
+						BytesToRecv.erase(BytesToRecv.begin(), BytesToRecv.begin() + 4);
 						packetsize -= 8;
 
 
@@ -245,25 +332,20 @@ int Handle_Jass_Packet(unsigned char* packetraw, size_t _packetsize, int pid)
 						//fprintf_s( f, "%s", "\n" );
 						//fclose( f );
 
-
-	//					AddNewPaTestData( BytesToRecv, pid, packetsize, packetid == 0xA1A2A3A1 );
-
-
+						AddNewPaTestData(BytesToRecv, pid, packetsize, packetid == 0xA1A2A3A1);
 					}
 				}
-
-				*/
-			if (CallbackTrigger)
-			{
-				CallTrigger(CallbackTrigger);
+				if (CallbackTrigger)
+				{
+					CallTrigger(CallbackTrigger);
+				}
 			}
-
+			//BytesToRecv.erase( BytesToRecv.begin( ), BytesToRecv.begin( ) + packetsize );
+			//}
+			/*else
+				break;
+			*/
 		}
-		//BytesToRecv.erase( BytesToRecv.begin( ), BytesToRecv.begin( ) + packetsize );
-		//}
-		/*else
-			break;
-*/
 	}
 	return readdata;
 }
@@ -271,7 +353,6 @@ int Handle_Jass_Packet(unsigned char* packetraw, size_t _packetsize, int pid)
 
 void InitializePacketHandler()
 {
-
 	PacketClassPtr = GameDll + 0x932D2C;
 	pGAME_SendPacket = GameDll + 0x54D970;
 

@@ -110,6 +110,9 @@
     <ClCompile Include="quantizer.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="UnrealVoiceChat.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base64.h">
@@ -182,6 +185,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="GameStructs.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="cppcrc.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

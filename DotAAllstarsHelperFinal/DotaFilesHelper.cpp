@@ -1190,7 +1190,6 @@ void ProcessMdx(std::string filename, unsigned char** OutDataPointer, size_t* Ou
 					}
 					else if (memcmp(&ModelBytes[offset], "HELP", 4) == 0)
 					{
-
 						offset += 4;
 						size_t newoffset = offset + *(size_t*)&ModelBytes[offset];
 						offset += 4;

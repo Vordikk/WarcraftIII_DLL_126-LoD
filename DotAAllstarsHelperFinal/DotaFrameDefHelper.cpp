@@ -333,7 +333,7 @@ void __stdcall CFrame_AddCallackPacket(CWar3Frame* frame, int FrameCode, unsigne
 		return;
 	CFrameBuffer tmpFrameBuf = CFrameBuffer();
 	tmpFrameBuf.frame = frame;
-	tmpFrameBuf.callbackfuncname = "";
+	tmpFrameBuf.callbackfuncname.clear();
 	tmpFrameBuf.packetcallback = true;
 	tmpFrameBuf.callbackeventid = callbackeventid;
 	tmpFrameBuf.FrameCode = FrameCode;

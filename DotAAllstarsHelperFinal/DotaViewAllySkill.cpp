@@ -7,12 +7,13 @@ IsNeedDrawUnit2 IsNeedDrawUnit2ptr;
 
 IsDrawSkillPanel IsDrawSkillPanel_org = NULL;
 IsDrawSkillPanel IsDrawSkillPanel_ptr;
+
 IsDrawSkillPanelOverlay IsDrawSkillPanelOverlay_org = NULL;
 IsDrawSkillPanelOverlay IsDrawSkillPanelOverlay_ptr;
 
 bool ShowSkillPanelForObservers = false;
-bool ShowSkillPanelOnlyForHeroes = true;
-
+bool ShowSkillPanelOnlyForHeroes = false;
+bool ShowSkillPanelNeutral = false;
 
 
 int __stdcall ShowObserverSkillPanel(int enabled)
@@ -25,6 +26,12 @@ int __stdcall ShowSkillPanelForAllUnits(int enabled)
 {
 	ShowSkillPanelOnlyForHeroes = !enabled;
 	return ShowSkillPanelOnlyForHeroes;
+}
+
+int __stdcall ShowSkillPanelForEnemyNeurals(int enabled)
+{
+	ShowSkillPanelNeutral = enabled;
+	return ShowSkillPanelNeutral;
 }
 
 
@@ -49,24 +56,34 @@ signed int __fastcall  IsDrawSkillPanel_my(unsigned char* UnitAddr, int addr1)
 		}
 		else if (IsNotBadUnit(UnitAddr))
 		{
-			// Затем дополнительную которая отрисует скилы всем союзным героям.
-			if (IsEnemy(UnitAddr) == false)
+			// Если не враг
+			if (!IsEnemy(UnitAddr))
 			{
-				if (IsHero(UnitAddr))
+				//Если герой или включено отображение для всех
+				if (!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr))
 				{
 					((DrawSkillPanel)(GameDll + DrawSkillPanelOffset))(UnitAddr, OID);
 					return result;
 				}
 			}
 
+			// Отрисовать Neutrals
+			if (ShowSkillPanelNeutral && GetUnitOwnerSlot(UnitAddr) >= 12)
+			{
+				((DrawSkillPanel)(GameDll + DrawSkillPanelOffset))(UnitAddr, OID);
+				return result;
+			}
+
+			// Отображать для зрителя
 			if (ShowSkillPanelForObservers && IsLocalPlayerObserver())
 			{
-				if ((!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr)) &&
-					GetUnitOwnerSlot(UnitAddr) <= 12)
+				if (!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr))
+				{
 					((DrawSkillPanel)(GameDll + DrawSkillPanelOffset))(UnitAddr, OID);
+					return result;
+				}
 			}
 		}
-
 	}
 	else
 	{
@@ -98,20 +115,33 @@ signed int __fastcall  IsDrawSkillPanelOverlay_my(unsigned char* UnitAddr, int a
 		}
 		else if (IsNotBadUnit(UnitAddr))
 		{
-			// Затем дополнительную которая отрисует скилы всем союзным героям.
-			if (IsEnemy(UnitAddr) == false)
+			// Если не враг
+			if (!IsEnemy(UnitAddr))
 			{
-				if (IsHero(UnitAddr))
+				//Если герой или включено отображение для всех
+				if (!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr))
 				{
 					((DrawSkillPanelOverlay)(GameDll + DrawSkillPanelOverlayOffset))(UnitAddr, OID);
 					return result;
 				}
 			}
+
+			//// Отрисовать Neutrals
+			if (!ShowSkillPanelOnlyForHeroes && GetUnitOwnerSlot(UnitAddr) >= 12)
+			{
+
+				((DrawSkillPanelOverlay)(GameDll + DrawSkillPanelOverlayOffset))(UnitAddr, OID);
+				return result;
+			}
+
+			// Отображать для зрителя
 			if (ShowSkillPanelForObservers && IsLocalPlayerObserver())
 			{
-				if ((!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr)) &&
-					GetUnitOwnerSlot(UnitAddr) <= 12)
+				if (!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr)) 
+				{
 					((DrawSkillPanelOverlay)(GameDll + DrawSkillPanelOverlayOffset))(UnitAddr, OID);
+					return result;
+				}
 			}
 		}
 
@@ -124,21 +154,29 @@ signed int __fastcall  IsDrawSkillPanelOverlay_my(unsigned char* UnitAddr, int a
 }
 
 
-int __fastcall IsNeedDrawUnit2_my( unsigned char * UnitAddr, int unused/* converted from thiscall to fastcall*/)
+int __fastcall IsNeedDrawUnit2_my(unsigned char* UnitAddr, int unused/* converted from thiscall to fastcall*/)
 {
 	if (IsNotBadUnit(UnitAddr))
 	{
-		if (IsEnemy(UnitAddr) == false)
+		// Если не враг
+		if (!IsEnemy(UnitAddr))
 		{
-			if (IsHero(UnitAddr))
+			//Если герой или включено отображение для всех
+			if (!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr))
 				return 1;
 		}
 
+		// Отрисовать Neutrals
+		if (ShowSkillPanelNeutral && GetUnitOwnerSlot(UnitAddr) >= 12)
+		{
+			return 1;
+		}
+
+		// Отображать для зрителя
 		if (ShowSkillPanelForObservers && IsLocalPlayerObserver())
 		{
 			if (!ShowSkillPanelOnlyForHeroes || IsHero(UnitAddr))
-				if (GetUnitOwnerSlot(UnitAddr) <= 12)
-					return 1;
+				return 1;
 		}
 	}
 	return IsNeedDrawUnit2ptr(UnitAddr);

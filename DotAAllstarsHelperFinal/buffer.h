@@ -99,6 +99,17 @@ public:
 		return (*this);
 	}
 
+	void Allocate(size_t s)
+	{
+		Clear(); Resize(s);
+	}
+
+	void Copy(const StormBuffer& a)
+	{
+		Resize(a.length);
+		std::memcpy(buf, a.buf, length);
+	}
+
 	StormBuffer& operator =(const StormBuffer& CopyObject)
 	{
 		Clear();

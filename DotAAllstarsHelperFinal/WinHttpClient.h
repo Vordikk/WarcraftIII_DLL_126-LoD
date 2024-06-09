@@ -773,7 +773,7 @@ bool WinHttpClient::SetAdditionalDataToSend(unsigned char* data, unsigned int da
 // Reset additional data fields
 bool WinHttpClient::ResetAdditionalDataToSend(void)
 {
-	if (m_pDataToSend != NULL)
+	if (m_pDataToSend)
 	{
 		delete[] m_pDataToSend;
 	}
