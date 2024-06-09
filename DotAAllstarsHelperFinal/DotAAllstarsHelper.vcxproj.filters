@@ -169,9 +169,6 @@
     <ClInclude Include="WarcraftFrameHelper.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="WinHttpClient.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="IniReader.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -188,6 +185,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="cppcrc.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="httplib.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

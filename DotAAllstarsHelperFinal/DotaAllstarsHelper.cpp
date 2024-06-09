@@ -7,16 +7,12 @@
 #include "Crc32Dynamic.h"
 #include "Storm.h"
 
-
 #include "DotaClickHelper.h"
-
-
 #include "RawImageApi.h"
 
-int FileExist(const char* name)
+bool FileExist(const char* name)
 {
-	std::ifstream f(name);
-	return f.good();
+	return std::filesystem::exists(name) && !std::filesystem::is_directory(name);
 }
 
 bool DEBUG_FULL = false;

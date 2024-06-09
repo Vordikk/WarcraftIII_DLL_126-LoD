@@ -115,7 +115,7 @@ void PatchOffsetValue1(void* addr, unsigned char value);
 extern int RenderStage;
 
 war3::CGameUI* GameUIObjectGet();
-int FileExist(const char* name);
+bool FileExist(const char* name);
 unsigned long GetDllCrc32();
 typedef void* (__cdecl* _TriggerExecute)(int TriggerHandle);
 extern _TriggerExecute TriggerExecute;

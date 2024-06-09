@@ -1,37 +1,8 @@
+#include "httplib.h"
+
 #include "Main.h"
 //#include "HttpClass.h"
 #include "base64.h"
-
-#include <WinInet.h>
-#pragma comment ( lib, "Wininet.lib" ) 
-
-#undef BOOLAPI
-#undef SECURITY_FLAG_IGNORE_CERT_DATE_INVALID
-#undef SECURITY_FLAG_IGNORE_CERT_CN_INVALID
-#define URL_COMPONENTS URL_COMPONENTS_ANOTHER
-#define URL_COMPONENTSA URL_COMPONENTSA_ANOTHER
-#define URL_COMPONENTSW URL_COMPONENTSW_ANOTHER
-#define LPURL_COMPONENTS LPURL_COMPONENTS_ANOTHER
-#define LPURL_COMPONENTSA LPURL_COMPONENTS_ANOTHER
-#define LPURL_COMPONENTSW LPURL_COMPONENTS_ANOTHER
-#define INTERNET_SCHEME INTERNET_SCHEME_ANOTHER
-#define LPINTERNET_SCHEME LPINTERNET_SCHEME_ANOTHER
-#define HTTP_VERSION_INFO HTTP_VERSION_INFO_ANOTHER
-#define LPHTTP_VERSION_INFO LPHTTP_VERSION_INFO_ANOTHER
-#include "WinHttpClient.h"
-#undef URL_COMPONENTS
-#undef URL_COMPONENTSA
-#undef URL_COMPONENTSW
-#undef LPURL_COMPONENTS
-#undef LPURL_COMPONENTSA
-#undef LPURL_COMPONENTSW
-#undef INTERNET_SCHEME
-#undef LPINTERNET_SCHEME
-#undef HTTP_VERSION_INFO
-#undef LPHTTP_VERSION_INFO
-
-
-//
 
 int DownProgress = 0, DownStatus = 0;
 std::string LatestDownloadedString;
@@ -43,27 +14,56 @@ bool ProgressProc(double progress)
 	return true;
 }
 
+struct UrlComponents {
+	std::string host;
+	std::string path;
+};
 
-std::string SendHttpPostRequest(const char* ulr, const char* data)
+UrlComponents parse_url(const std::string& url) {
+	std::regex url_regex(R"(^(http[s]?:\/\/)?([^\/\s]+)(\/.*)?$)");
+	std::smatch url_match_result;
+
+	UrlComponents components;
+
+	if (std::regex_match(url, url_match_result, url_regex)) {
+		components.host = url_match_result[1].str() + url_match_result[2].str();
+		components.path = url_match_result[3].str();
+		if (components.path.empty()) {
+			components.path = "/";
+		}
+	}
+	else {
+		components.host = url;
+		components.path = "/";
+	}
+
+	return components;
+}
+
+
+std::string SendHttpPostRequest(const char* url, const char* data)
 {
-	if (!ulr || ulr[0] == '\0' || !data)
+	if (!url || url[0] == '\0' || !data)
 		return "";
 
-	std::string BuildedPath = ulr;
-	WinHttpClient client(StringToWString(BuildedPath.c_str()), ProgressProc);
-	std::string postdata = data;
-	client.SetAdditionalDataToSend((unsigned char*)postdata.c_str(), postdata.size());
-	wchar_t szSize[50] = L"";
-	swprintf_s(szSize, L"%u", postdata.size());
-	std::wstring headers = L"Content-Length: ";
-	headers += szSize;
-	headers += L"\r\nContent-Type: application/x-www-form-urlencoded\r\n";
-	client.SetAdditionalRequestHeaders(headers);
-	client.SendHttpRequest(L"POST");
-	if (!client.GetLastError())
+	UrlComponents uril = parse_url(url);
+	try
 	{
-		DownStatus = 1;
-		return WStringToString(client.GetResponseContent().c_str());
+		httplib::Client client(uril.host);
+		std::string postdata = data;
+		auto res = client.Post(uril.path, data, "text/plain");
+
+		if (res->status == 200)
+		{
+			DownStatus = 1;
+			return res->body;
+		}
+		DownStatus = -1;
+		return res->body;
+	}
+	catch (...)
+	{
+
 	}
 	DownStatus = -1;
 	return "";
@@ -74,17 +74,23 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 	if (!host || host[0] == '\0' || !path)
 		return "";
 
-	std::string BuildedPath = std::string(host) + std::string(path);
-
-	WinHttpClient client(StringToWString(BuildedPath.c_str()));
-
-	client.SendHttpRequest();
-
-	if (!client.GetLastError())
+	try
 	{
-		DownStatus = 1;
-		return  WStringToString(client.GetResponseContent().c_str());
+		httplib::Client client(host);
+		auto res = client.Get(path);
+		if (res->status == 200)
+		{
+			DownStatus = 1;
+			return res->body;
+		}
+		DownStatus = -1;
+		return res->body;
 	}
+	catch (...)
+	{
+
+	}
+
 	DownStatus = -1;
 	return "";
 }
@@ -92,103 +98,53 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 
 void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 {
-	DownStatus = 0;
-	HINTERNET hOpen = NULL;
-	HINTERNET hFile = NULL;
-	unsigned long dataSize = 0;
-	unsigned long dwBytesRead = 0;
-	std::vector<unsigned char> OutData;
-	FILE* outfile = NULL;
-	int AllOkay = false;
-
-	if (filepath == NULL || filepath[0] == '\0' || FileExist(filepath))
+	if (FileExist(filepath))
 	{
 		DownStatus = 2;
 		return;
 	}
+	DownProgress = 0;
+	DownStatus = -1;
 
-	hOpen = InternetOpenA("Microsoft Internet Explorer", NULL, NULL, NULL, 0);
-	if (!hOpen)
+	try
 	{
-		DownStatus = -1;
-		return;
-	}
-	DownProgress = 10;
-	hFile = InternetOpenUrlA(hOpen, szUrl, NULL, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_DONT_CACHE, 0);
+		httplib::Client cli(szUrl);
 
-	if (!hFile)
-	{
-		InternetCloseHandle(hOpen);
-		DownStatus = -1;
-		return;
-	}
-	DownProgress = 20;
-	int code = 0;
-	unsigned long codeLen = 4;
-	HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE |
-		HTTP_QUERY_FLAG_NUMBER, &code, &codeLen, 0);
+		auto progress_callback = [&](uint64_t current, uint64_t total) {
+			if (total > 0) {
+				DownProgress = (static_cast<double>(current) / total) * 100;
+			}
+			return true; 
+			};
 
-	if (code != HTTP_STATUS_OK)// 200 OK
-	{
-		InternetCloseHandle(hFile);
-		InternetCloseHandle(hOpen);
-		DownStatus = -1;
-		return;
-	}
+		auto res = cli.Get("/", progress_callback);
 
-	unsigned int sizeBuffer = 0;
-	unsigned long length = sizeof(sizeBuffer);
-	HttpQueryInfo(hFile, HTTP_QUERY_CONTENT_LENGTH | HTTP_QUERY_FLAG_NUMBER, &sizeBuffer, &length, NULL);
-
-	DownProgress = 30;
-
-	do
-	{
-		dataSize += dwBytesRead;
-		if (sizeBuffer != 0)
-			DownProgress = (int)((dataSize * 100) / sizeBuffer);
-
-		unsigned char buffer[2000];
-		dwBytesRead = 0;
-		int isRead = InternetReadFile(hFile, (LPVOID)buffer, _countof(buffer), &dwBytesRead);
-		if (dwBytesRead > 0 && isRead)
+		if (res && res->status == 200) 
 		{
-			AllOkay = true;
-			for (unsigned int i = 0; i < dwBytesRead; i++)
-				OutData.push_back(buffer[i]);
+			std::ofstream ofs(filepath, std::ios::binary);
+			if (ofs.is_open()) 
+			{
+				ofs.write(res->body.c_str(), res->body.size());
+				ofs.close();
+				DownStatus = 1;
+				DownProgress = 100;
+			}
+			else
+			{
+				DownStatus = -1;
+				DownProgress = 0;
+			}
 		}
-		else
-			break;
-	} while (dwBytesRead > 0);
-
-	if (DownProgress == 30)
-	{
-		DownProgress = 70;
-	}
-
-	if (OutData.size() > 0 && AllOkay)
-	{
-		fopen_s(&outfile, filepath, "wb");
-		if (outfile != NULL)
-		{
-			fwrite(&OutData[0], OutData.size(), 1, outfile);
-			OutData.clear();
-			fclose(outfile);
-			DownStatus = 1;
+		else {
+			DownStatus = -1;
+			DownProgress = 0;
 		}
-		else DownStatus = -1;
 	}
-	else DownStatus = -1;
-
-
-	if (DownProgress == 70)
+	catch (...)
 	{
-		DownProgress = 100;
+		DownStatus = -1;
+		DownProgress = 0;
 	}
-
-	InternetCloseHandle(hFile);
-	InternetCloseHandle(hOpen);
-
 	return;
 }
 
@@ -238,20 +194,32 @@ unsigned long __stdcall SENDSAVEFILEREQUEST(LPVOID)
 	return 0;
 }
 
-int __stdcall SendGetRequest(const char* url, const  char* request)
+int __stdcall SendGetRequest(const char* url, const  char* path)
 {
 	DownProgress = 0;
-	_addr = url; _request = request;
+	_addr = url; 
+	_request = path;
 	DownStatus = 0;
 	CloseHandle(CreateThread(0, 0, SENDGETREQUEST, 0, 0, 0));
 	return 0;
 }
 
-
 int __stdcall SendPostRequest(const char* url, const  char* request)
 {
 	DownProgress = 0;
-	_addr = url ? url : ""; _request = request ? request : "";
+	_addr = url ? url : "";
+	_request = request ? request : "";
+	DownStatus = 0;
+	CloseHandle(CreateThread(0, 0, SENDPOSTREQUEST, 0, 0, 0));
+	return 0;
+}
+
+
+int __stdcall SendPostRequestEx(const char* url, const char * path, const  char* request)
+{
+	DownProgress = 0;
+	_addr = url && path ? std::string(url) + std::string(path) : "";
+	_request = request ? request : "";
 	DownStatus = 0;
 	CloseHandle(CreateThread(0, 0, SENDPOSTREQUEST, 0, 0, 0));
 	return 0;
