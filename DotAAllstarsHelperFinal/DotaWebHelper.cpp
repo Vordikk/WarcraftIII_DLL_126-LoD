@@ -1,3 +1,4 @@
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib.h"
 
 #include "Main.h"
@@ -50,22 +51,34 @@ std::string SendHttpPostRequest(const char* url, const char* data)
 	try
 	{
 		httplib::Client client(uril.host);
+		client.set_follow_location(true);
+
 		std::string postdata = data;
+
 		auto res = client.Post(uril.path, data, "text/plain");
 
-		if (res->status == 200)
+		if (res)
 		{
-			DownStatus = 1;
+			if (res->status == httplib::StatusCode::OK_200)
+			{
+				DownStatus = 1;
+				return res->body;
+			}
+
+			DownStatus = -1;
 			return res->body;
 		}
-		DownStatus = -1;
-		return res->body;
+	}
+	catch (std::exception& ex)
+	{
+		DownStatus = -3;
+		return ex.what() ? ex.what() : "";
 	}
 	catch (...)
 	{
 
 	}
-	DownStatus = -1;
+	DownStatus = -2;
 	return "";
 }
 
@@ -77,21 +90,33 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 	try
 	{
 		httplib::Client client(host);
+
+		client.set_follow_location(true);
+
 		auto res = client.Get(path);
-		if (res->status == 200)
+
+		if (res)
 		{
-			DownStatus = 1;
+			if (res->status == httplib::StatusCode::OK_200)
+			{
+				DownStatus = 1;
+				return res->body;
+			}
+			DownStatus = -1;
 			return res->body;
 		}
-		DownStatus = -1;
-		return res->body;
+	}
+	catch (std::exception & ex)
+	{
+		DownStatus = -3;
+		return ex.what() ? ex.what() : "";
 	}
 	catch (...)
 	{
 
 	}
 
-	DownStatus = -1;
+	DownStatus = -2;
 	return "";
 }
 
@@ -108,7 +133,7 @@ void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 
 	try
 	{
-		httplib::Client cli(szUrl);
+		httplib::Client client(szUrl);
 
 		auto progress_callback = [&](uint64_t current, uint64_t total) {
 			if (total > 0) {
@@ -117,9 +142,9 @@ void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 			return true; 
 			};
 
-		auto res = cli.Get("/", progress_callback);
+		auto res = client.Get("/", progress_callback);
 
-		if (res && res->status == 200) 
+		if (res && res->status == httplib::StatusCode::OK_200)
 		{
 			std::ofstream ofs(filepath, std::ios::binary);
 			if (ofs.is_open()) 

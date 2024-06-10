@@ -215,3 +215,4 @@ SetAutoFpsLimitFloat
 ShowSkillPanelForEnemyNeurals
 GetEspValue
 GetEspValueStdCall
+Packet_Send_Ex

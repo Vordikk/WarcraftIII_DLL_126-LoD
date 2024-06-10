@@ -1,0 +1,9 @@
+libdir=C:\Projects\WAR3\WarcraftIII_DLL_126-xxx\openssl
+includedir=C:\Projects\WAR3\WarcraftIII_DLL_126-xxx\openssl\include
+
+Name: OpenSSL-libssl
+Description: Secure Sockets Layer and cryptography libraries
+Version: 3.4.0-dev
+Requires.private: libcrypto
+Libs: -L${libdir} -lssl
+Cflags: -I${includedir}

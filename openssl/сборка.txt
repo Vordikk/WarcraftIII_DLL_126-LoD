@@ -1,0 +1,3 @@
+varsall.bat x86
+perl Configure --release /MT VC-WIN32 no-shared
+nmake

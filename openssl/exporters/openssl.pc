@@ -1,0 +1,7 @@
+libdir=C:\Program Files (x86)\OpenSSL\lib
+includedir=C:\Program Files (x86)\OpenSSL\include
+
+Name: OpenSSL
+Description: Secure Sockets Layer and cryptography libraries and tools
+Version: 3.4.0-dev
+Requires: libssl libcrypto

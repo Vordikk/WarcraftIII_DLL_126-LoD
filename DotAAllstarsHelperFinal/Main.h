@@ -51,36 +51,19 @@ namespace fs = std::filesystem;
 #include "Storm.h"
 
 #include "WarcraftFrameHelper.h"
-
 #include "MegaPacketHandler.h"
-
-
 #include <stdlib.h>
-
-
 #include <portaudio.h>
-#pragma comment(lib,"portaudio.lib")
-
-
 #include "quantizer.h"
-
 #include "BlpReadWrite.h"
-
-
-
-#pragma comment(lib,"ijl15.lib")
 #include <ijl.h>
-
-
 #include "GameStructs.h"
-
 
 extern bool DEBUG_FULL;
 
 #pragma comment(lib,"legacy_stdio_definitions.lib")
 #pragma comment(lib,"Psapi.lib")
 #pragma comment (lib, "Ws2_32.lib")
-#pragma comment(lib, "libMinHook.x86.lib")
 
 #define IsKeyPressed(CODE) ((GetAsyncKeyState(CODE) & 0x8000) > 0)
 

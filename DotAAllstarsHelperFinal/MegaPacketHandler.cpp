@@ -128,8 +128,7 @@ void SendIngameAction(unsigned char* data, int datalen)
 	unsigned char* hostbotsocket = GetHostBotChatSock();
 	if (hostbotsocket)
 	{
-		int crc32 = 0;
-		uint32_t crc_value = CRC32::CRC32::calc(data, datalen);
+		uint32_t crc_value = CRC32::CRC32::calc((const uint8_t*)data, (size_t)datalen);
 		std::vector<unsigned char> senddata;
 		senddata.push_back(((unsigned char*)&crc_value)[0]);
 		senddata.push_back(((unsigned char*)&crc_value)[1]);
@@ -180,7 +179,6 @@ size_t size_of_sended_packet = 0;
 
 void __stdcall Packet_Clear(int unused)
 {
-
 	BytesToSend.clear();
 	BytesToRecv.clear();
 	BytesToSend.push_back(0x50);
@@ -192,7 +190,6 @@ void __stdcall Packet_Clear(int unused)
 	BytesToSend.push_back(0);
 	BytesToSend.push_back(0);
 	// packet data
-
 }
 
 void __stdcall Packet_Initialize(int TriggerHandle)
@@ -263,6 +260,12 @@ int __stdcall Packet_PopReal(int unused)
 void __stdcall Packet_Send(int unused)
 {
 	SendPacket(&BytesToSend[0], BytesToSend.size());
+	BytesToSend.clear();
+}
+
+void __stdcall Packet_Send_Ex(int unused)
+{
+	SendPacket(&BytesToSend[0], BytesToSend.size(), false);
 	BytesToSend.clear();
 }
 

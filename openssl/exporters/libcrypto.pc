@@ -1,0 +1,11 @@
+libdir=C:\Program Files (x86)\OpenSSL\lib
+includedir=C:\Program Files (x86)\OpenSSL\include
+enginesdir=C:\Program Files (x86)\OpenSSL\lib\engines-3
+modulesdir=C:\Program Files (x86)\OpenSSL\lib\ossl-modules
+
+Name: OpenSSL-libcrypto
+Description: OpenSSL cryptography library
+Version: 3.4.0-dev
+Libs: -L${libdir} -lcrypto
+Libs.private: ws2_32.lib gdi32.lib advapi32.lib crypt32.lib user32.lib
+Cflags: -I${includedir}
