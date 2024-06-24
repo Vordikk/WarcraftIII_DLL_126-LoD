@@ -137,7 +137,7 @@ void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 
 		auto progress_callback = [&](uint64_t current, uint64_t total) {
 			if (total > 0) {
-				DownProgress = (static_cast<double>(current) / total) * 100;
+				DownProgress = (int)((static_cast<double>(current) / total) * 100.0);
 			}
 			return true; 
 			};

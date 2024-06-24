@@ -37,15 +37,18 @@
     <IgnoreImportLibrary>
     </IgnoreImportLibrary>
     <GenerateManifest>true</GenerateManifest>
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>
+    </LinkIncremental>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <SDLCheck>false</SDLCheck>
+      <IntrinsicFunctions>
+      </IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
@@ -55,16 +58,22 @@
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <Optimization>Disabled</Optimization>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <StructMemberAlignment>Default</StructMemberAlignment>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <ControlFlowGuard>false</ControlFlowGuard>
+      <StructMemberAlignment>
+      </StructMemberAlignment>
+      <SmallerTypeCheck>
+      </SmallerTypeCheck>
+      <BasicRuntimeChecks>
+      </BasicRuntimeChecks>
+      <ControlFlowGuard>
+      </ControlFlowGuard>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <EnableParallelCodeGeneration>
       </EnableParallelCodeGeneration>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>
+      </FloatingPointModel>
       <PreprocessorDefinitions>SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NDEBUG;NO_WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <WholeProgramOptimization>
+      </WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>false</StringPooling>
@@ -72,9 +81,11 @@
       </FloatingPointExceptions>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
+      <OmitDefaultLibName>
+      </OmitDefaultLibName>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>
+      </ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
