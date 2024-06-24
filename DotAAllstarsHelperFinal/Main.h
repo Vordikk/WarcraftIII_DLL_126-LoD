@@ -53,7 +53,8 @@ namespace fs = std::filesystem;
 #include "WarcraftFrameHelper.h"
 #include "MegaPacketHandler.h"
 #include <stdlib.h>
-#include <portaudio.h>
+//#include <portaudio.h>
+//#pragma comment (lib, "portaudio.lib")
 #include "quantizer.h"
 #include "BlpReadWrite.h"
 #include <ijl.h>
@@ -242,7 +243,7 @@ void __stdcall  AddNewLineToDotaHelperLog(const char* s, int line);//( const cha
 void __stdcall  AddNewLineToJassNativesLog(const char* s);
 void __stdcall EnableErrorHandler(int);
 void __stdcall DisableErrorHandler(int);
-
+void PrintLog(const char* file, const char* str);
 
 typedef int(__fastcall* LookupNative)(int global, int unused, const char* name);
 extern LookupNative LookupNative_org;
@@ -499,7 +500,7 @@ In the local game or on the Internet there is a limit on sending data size, so t
 
 void UninitializeVoiceClient( );
 void InitVoiceClientThread( );
-void AddNewPaTestData( std::vector<unsigned char> _samples, int playerid, int packetsize, bool compressed );
+//void AddNewPaTestData( std::vector<unsigned char> _samples, int playerid, int packetsize, bool compressed );
 
 
 extern BOOL TICK_HOOK_ENABLED;

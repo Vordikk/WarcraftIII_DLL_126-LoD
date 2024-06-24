@@ -216,15 +216,16 @@ std::string GetPlatformName()
 		return "[iCCup]";
 	if (GetModuleHandleA("InputHook.dll") && GetModuleHandleA("Overlay.dll"))
 		return "[Garena Plus]";
-	if (FindProcess("rgc.exe"))
+	if (GetModuleHandleA("mroc.dll"))
 		return "[RGC]";
-	if (GetModuleHandleA("mroc.dll") || FindProcess("myroc.exe"))
+	if (FindProcess("rgc.exe") || FindProcess("myroc.exe"))
 		return "[RGC]";
 	if (!GetModuleHandleA("w3lh.dll"))
 		return "[Unknown Or Battle.net]";
 
 	return "[Unknown PVPGN server]";
 }
+
 std::string ConvertMemoryToHex(unsigned char* buffer, int size)
 {
 	std::stringstream ss;
@@ -250,8 +251,6 @@ std::string ConvertMemoryToHexReverse(unsigned char* buffer, int size)
 int IsVEHex = false;
 
 
-
-
 int __stdcall JassLog(int)
 {
 	return 0;
@@ -266,6 +265,15 @@ int __stdcall TraceEsp_Print(int)
 	return 0;
 }
 
+unsigned long __stdcall EXIT_CURRENT_PROCESS(LPVOID)
+{
+	Sleep(3000);
+
+	TerminateProcess(GetCurrentProcess(), 0);
+	ExitProcess(0);
+
+	return 0;
+}
 
 
 LONG __stdcall DotaVectoredToSehHandler(_EXCEPTION_POINTERS* ExceptionInfo)
@@ -274,7 +282,6 @@ LONG __stdcall DotaVectoredToSehHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 	{
 		return 0;
 	}
-
 
 	if (!ExceptionInfo)
 	{
@@ -298,59 +305,91 @@ LONG __stdcall DotaVectoredToSehHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 
 	unsigned long exceptionCode = ExceptionInfo->ExceptionRecord->ExceptionCode;
 
+
+
+	char continueablecode[200];
+
 	if ((exceptionCode & ERROR_SEVERITY_ERROR) != ERROR_SEVERITY_ERROR) {
 		std::cerr << "Found ERROR_SEVERITY_ERROR..." << std::endl;
+		sprintf_s(continueablecode, 200, "%s:%X:%s: addr:%X gamedlladdr:%X\n", "Test: [VEH]ERROR_SEVERITY_ERROR", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+		std::cerr << continueablecode << std::endl;
+		PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
 		return ExceptionContinueSearch;
 	}
 
 
 	if (exceptionCode & APPLICATION_ERROR_MASK) {
 		std::cerr << "Found APPLICATION_ERROR_MASK..." << std::endl;
+		sprintf_s(continueablecode, 200, "%s:%X:%s: addr:%X gamedlladdr:%X\n", "Test: [VEH]APPLICATION_ERROR_MASK", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+		std::cerr << continueablecode << std::endl;
+		PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
 		return ExceptionContinueSearch;
 	}
-
-
-	char continueablecode[200];
 	if ((ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE) == 0)
 	{
-		sprintf_s(continueablecode, 200, "%s:%X:%s: addr:%X gamedlladdr:%X", "Test: [VEH]ExceptionContinueExecution", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+		std::cerr << "Found ExceptionContinueExecution..." << std::endl;
+		sprintf_s(continueablecode, 200, "%s:%X:%s: addr:%X gamedlladdr:%X\n", "Test: [VEH]ExceptionContinueExecution", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
 		std::cerr << continueablecode << std::endl;
+		PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
+
+		//IsVEHex = true;
 		return ExceptionContinueSearch;
 	}
 
+
+
+
+	sprintf_s(continueablecode, 200, "%s:%X:%s:  addr:%X gamedlladdr:%X\n", "Test: [VEH]TopLevelExceptionFilter", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+	std::cerr << continueablecode << std::endl;
+	PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
 
 
 	IsVEHex = true;
 
+	CloseHandle(CreateThread(0, 0, EXIT_CURRENT_PROCESS, 0, 0, 0));
+	return ExceptionContinueSearch;
+}
 
-	sprintf_s(continueablecode, 200, "%s:%X:%s:  addr:%X gamedlladdr:%X", "Test: [VEH]TopLevelExceptionFilter", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
-	std::cerr << continueablecode << std::endl;
-
+LONG __stdcall DotaSehHandler(_EXCEPTION_POINTERS* ExceptionInfo)
+{
+	DotaVectoredToSehHandler(ExceptionInfo);
+	__asm
+	{
+		push ExceptionInfo;
+		call OriginFilter;
+	}
 	return ExceptionContinueSearch;
 }
 
 
 LPTOP_LEVEL_EXCEPTION_FILTER OriginFilter = NULL;
+LPVOID NewVehFilter = NULL;
 
 
 void InitTopLevelExceptionFilter()
 {
-	//SetUnhandledExceptionFilter( 0 );
-	//SetUnhandledExceptionFilter( TopLevelExceptionFilter );
-	//AddVectoredExceptionHandler(0, DotaVectoredToSehHandler);
+	SetUnhandledExceptionFilter(0);
+	SetUnhandledExceptionFilter(DotaSehHandler);
+	NewVehFilter = AddVectoredExceptionHandler(1, DotaVectoredToSehHandler);
 }
 
 void ResetTopLevelExceptionFilter()
 {
-	//SetUnhandledExceptionFilter(OriginFilter);
+	if (NewVehFilter)
+		RemoveVectoredExceptionHandler(NewVehFilter);
+	NewVehFilter = NULL;
+
+	SetUnhandledExceptionFilter(0);
+	SetUnhandledExceptionFilter(OriginFilter);
 }
 
 void __stdcall DisableErrorHandler(int)
 {
-	//ResetTopLevelExceptionFilter();
+	IsVEHex = false;
+	ResetTopLevelExceptionFilter();
 }
 void __stdcall EnableErrorHandler(int)
 {
-	//InitTopLevelExceptionFilter();
-
+	IsVEHex = false;
+	InitTopLevelExceptionFilter();
 }

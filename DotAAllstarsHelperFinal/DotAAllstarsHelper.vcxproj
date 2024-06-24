@@ -44,7 +44,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
       <IntrinsicFunctions>
       </IntrinsicFunctions>
       <SDLCheck>
@@ -76,7 +77,8 @@
       </WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <StringPooling>false</StringPooling>
+      <StringPooling>
+      </StringPooling>
       <FloatingPointExceptions>
       </FloatingPointExceptions>
       <RuntimeTypeInfo>
@@ -95,7 +97,7 @@
       <ModuleDefinitionFile>Source.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;portaudio.lib;libcrypto.lib;libssl.lib;zlib.lib;ijl15.lib;libMinHook.x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libcrypto.lib;libssl.lib;zlib.lib;ijl15.lib;libMinHook.x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <LinkStatus>
@@ -172,7 +174,6 @@
     <ClCompile Include="quantizer.cpp" />
     <ClCompile Include="Storm.cpp" />
     <ClCompile Include="UnitAndItem.cpp" />
-    <ClCompile Include="UnrealVoiceChat.cpp" />
     <ClCompile Include="WarcraftFrameHelper.cpp" />
   </ItemGroup>
   <ItemGroup>

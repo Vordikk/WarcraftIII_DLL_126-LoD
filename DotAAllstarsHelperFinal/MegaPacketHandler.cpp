@@ -335,7 +335,7 @@ int Handle_Jass_Packet(unsigned char* packetraw, size_t _packetsize, int pid)
 						//fprintf_s( f, "%s", "\n" );
 						//fclose( f );
 
-						AddNewPaTestData(BytesToRecv, pid, packetsize, packetid == 0xA1A2A3A1);
+						//AddNewPaTestData(BytesToRecv, pid, packetsize, packetid == 0xA1A2A3A1);
 					}
 				}
 				if (CallbackTrigger)
