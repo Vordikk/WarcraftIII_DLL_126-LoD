@@ -136,7 +136,7 @@ unsigned long CCrc32Dynamic::FileCrc32Streams(char* szFilename, unsigned long& d
 			throw 0;
 
 		// Open the file
-		file.open(szFilename, ios::in | ios::binary);
+		file.open(szFilename, std::ios::in | std::ios::binary);
 		if (!file.is_open())
 			dwErrorCode = (unsigned long)file.fail();
 		else

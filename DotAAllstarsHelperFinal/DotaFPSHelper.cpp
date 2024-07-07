@@ -118,12 +118,13 @@ int __stdcall HookTickTimerAccurate(unsigned int val)
 // val 3 - Enable (Diff timer fast)
 int __stdcall HookTickTimer(int val)
 {
-	if (!TICK_HOOK_ENABLED)
+	if (TICK_HOOK_ENABLED)
 	{
-		TICK_HOOK_ENABLED = TRUE;
-		MH_CreateHook(&GetTickCount, &GetTickCountMy, reinterpret_cast<void**>(&GetTickCount_ptr));
-		MH_EnableHook(&GetTickCount);
+		MH_DisableHook(&GetTickCount);
 	}
+	TICK_HOOK_ENABLED = TRUE;
+	MH_CreateHook(&GetTickCount, &GetTickCountMy, reinterpret_cast<void**>(&GetTickCount_ptr));
+	MH_EnableHook(&GetTickCount);
 	start_point_latest = 0;
 	start_point = GetTickCount();
 	offset_point = (((long long)GetTickCount_ptr()) - ((long long)start_point));

@@ -701,9 +701,9 @@ int CreateJpgBLP(StormBuffer rawData, StormBuffer& output, int quality, char con
 			JPEG_CORE_PROPERTIES v17;
 			ijlInit(&v17);
 
-			void* compressedimage;
 			int imglen = 0;
-			if (compressedimage = Compress(scaled[i].buf, xdimension, ydimension, bytespp, imglen, quality))
+			void* compressedimage = Compress(scaled[i].buf, xdimension, ydimension, bytespp, imglen, quality);
+			if (compressedimage)
 			{
 				target[i].buf = (unsigned char*)compressedimage;
 				target[i].length = imglen;
@@ -892,9 +892,9 @@ int RAW2Tga(StormBuffer input, StormBuffer& output, int width, int height, int b
 	memset(&header, 0, sizeof(TGAHeader));
 
 	header.imageType = 2;
-	header.width = width;
-	header.height = height;
-	header.bpp = bpp * 8;
+	header.width = (short)width;
+	header.height = (short)height;
+	header.bpp = (char)(bpp * 8);
 	header.imagedescriptor = bpp == 4 ? 8 : 0;
 	output.length = sizeof(TGAHeader) + width * height * bpp;
 	output.buf = (unsigned char*)Storm::MemAlloc(output.length);

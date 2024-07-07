@@ -2812,51 +2812,7 @@ inline mmap::~mmap() { close(); }
 
 inline bool mmap::open(const char *path) {
   close();
-
-#if defined(_WIN32)
-  std::wstring wpath;
-  for (size_t i = 0; i < strlen(path); i++) {
-    wpath += path[i];
-  }
-
-  hFile_ = ::CreateFile2(wpath.c_str(), GENERIC_READ, FILE_SHARE_READ,
-                         OPEN_EXISTING, NULL);
-
-  if (hFile_ == INVALID_HANDLE_VALUE) { return false; }
-
-  LARGE_INTEGER size{};
-  if (!::GetFileSizeEx(hFile_, &size)) { return false; }
-  size_ = static_cast<size_t>(size.QuadPart);
-
-  hMapping_ =
-      ::CreateFileMappingFromApp(hFile_, NULL, PAGE_READONLY, size_, NULL);
-
-  if (hMapping_ == NULL) {
-    close();
-    return false;
-  }
-
-  addr_ = ::MapViewOfFileFromApp(hMapping_, FILE_MAP_READ, 0, 0);
-#else
-  fd_ = ::open(path, O_RDONLY);
-  if (fd_ == -1) { return false; }
-
-  struct stat sb;
-  if (fstat(fd_, &sb) == -1) {
-    close();
-    return false;
-  }
-  size_ = static_cast<size_t>(sb.st_size);
-
-  addr_ = ::mmap(NULL, size_, PROT_READ, MAP_PRIVATE, fd_, 0);
-#endif
-
-  if (addr_ == nullptr) {
-    close();
-    return false;
-  }
-
-  return true;
+  return false;
 }
 
 inline bool mmap::is_open() const { return addr_ != nullptr; }

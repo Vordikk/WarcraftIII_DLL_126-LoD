@@ -1,7 +1,9 @@
+
 #include "Main.h"
 #include <iomanip>
 #include <eh.h>
-
+#include <Psapi.h>
+#include "StackWalker.h"
 
 
 std::string ReadRegistryKeyString(const char* registryKey, const char* registryValue)
@@ -116,7 +118,7 @@ std::string GetLastErrorAsString()
 	//Get the error message, if any.
 	unsigned long errorMessageID = ::GetLastError();
 	if (errorMessageID == 0)
-		return std::string(); //No error message has been recorded
+		return "NO ERROR"; //No error message has been recorded
 
 	LPSTR messageBuffer = NULL;
 	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -131,7 +133,7 @@ std::string GetLastErrorAsString()
 
 		return message;
 	}
-	return "NULL";
+	return std::to_string(errorMessageID);
 }
 
 
@@ -276,7 +278,7 @@ unsigned long __stdcall EXIT_CURRENT_PROCESS(LPVOID)
 }
 
 
-LONG __stdcall DotaVectoredToSehHandler(_EXCEPTION_POINTERS* ExceptionInfo)
+LONG __stdcall DotaVectoredToSehHandler(EXCEPTION_POINTERS* ExceptionInfo)
 {
 	if (IsVEHex)
 	{
@@ -286,7 +288,7 @@ LONG __stdcall DotaVectoredToSehHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 	if (!ExceptionInfo)
 	{
 		std::cerr << "Test: error1" << std::endl;
-		ExceptionInfo = new	_EXCEPTION_POINTERS();
+		ExceptionInfo = new	EXCEPTION_POINTERS();
 	}
 	if (!ExceptionInfo->ContextRecord)
 	{
@@ -311,38 +313,35 @@ LONG __stdcall DotaVectoredToSehHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 
 	if ((exceptionCode & ERROR_SEVERITY_ERROR) != ERROR_SEVERITY_ERROR) {
 		std::cerr << "Found ERROR_SEVERITY_ERROR..." << std::endl;
-		sprintf_s(continueablecode, 200, "%s:%X:%s: addr:%X gamedlladdr:%X\n", "Test: [VEH]ERROR_SEVERITY_ERROR", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+		sprintf_s(continueablecode, 200, "%s:%X:%X: addr:%X gamedlladdr:%X [WIN32 error: %s]\n", "Non Fatal Exception: [VEH]ERROR_SEVERITY_ERROR", ex->ExceptionCode, ex->ExceptionFlags, (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll, GetLastErrorAsString().c_str());
 		std::cerr << continueablecode << std::endl;
-		PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
+		PrintErrorLog(".\\crashlog_warcraftdll.txt", continueablecode, NULL);
 		return ExceptionContinueSearch;
 	}
 
 
 	if (exceptionCode & APPLICATION_ERROR_MASK) {
 		std::cerr << "Found APPLICATION_ERROR_MASK..." << std::endl;
-		sprintf_s(continueablecode, 200, "%s:%X:%s: addr:%X gamedlladdr:%X\n", "Test: [VEH]APPLICATION_ERROR_MASK", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+		sprintf_s(continueablecode, 200, "%s:%X:%X: addr:%X gamedlladdr:%X [WIN32 error: %s]\n", "Non Fatal Exception: [VEH]APPLICATION_ERROR_MASK", ex->ExceptionCode, ex->ExceptionFlags, (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll, GetLastErrorAsString().c_str());
 		std::cerr << continueablecode << std::endl;
-		PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
+		PrintErrorLog(".\\crashlog_warcraftdll.txt", continueablecode, NULL);
 		return ExceptionContinueSearch;
 	}
 	if ((ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE) == 0)
 	{
 		std::cerr << "Found ExceptionContinueExecution..." << std::endl;
-		sprintf_s(continueablecode, 200, "%s:%X:%s: addr:%X gamedlladdr:%X\n", "Test: [VEH]ExceptionContinueExecution", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+		sprintf_s(continueablecode, 200, "%s:%X:%X: addr:%X gamedlladdr:%X [WIN32 error: %s]\n", "Non Fatal Exception: [VEH]ExceptionContinueExecution", ex->ExceptionCode, ex->ExceptionFlags, (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll, GetLastErrorAsString().c_str());
 		std::cerr << continueablecode << std::endl;
-		PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
+		PrintErrorLog(".\\crashlog_warcraftdll.txt", continueablecode, NULL);
 
 		//IsVEHex = true;
 		return ExceptionContinueSearch;
 	}
 
 
-
-
-	sprintf_s(continueablecode, 200, "%s:%X:%s:  addr:%X gamedlladdr:%X\n", "Test: [VEH]TopLevelExceptionFilter", ex->ExceptionCode, std::to_string(ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE).c_str(), (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll);
+	sprintf_s(continueablecode, 200, "%s:%X:%X:  addr:%X gamedlladdr:%X [WIN32 error: %s]\n", "Critical Exception: [VEH]TopLevelExceptionFilter", ex->ExceptionCode, ex->ExceptionFlags, (unsigned int)ex->ExceptionAddress, (unsigned long)GameDll, GetLastErrorAsString().c_str());
 	std::cerr << continueablecode << std::endl;
-	PrintLog(".\\crashlog_warcraftdll.txt", continueablecode);
-
+	PrintErrorLog(".\\crashlog_warcraftdll.txt", continueablecode, ExceptionInfo);
 
 	IsVEHex = true;
 
@@ -390,6 +389,174 @@ void __stdcall DisableErrorHandler(int)
 }
 void __stdcall EnableErrorHandler(int)
 {
+	DeleteFileA(".\\crashlog_warcraftdll.txt");
+	
 	IsVEHex = false;
 	InitTopLevelExceptionFilter();
 }
+
+FILE* debugFile = NULL;
+
+int callStackEntries = 0;
+bool modulesStartPrint = false;
+
+struct MDL_Entry
+{
+	DWORD64 base;
+	DWORD size;
+	std::string modname;
+};
+
+std::vector<MDL_Entry> MdlList;
+
+std::string GetModuleByAddr(DWORD64 addr)
+{
+	for (auto& s : MdlList)
+	{
+		if (addr >= s.base && addr <= s.base + s.size)
+			return s.modname;
+	}
+
+	return std::string();
+}
+
+PCONTEXT debug_context = NULL;
+
+class MyStackWalker : public StackWalker
+{
+public:
+	MyStackWalker() : StackWalker() {}
+protected:
+	virtual void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr)
+	{
+
+	}
+	virtual void OnOutput(LPCSTR szText) {
+
+	}
+	virtual void OnLoadModule(LPCSTR    img,
+                               LPCSTR    mod,
+                               DWORD64   baseAddr,
+                               DWORD     size,
+                               DWORD     result,
+                               LPCSTR    symType,
+                               LPCSTR    pdbName,
+                               ULONGLONG fileVersion)
+	{
+		if (!modulesStartPrint)
+		{
+			modulesStartPrint = true;
+			fprintf_s(debugFile, "\n%s\n", "Loaded modules:");
+		}
+
+		fprintf_s(debugFile, "%llX - %llX %s\n", baseAddr, baseAddr + size, img);
+		MdlList.push_back({ baseAddr,size,mod });
+	}
+	virtual void OnCallstackEntry(CallstackEntryType eType, CallstackEntry& entry)
+	{
+		if (callStackEntries == 0)
+		{
+			if (debug_context)
+			{
+				fprintf_s(debugFile, "\n%s\n", "x86 Registers:");
+				fprintf_s(debugFile, "EAX=%08X  EBX=%08X  ECX=%08X  EDX=%08X\n", debug_context->Eax, debug_context->Ebx, debug_context->Ecx, debug_context->Edx);
+				fprintf_s(debugFile, "ESI=%08X  EDI=%08X  EBP=%08X  ESP=%08X\n", debug_context->Esi, debug_context->Edi, debug_context->Ebp, debug_context->Esp);
+				fprintf_s(debugFile, "EIP=%08X  FLG=%08X\n", debug_context->Eip, debug_context->EFlags);
+				fprintf_s(debugFile, "CS=%04X  DS=%04X  ES=%04X  SS=%04X  FS=%04X  GS=%04X\n", debug_context->SegCs, debug_context->SegDs, debug_context->SegEs, debug_context->SegSs, debug_context->SegFs, debug_context->SegGs);
+			}
+
+			fprintf_s(debugFile, "\n%s\n", "Stack Trace (Using DBGHELP.DLL)");
+		}
+
+		callStackEntries++;
+		if (callStackEntries < 6)
+		{
+			std::string modname = GetModuleByAddr(entry.baseOfImage);
+			if (modname.empty())
+				modname = GetModuleByAddr(entry.offset);
+			if (modname.empty())
+				modname = "<unknown>";
+
+			entry.name[1023] = '\0';
+			fprintf_s(debugFile, "%llX [%llX] %s [func name:%s]", entry.baseOfImage, entry.offset, modname.c_str(), entry.name);
+		}
+	}
+};
+
+std::string GetCurrentDateString() {
+	time_t now = time(0);
+	struct tm timeinfo;
+	char buffer[80];
+
+	localtime_s(&timeinfo, &now);
+	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
+
+	return std::string(buffer);
+}
+
+
+char dbg_tmp_path[2048];
+void* dbg_tmp_modules[2048];
+void PrintErrorLog(const char* file, const char* error_str, EXCEPTION_POINTERS* ExceptionInfo)
+{
+	callStackEntries = 0;
+	modulesStartPrint = false;
+
+	fopen_s(&debugFile, file, "a+");
+	if (debugFile != NULL)
+	{
+		fprintf_s(debugFile, "Found Exception:\"%s\"\n", error_str);
+		fflush(debugFile);
+		fprintf_s(debugFile, "OS:\"%s\"\n", GetOSDisplayString().c_str());
+		fflush(debugFile);
+		fprintf_s(debugFile, "DATE:\"%s\"\n", GetCurrentDateString().c_str());
+		fflush(debugFile);
+
+		if (ExceptionInfo)
+		{
+			debug_context = ExceptionInfo->ContextRecord;
+
+			if (debug_context)
+			{
+				StackWalker sw;
+				sw.ShowCallstack(GetCurrentThread(), ExceptionInfo->ContextRecord);
+			}
+		}
+		else
+			debug_context = NULL;
+
+		if (!GetModuleHandleA("dbghelp.dll") || !debug_context)
+		{
+			if (!debug_context)
+			{
+				fprintf_s(debugFile, "%s\n", "Write only loaded modules:");
+			}
+			else
+			{
+				fprintf_s(debugFile, "%s\n", "No found dbghelp.dll. Write only loaded modules!");
+			}
+			unsigned long cbNeeded;
+			if (EnumProcessModules(GetCurrentProcess(), (HMODULE*)dbg_tmp_modules, sizeof(dbg_tmp_modules), &cbNeeded))
+			{
+				for (unsigned int i = 0; i < (cbNeeded / sizeof(void*)); i++)
+				{
+					GetModuleFileNameA((HMODULE)dbg_tmp_modules[i], dbg_tmp_path, sizeof(dbg_tmp_path));
+					fprintf_s(debugFile, "%llX : %s\n", (DWORD64)dbg_tmp_modules[i], dbg_tmp_path);
+				}
+			}
+			fprintf_s(debugFile, "\n\n\n");
+			fflush(debugFile);
+			fclose(debugFile);
+			debugFile = NULL;
+			return;
+		}
+
+		fprintf_s(debugFile, "\n\n\n");
+		fflush(debugFile);
+		fclose(debugFile);
+	}
+
+	debugFile = NULL;
+}
+
+

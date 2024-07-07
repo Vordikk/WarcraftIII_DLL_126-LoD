@@ -1753,21 +1753,8 @@ int __stdcall RedirectFile(const char* RealFilePath, const char* NewFilePath)
 	return 0;
 }
 
-void PrintLog(const char * file, const char* str)
-{
-	FILE* f = NULL;
-	fopen_s(&f, file, "a+");
-	if (f != NULL)
-	{
-		fprintf_s(f, "%s\n", str);
-		fclose(f);
-	}
-}
-
-
 int ProcessFile(const char* filename, unsigned char** OutDataPointer, size_t* OutSize, int unknown, int IsFileExistOld)
 {
-	//PrintLog( filename.c_str( ) );
 	int IsFileExist = IsFileExistOld;
 
 	if (!OutDataPointer || !OutSize || !filename)

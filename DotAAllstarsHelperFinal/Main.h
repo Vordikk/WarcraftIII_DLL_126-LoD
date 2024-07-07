@@ -1,11 +1,5 @@
 ﻿#pragma once
-#define _WIN32_WINNT 0x0501 
-#define WINVER 0x0501 
-#define NTDDI_VERSION 0x05010000
-#define VC_EXTRALEAN
-#define _ATL_XP_TARGETING
-#define WIN32_LEAN_AND_MEAN
-#define PSAPI_VERSION 1
+
 
 #include <stdint.h>
 #include <cstdio>
@@ -35,11 +29,7 @@
 namespace fs = std::filesystem;
 
 
-#include <winsock2.h>
 #include "buffer.h"
-
-#include <Psapi.h>
-
 
 #define MASK_56 (((u_int64_t)1<<56)-1) /* i.e., (u_int64_t)0xffffffffffffff */
 
@@ -243,7 +233,8 @@ void __stdcall  AddNewLineToDotaHelperLog(const char* s, int line);//( const cha
 void __stdcall  AddNewLineToJassNativesLog(const char* s);
 void __stdcall EnableErrorHandler(int);
 void __stdcall DisableErrorHandler(int);
-void PrintLog(const char* file, const char* str);
+
+void PrintErrorLog(const char* file, const char* error_str, EXCEPTION_POINTERS* ExceptionInfo);
 
 typedef int(__fastcall* LookupNative)(int global, int unused, const char* name);
 extern LookupNative LookupNative_org;

@@ -10,6 +10,8 @@
 #include "DotaClickHelper.h"
 #include "RawImageApi.h"
 
+#include <Psapi.h>
+
 bool FileExist(const char* name)
 {
 	return std::filesystem::exists(name) && !std::filesystem::is_directory(name);
