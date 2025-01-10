@@ -20,7 +20,7 @@ jobs:
           arch: Win32
       - name: Build XP
         run: >
-          msbuild DotAAllstarsHelperFinal/DotAAllstarsHelper.vcxproj -m /p:Configuration=Release
+          msbuild DotAAllstarsHelper.sln -m /p:Configuration=Release
       - name: SIGNING
         run: |
           ./SignRelease.bat
