@@ -1,1 +1,1 @@
-"signtool.exe" sign /tr http://timestamp.digicert.com /fd SHA1 /td SHA256 /f DotaHelperDLL.pfx /p TestCertPassword777 "DotAAllstarsHelperFinal\Release\DotAAllstarsHelperFinal.dll"
+"signtool.exe" sign /tr http://timestamp.digicert.com /fd SHA1 /td SHA256 /f DotaHelperDLL.pfx /p TestCertPassword777 "Release\DotAAllstarsHelperFinal.dll"
