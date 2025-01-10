@@ -161,7 +161,7 @@ void Resize_HQ_4ch(unsigned char* src, int w1, int h1,
 		float weight_div = accum_per_pixel / 4294967000.0f;
 		if (weight_div > 1)
 			weight_shift = (int)ceilf(logf((float)weight_div) / logf(2.0f));
-		weight_shift = min(15, weight_shift);  // this could go to 15 and still be ok.
+		weight_shift = std::min(15, weight_shift);  // this could go to 15 and still be ok.
 
 		float fh = 256 * h1 / (float)h2;
 		float fw = 256 * w1 / (float)w2;
@@ -182,7 +182,7 @@ void Resize_HQ_4ch(unsigned char* src, int w1, int h1,
 			{
 				// find the x-range of input pixels that will contribute:
 				int x1a = (int)(x2 * fw);
-				x1a = min(x1a, 256 * (w1 - 1) - 1);
+				x1a = std::min(x1a, 256 * (w1 - 1) - 1);
 				g_px1a[x2] = x1a;
 			}
 
@@ -191,7 +191,7 @@ void Resize_HQ_4ch(unsigned char* src, int w1, int h1,
 			{
 				// find the y-range of input pixels that will contribute:
 				int y1a = (int)(y2 * fh);
-				y1a = min(y1a, 256 * (h1 - 1) - 1);
+				y1a = std::min(y1a, 256 * (h1 - 1) - 1);
 				int y1c = y1a >> 8;
 
 				unsigned int* ddest2 = &((unsigned int*)dest)[y2 * w2 + 0];
@@ -247,7 +247,7 @@ void Resize_HQ_4ch(unsigned char* src, int w1, int h1,
 				int x1b = (int)((x2 + 1) * fw);
 				if (bUpsampleX) // map to same pixel -> we want to interpolate between two pixels!
 					x1b = x1a + 256;
-				x1b = min(x1b, 256 * w1 - 1);
+				x1b = std::min(x1b, 256 * w1 - 1);
 				g_px1ab[x2 * 2 + 0] = x1a;
 				g_px1ab[x2 * 2 + 1] = x1b;
 			}
@@ -260,7 +260,7 @@ void Resize_HQ_4ch(unsigned char* src, int w1, int h1,
 				int y1b = (int)((y2 + 1) * fh);
 				if (bUpsampleY) // map to same pixel -> we want to interpolate between two pixels!
 					y1b = y1a + 256;
-				y1b = min(y1b, 256 * h1 - 1);
+				y1b = std::min(y1b, 256 * h1 - 1);
 				int y1c = y1a >> 8;
 				int y1d = y1b >> 8;
 
@@ -743,7 +743,7 @@ int CreateJpgBLP(StormBuffer rawData, StormBuffer& output, int quality, char con
 		xdimension = xdimension / 2;
 		ydimension = ydimension / 2;
 	}
-	maxmipmaps = min(truemipmaps, maxmipmaps);
+	maxmipmaps = std::min(truemipmaps, maxmipmaps);
 
 	output.buf = (unsigned char*)Storm::MemAlloc(output.length);
 	std::memcpy(output.buf, &blpHeader, sizeof(BLPHeader));
