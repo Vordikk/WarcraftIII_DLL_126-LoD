@@ -30,7 +30,7 @@ int __stdcall ShowSkillPanelForAllUnits(int enabled)
 
 int __stdcall ShowSkillPanelForEnemyNeurals(int enabled)
 {
-	ShowSkillPanelNeutral = enabled;
+	ShowSkillPanelNeutral = enabled != 0;
 	return ShowSkillPanelNeutral;
 }
 
@@ -49,7 +49,7 @@ signed int __fastcall  IsDrawSkillPanel_my(unsigned char* UnitAddr, int addr1)
 			OID = 852290;
 		result = 1;
 
-		// Сначала вызвать оригинальную функцию
+		// Сначала вызвать оригинальную функцию отрисовки, в случае успеха ничего не делать
 		if (((IsNeedDrawUnitOrigin)(GameDll + IsNeedDrawUnitOriginOffset))(UnitAddr))
 		{
 			((DrawSkillPanel)(GameDll + DrawSkillPanelOffset))(UnitAddr, OID);
@@ -129,7 +129,6 @@ signed int __fastcall  IsDrawSkillPanelOverlay_my(unsigned char* UnitAddr, int a
 			//// Отрисовать Neutrals
 			if (!ShowSkillPanelOnlyForHeroes && GetUnitOwnerSlot(UnitAddr) >= 12)
 			{
-
 				((DrawSkillPanelOverlay)(GameDll + DrawSkillPanelOverlayOffset))(UnitAddr, OID);
 				return result;
 			}
