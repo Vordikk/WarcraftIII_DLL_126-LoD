@@ -21,10 +21,6 @@ jobs:
       - name: Build XP
         run: >
           msbuild DotAAllstarsHelperFinal/DotAAllstarsHelper.vcxproj -m /p:Configuration=Release
-      - name: Set up Visual Studio shell
-        uses: egor-tensin/vs-shell@v2
-        with:
-          arch: Win32
       - name: SIGNING
         run: |
           ./SignRelease.bat
