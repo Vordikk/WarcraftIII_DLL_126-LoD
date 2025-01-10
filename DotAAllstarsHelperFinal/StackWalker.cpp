@@ -613,7 +613,7 @@ private:
     int cnt = 0;
     while (keepGoing)
     {
-      this->LoadModule(hProcess, me.szExePath, me.szModule, (DWORD64)me.modBaseAddr,
+      this->LoadModule(hProcess, me.szExePath, me.szModule, (DWORD64)(unsigned char*)me.modBaseAddr,
                        me.modBaseSize);
       cnt++;
       keepGoing = !!pM32N(hSnap, &me);
@@ -840,7 +840,7 @@ public:
     pModuleInfo->SizeOfStruct = sizeof(IMAGEHLP_MODULE64_V3);
     void* pData = malloc(
         4096); // reserve enough memory, so the bug in v6.3.5.1 does not lead to memory-overwrites...
-    if (pData == NULL)
+    if (pData <= NULL || !pModuleInfo)
     {
       SetLastError(ERROR_NOT_ENOUGH_MEMORY);
       return FALSE;
@@ -1115,7 +1115,7 @@ static std::atomic<bool> foundPotentialDeadlock = false;
 void monitorFunc()
 {
   monitorThreadId = GetCurrentThreadId();
-  SetThreadDescription(GetCurrentThread(), L"MonitorThread");
+  //SetThreadDescription(GetCurrentThread(), L"MonitorThread");
 
   // Inform startMonitorThread that thread was started
   {

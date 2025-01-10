@@ -1040,7 +1040,7 @@ void ProcessMdx(std::string filename, unsigned char** OutDataPointer, size_t* Ou
 					{
 						*dwTime += AddTime;
 					}
-					else if (*dwTime <= SeqEndTime && *dwTime >= SeqStartTime)
+					else if (*dwTime >= SeqStartTime)
 					{
 						*dwTime = (int)SeqStartTime + (int)((float)(*dwTime - SeqStartTime) / mdlfix.SpeedUp);
 					}

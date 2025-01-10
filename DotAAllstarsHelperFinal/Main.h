@@ -24,7 +24,6 @@
 #include <chrono>
 #include <map>
 #include <utility>
-#include <codecvt>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -111,16 +110,8 @@ extern pGame_Wc3MessageBox Game_Wc3MessageBox;
 typedef void(__fastcall* pLoadFrameDefList)(const char* filepath, int env);
 extern pLoadFrameDefList LoadFrameDefList;
 
-inline std::string ToLower(std::string str)
-{
-	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return (char)std::tolower(c); });
-	return str;
-}
-inline std::string ToUpper(std::string str)
-{
-	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return  (char)std::toupper(c); });
-	return str;
-}
+std::string ToLower(std::string str);
+std::string ToUpper(std::string str);
 
 extern bool MainFuncWork;
 
@@ -465,21 +456,17 @@ extern int protect_integer;
 extern int protect_integer2;
 
 
-inline std::string WStringToString(LPCWSTR s)
-{
-	if (!s)
-		return "";
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.to_bytes(s);
-}
+bool starts_with(const std::string& str, const std::string& prefix);
+bool starts_with(const std::wstring& str, const std::wstring& prefix);
+bool ends_with(const std::string& str, const std::string& suffix);
+bool ends_with(const std::wstring& str, const std::wstring& suffix);
+bool starts_with(const std::string& str, char prefix);
+bool starts_with(const std::wstring& str, wchar_t prefix);
+bool ends_with(const std::string& str, char suffix);
+bool ends_with(const std::wstring& str, wchar_t suffix);
 
-inline std::wstring StringToWString(LPCSTR s)
-{
-	if (!s)
-		return L"";
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.from_bytes(s);
-}
+std::string utf16_to_utf8(const std::wstring& wideStr);
+std::wstring utf8_to_utf16(const std::string& utf8_str, bool remove_notprint = false);
 
 int __stdcall InitHpBar(int);
 void SetTlsForMe();

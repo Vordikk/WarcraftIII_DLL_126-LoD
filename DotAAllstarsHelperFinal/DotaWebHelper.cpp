@@ -53,8 +53,6 @@ std::string SendHttpPostRequest(const char* url, const char* data)
 		httplib::Client client(uril.host);
 		client.set_follow_location(true);
 
-		std::string postdata = data;
-
 		auto res = client.Post(uril.path, data, "text/plain");
 
 		if (res)
@@ -225,7 +223,9 @@ int __stdcall SendGetRequest(const char* url, const  char* path)
 	_addr = url; 
 	_request = path;
 	DownStatus = 0;
-	CloseHandle(CreateThread(0, 0, SENDGETREQUEST, 0, 0, 0));
+	std::thread([&]() {
+		SENDGETREQUEST(0);
+		}).detach();
 	return 0;
 }
 
@@ -235,7 +235,11 @@ int __stdcall SendPostRequest(const char* url, const  char* request)
 	_addr = url ? url : "";
 	_request = request ? request : "";
 	DownStatus = 0;
-	CloseHandle(CreateThread(0, 0, SENDPOSTREQUEST, 0, 0, 0));
+
+	std::thread([&]() {
+		SENDPOSTREQUEST(0);
+		}).detach();
+
 	return 0;
 }
 
@@ -246,7 +250,11 @@ int __stdcall SendPostRequestEx(const char* url, const char * path, const  char*
 	_addr = url && path ? std::string(url) + std::string(path) : "";
 	_request = request ? request : "";
 	DownStatus = 0;
-	CloseHandle(CreateThread(0, 0, SENDPOSTREQUEST, 0, 0, 0));
+
+	std::thread([&]() {
+		SENDPOSTREQUEST(0);
+		}).detach();
+
 	return 0;
 }
 
@@ -255,7 +263,11 @@ int __stdcall SaveNewDotaVersionFromUrl(const  char* addr, const  char* filepath
 	DownProgress = 0;
 	_addr = addr ? addr : ""; _filepath = filepath ? filepath : "";
 	DownStatus = 0;
-	CloseHandle(CreateThread(0, 0, SENDSAVEFILEREQUEST, 0, 0, 0));
+
+	std::thread([&]() {
+		SENDSAVEFILEREQUEST(0);
+		}).detach();
+
 	return 0;
 }
 

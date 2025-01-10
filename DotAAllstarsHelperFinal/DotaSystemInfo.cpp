@@ -356,15 +356,31 @@ const char* __stdcall GetSystemInfo2(SystemInfo info, unsigned int DIV/*or arg2*
 
 		HDC ourWindowHandleToDeviceContext = GetDC(Warcraft3Window);
 		if (!ourWindowHandleToDeviceContext)
-			return "Error #1";
-		int  letWindowsChooseThisPixelFormat;
-		letWindowsChooseThisPixelFormat = ChoosePixelFormat(ourWindowHandleToDeviceContext, &pfd);
-		SetPixelFormat(ourWindowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
+			return "Error #1: Unable to get device context";
+
+		int letWindowsChooseThisPixelFormat = ChoosePixelFormat(ourWindowHandleToDeviceContext, &pfd);
+		if (letWindowsChooseThisPixelFormat == 0) {
+			ReleaseDC(Warcraft3Window, ourWindowHandleToDeviceContext);
+			return "Error #2: Unable to choose pixel format";
+		}
+
+		if (!SetPixelFormat(ourWindowHandleToDeviceContext, letWindowsChooseThisPixelFormat, &pfd)) 
+		{
+			ReleaseDC(Warcraft3Window, ourWindowHandleToDeviceContext);
+			return "Error #3: Unable to set pixel format";
+		}
 
 		HGLRC ourOpenGLRenderingContext = wglCreateContext(ourWindowHandleToDeviceContext);
-		if (!ourOpenGLRenderingContext)
-			return "Error #2`";
-		wglMakeCurrent(ourWindowHandleToDeviceContext, ourOpenGLRenderingContext);
+		if (!ourOpenGLRenderingContext) {
+			ReleaseDC(Warcraft3Window, ourWindowHandleToDeviceContext);
+			return "Error #4: Unable to create OpenGL rendering context";
+		}
+
+		if (!wglMakeCurrent(ourWindowHandleToDeviceContext, ourOpenGLRenderingContext)) {
+			wglDeleteContext(ourOpenGLRenderingContext);
+			ReleaseDC(Warcraft3Window, ourWindowHandleToDeviceContext);
+			return "Error #5: Unable to make OpenGL context current";
+		}
 	}
 
 

@@ -21,7 +21,20 @@ bool DEBUG_FULL = false;
 
 //unsigned long GameDllsz = 0;
 //unsigned long StormDLLsz = 0;
+ 
 
+// WINXP SUPPORT
+extern "C" uint64_t _dtoul3_legacy(const double x) {
+	uint64_t result;
+	__asm {
+		movsd xmm0, x; Move the double value into xmm0
+		cvttsd2si eax, xmm0; Convert the value in xmm0 to a 32 - bit integer in eax
+		xor edx, edx; Zero out the high part of the result
+		mov dword ptr[result], eax; Move the lower 32 bits to the result
+		mov dword ptr[result + 4], edx; Move the higher 32 bits to the result
+	}
+	return result;
+}
 
 int SetInfoObjDebugVal = false;
 
@@ -898,7 +911,7 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 				float AttacksPerSec = 0.0f;
 
 				float AttackReload = 0.0f;
-				if (fixedattackspeed != 0.0f && realBAT != 0.0f)
+				if (fabs(fixedattackspeed) > 0.00001f && fabs(realBAT) > 0.00001f)
 				{
 					AttacksPerSec = fixedattackspeed / realBAT;
 					AttackReload = 1.0f / (fixedattackspeed / realBAT);
@@ -914,8 +927,9 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 			{
 				float AttacksPerSec = 0.0f;
 
-				float AttackReload = 0.0f;
-				if (fixedattackspeed != 0.0f && realBAT != 0.0f)
+				float AttackReload = 0.0f; 
+				
+				if (fabs(fixedattackspeed) > 0.00001f && fabs(realBAT) > 0.00001f)
 				{
 					AttacksPerSec = fixedattackspeed / realBAT;
 					AttackReload = 1.0f / (fixedattackspeed / realBAT);
@@ -1079,7 +1093,7 @@ int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned cha
 		
 		bufferaddr = buffer;
 
-		if (MagicProtection == 0.0f)
+		if (fabs(MagicProtection) < 0.00001f)
 			sprintf_s(buffer, sizeof(buffer), "%.1f", (*(float*)movespeed));
 		else if (MagicProtection > 30.0f)
 			sprintf_s(buffer, sizeof(buffer), "%.1f|nMagic Protection: |cFF00C800%.1f|r%%", (*(float*)movespeed), MagicProtection);
@@ -1552,7 +1566,7 @@ void __declspec(naked) HookPrint4_127a()
 
 void __stdcall SetCdForAddr(unsigned char* cd_addr)
 {
-	if ((long long)cd_addr > 0xb0 /*eax */)
+	if (cd_addr > (unsigned char*)0xb0 /*eax */)
 	{
 		unsigned char* abiladdr = cd_addr - 0xb0;
 		unsigned char* pData = *(unsigned char**)(abiladdr + 0xDC);
@@ -1575,7 +1589,7 @@ void __stdcall SetCdForAddr(unsigned char* cd_addr)
 
 	}
 
-	if (*(float*)(cd_addr + 4) != 1000.0f)
+	if (fabs(*(float*)(cd_addr + 4) - 1000.0f) < 0.00001f)
 		*(float*)(cd_addr + 4) = 100.0f;
 }
 

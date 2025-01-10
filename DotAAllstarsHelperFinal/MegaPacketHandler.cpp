@@ -107,7 +107,7 @@ void SendData(unsigned char* sockstr, unsigned char header, unsigned char packet
 	if (!sockstr)
 		return;
 	send_data_buf.clear();
-	short totallen = datalen + 4;
+	short totallen = (short)(datalen + 4);
 	send_data_buf.push_back(header);
 	send_data_buf.push_back(packetid);
 	send_data_buf.push_back(((unsigned char*)&totallen)[0]);

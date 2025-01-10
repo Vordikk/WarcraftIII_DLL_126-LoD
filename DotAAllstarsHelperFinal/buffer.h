@@ -110,6 +110,12 @@ public:
 		std::memcpy(buf, a.buf, length);
 	}
 
+	StormBuffer(const StormBuffer& CopyObject)
+	{
+		Clear();
+		Copy(CopyObject);
+	}
+
 	StormBuffer& operator =(const StormBuffer& CopyObject)
 	{
 		Clear();

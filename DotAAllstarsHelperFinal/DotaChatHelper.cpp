@@ -1,5 +1,5 @@
 #include "Main.h"
-
+#include <cctype>
 
 
 
@@ -198,4 +198,79 @@ int __stdcall SendMessageToChat(const char* msg, int toAll)
 	//	SetKeyboardState( tmpbuf );
 
 	return 0;
+}
+
+
+bool starts_with(const std::string& str, const std::string& prefix) {
+	return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
+bool starts_with(const std::wstring& str, const std::wstring& prefix) {
+	return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
+bool ends_with(const std::string& str, const std::string& suffix) {
+	if (str.size() < suffix.size()) return false;
+	return str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+bool ends_with(const std::wstring& str, const std::wstring& suffix) {
+	if (str.size() < suffix.size()) return false;
+	return str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+bool starts_with(const std::string& str, char prefix) {
+	return !str.empty() && str.front() == prefix;
+}
+
+bool starts_with(const std::wstring& str, wchar_t prefix) {
+	return !str.empty() && str.front() == prefix;
+}
+
+bool ends_with(const std::string& str, char suffix) {
+	return !str.empty() && str.back() == suffix;
+}
+
+bool ends_with(const std::wstring& str, wchar_t suffix) {
+	return !str.empty() && str.back() == suffix;
+}
+
+std::wstring utf8_to_utf16(const std::string& utf8_str, bool remove_notprint)
+{
+	int wstr_size = MultiByteToWideChar(CP_UTF8, 0, utf8_str.c_str(), -1, NULL, 0);
+	std::wstring wstr(wstr_size, 0);
+	MultiByteToWideChar(CP_UTF8, 0, utf8_str.c_str(), -1, &wstr[0], wstr_size);
+	while (!wstr.empty() && wstr.back() == L'\0') {
+		wstr.pop_back();
+	}
+	if (remove_notprint)
+	{
+		for (auto& ch : wstr) {
+			if (!iswprint(ch)) {
+				ch = L' ';
+			}
+		}
+	}
+	return wstr;
+}
+std::string utf16_to_utf8(const std::wstring& wideStr) {
+	int ansiSize = WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, NULL, 0, NULL, NULL);
+	std::string ansiStr(ansiSize, '\0');
+	WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, &ansiStr[0], ansiSize, NULL, NULL);
+	while (ends_with(ansiStr, '\0'))
+	{
+		ansiStr.pop_back();
+	}
+	return ansiStr;
+}
+
+std::string ToLower(std::string str)
+{
+	std::transform(str.begin(), str.end(), str.begin(),
+		[](unsigned char c) { return (unsigned char)std::tolower(c); }
+	);
+	return str;
+}
+std::string ToUpper(std::string str)
+{
+	std::transform(str.begin(), str.end(), str.begin(),
+		[](unsigned char c) { return (unsigned char)std::toupper(c); }
+	);
+	return str;
 }

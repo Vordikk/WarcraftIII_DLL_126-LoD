@@ -65,7 +65,7 @@ static HRESULT STDMETHODCALLTYPE d3dreset_my(IDirect3DDevice8* device,
 	}
 	else
 	{
-		if (GlobalMultiSampleType != 0xFFFF && GlobalMultiSampleType < caps8.MaxAnisotropy)
+		if (GlobalMultiSampleType < caps8.MaxAnisotropy)
 			parameters->MultiSampleType = (D3DMULTISAMPLE_TYPE)(GlobalMultiSampleType);
 	}
 
@@ -647,7 +647,7 @@ HRESULT __fastcall EndScene_my(int GlobalWc3Data)
 
 		if (deviceglobal && !vsyncInitialized)
 		{
-			d3dreset_org = (d3dreset)((*(uintptr_t**)deviceglobal)[14]);
+			d3dreset_org = (d3dreset)((*(unsigned char**)deviceglobal)[14]);
 			if (d3dreset_org)
 			{
 				char helpfatal[256];

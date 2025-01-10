@@ -713,7 +713,7 @@ int CreateJpgBLP(StormBuffer rawData, StormBuffer& output, int quality, char con
 				for (int j = 0; j <= i; j++)
 				{ // cleanup
 					if (bytespp < 4 || j > 0)
-						scaled->Clear();
+						scaled[j].Clear();
 					if (target[j].buf)
 						target[j].Clear();
 				}

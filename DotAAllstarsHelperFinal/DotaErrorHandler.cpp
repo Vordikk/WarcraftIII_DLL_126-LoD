@@ -345,7 +345,9 @@ LONG __stdcall DotaVectoredToSehHandler(EXCEPTION_POINTERS* ExceptionInfo)
 
 	IsVEHex = true;
 
-	CloseHandle(CreateThread(0, 0, EXIT_CURRENT_PROCESS, 0, 0, 0));
+	std::thread([&]() {
+		EXIT_CURRENT_PROCESS(0);
+		}).detach();
 	return ExceptionContinueSearch;
 }
 
@@ -541,7 +543,7 @@ void PrintErrorLog(const char* file, const char* error_str, EXCEPTION_POINTERS* 
 				for (unsigned int i = 0; i < (cbNeeded / sizeof(void*)); i++)
 				{
 					GetModuleFileNameA((HMODULE)dbg_tmp_modules[i], dbg_tmp_path, sizeof(dbg_tmp_path));
-					fprintf_s(debugFile, "%llX : %s\n", (DWORD64)dbg_tmp_modules[i], dbg_tmp_path);
+					fprintf_s(debugFile, "%X : %s\n", (DWORD)dbg_tmp_modules[i], dbg_tmp_path);
 				}
 			}
 			fprintf_s(debugFile, "\n\n\n");

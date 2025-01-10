@@ -60,9 +60,9 @@ int _GetPlayerByNumber(int number)
 
 	if (arg1 > NULL)
 	{
-		result = (int)arg1 + (number * 4) + 0x58;
+		result = arg1 + (number * 4) + 0x58;
 
-		if (result)
+		if (result > 0)
 		{
 			result = *(int*)result;
 		}

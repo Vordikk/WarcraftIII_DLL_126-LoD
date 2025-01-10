@@ -1,6 +1,5 @@
 #include "DotaClickHelper.h"
 #include "Main.h"
-#include <codecvt>
 #include "RawImageApi.h"
 
 HWND Warcraft3Window = NULL;
@@ -169,7 +168,7 @@ void SetHeroFrameXY()
 
 void SetHeroFrameXY_old()
 {
-	if (*(float*)(GameFrameAtMouseStructOffset + 0x14) == HeroFrameX)
+	if (fabs(*(float*)(GameFrameAtMouseStructOffset + 0x14) - HeroFrameX) < 0.00001f)
 	{
 		*(float*)(GameFrameAtMouseStructOffset + 0x14) = HeroFrameX_old;
 		*(float*)(GameFrameAtMouseStructOffset + 0x18) = HeroFrameY_old;
@@ -230,14 +229,12 @@ void MouseClickX(int toX, int toY)
 
 
 
-unsigned long __stdcall ThreadTest(void* lpp)
+void ThreadTest(POINT* p)
 {
-	POINT* p = (POINT*)lpp;
 	SkipAllMessages = true;
 	MouseClickX(p->x, p->y);
 	SkipAllMessages = false;
 	delete p;
-	return 0;
 }
 
 void MouseClick(int toX, int toY)
@@ -245,7 +242,9 @@ void MouseClick(int toX, int toY)
 	POINT* ClickPoint = new POINT();
 	ClickPoint->x = toX;
 	ClickPoint->y = toY;
-	CloseHandle(CreateThread(0, 0, ThreadTest, ClickPoint, 0, 0));
+	std::thread([&]() {
+		ThreadTest(ClickPoint);
+		}).detach();
 }
 
 void JustClickMouse()
@@ -1237,7 +1236,8 @@ void PressKeyWithDelay_timed()
 								int selectedunits = GetSelectedUnitCountBigger(GetLocalPlayerId());
 								int itempressed = keyAction.IsSkill ? 0 : 1;
 
-								if (itempressed || (keyAction.IsSkill && !IsCursorSelectTarget()))
+								// fixme?
+								if (itempressed || !IsCursorSelectTarget())
 								{
 									unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
 									if (selectedunit && selectedunits > 0)
@@ -1609,7 +1609,7 @@ std::string GetObjectNameByID(int clid)
 		if (tInfo && (tInfo_1d = *(int*)(tInfo + 40)) != 0)
 		{
 			tInfo_2id = tInfo_1d - 1;
-			if (tInfo_2id >= (unsigned int)0)
+			if (tInfo_2id < 0)
 				tInfo_2id = 0;
 			return (const char*)*(int*)(*(int*)(tInfo + 44) + 4 * tInfo_2id);
 		}
@@ -2027,7 +2027,7 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 					int pAbilId = *(int*)(pAbil + 0x34);
 					if (pAbilId && (*(unsigned int*)(pButton + 0x140) & 16 || (std::find(InfoWhitelistedObj.begin(), InfoWhitelistedObj.end(), pObjId) != InfoWhitelistedObj.end())))
 					{
-						if (pObjId != 'AHer' && pObjId != 'Asel' && pObjId != 'Asud' && pObjId != 'Asid' && pObjId != 'Aneu')
+						if (pObjId != 'AHer' && pObjId != 'Asud' && pObjId != 'Asid' && pObjId != 'Aneu')
 						{
 							//if ( !pObjId )
 							//	AbilName = ReturnStringBeforeFirstChar( ReturnStringWithoutWarcraftTags( pAbilTitle ), '(' );
@@ -2173,7 +2173,7 @@ float __fastcall GetCameraHeight_my(unsigned int a1)
 unsigned long GroupSelectLastTime = GetTickCount();
 int LastSelectedGroupHandle = 0;
 
-int ProcessHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam, bool& _IsAltPressed,
+int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
 	bool& _IsCtrlPressed, bool& _IsShiftPressed, bool& itempressed, bool& ClickHelperWork, int WithModifiers)
 {
 	for (KeyActionStruct& keyAction : KeyActionList)
@@ -2472,7 +2472,7 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam,
 
 	return false;
 }
-int ProcessSelectActionHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam, bool& _IsAltPressed,
+int ProcessSelectActionHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
 	bool& _IsCtrlPressed, bool& _IsShiftPressed, int WithModifiers)
 {
 	for (auto keyAction : KeySelectActionList)
@@ -2565,7 +2565,7 @@ int ProcessSelectActionHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPA
 	}
 	return false;
 }
-int ProcessCallbackHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam, bool& _IsAltPressed,
+int ProcessCallbackHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
 	bool& _IsCtrlPressed, bool& _IsShiftPressed, int WithModifiers)
 {
 	int selectedunits = GetSelectedUnitCountBigger(GetLocalPlayerId());
@@ -2578,7 +2578,7 @@ int ProcessCallbackHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM&
 		int unitowner = GetUnitOwnerSlot(selectedunit);
 		if (unitowner != 15)
 		{
-			for (auto keyAction : KeyCalbackActionList)
+			for (const auto & keyAction : KeyCalbackActionList)
 			{
 				if (keyAction.VK == (int)wParam)
 				{
@@ -2635,7 +2635,7 @@ int ProcessCallbackHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM&
 	}
 	return false;
 }
-int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam, bool& _IsAltPressed,
+int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
 	bool& _IsCtrlPressed, bool& _IsShiftPressed, int WithModifiers)
 {
 	for (auto keyAction : KeyChatActionList)
@@ -2677,7 +2677,7 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lPa
 	return false;
 
 }
-int ProcessShopHelper(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam)
+int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
 	if (ShopHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 	{
@@ -2743,7 +2743,7 @@ int ProcessShopHelper(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lPar
 	}
 	return false;
 }
-int SkipKeyboardAndMouseWhenTeleport(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam)
+int SkipKeyboardAndMouseWhenTeleport(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
 	if (BlockKeyboardAndMouseWhenTeleport)
 	{
@@ -2760,7 +2760,7 @@ int SkipKeyboardAndMouseWhenTeleport(HWND hWnd, unsigned int& Msg, WPARAM& wPara
 					{
 						if (TeleportShiftPress)
 						{
-							if (ShiftPressed == 0 && !ShiftPressed)
+							if (ShiftPressed == 0)
 							{
 								SingleShift = GetTickCount();
 								ShiftPressed = 1;
@@ -2845,7 +2845,7 @@ int __stdcall GetLatestRegisteredHotkeyMsg(int)
 	return LatestRegisteredHotkeyMsg;
 }
 
-int ProcessRegisteredHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARAM& lParam)
+int ProcessRegisteredHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
 	LatestRegisteredHotkeyWPARAM = wParam;
 	LatestRegisteredHotkeyMsg = Msg;
@@ -2974,7 +2974,7 @@ int ProcessRegisteredHotkeys(HWND hWnd, unsigned int& Msg, WPARAM& wParam, LPARA
 	return false;
 }
 
-int FixNumpad(HWND hWnd, unsigned int& Msg, WPARAM& wParam, WPARAM& _wParam, LPARAM& lParam, bool& _IsShiftPressed)
+int FixNumpad(HWND hWnd, unsigned int& Msg, WPARAM& wParam, const WPARAM& _wParam, const LPARAM& lParam, bool& _IsShiftPressed)
 {
 	// SHIFT+NUMPAD TRICK
 	if (IsGameFrameActive() && (Msg == WM_KEYDOWN || Msg == WM_KEYUP) && (
@@ -3447,7 +3447,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 			}
 		}
 
-		if (LOCK_MOUSE_IN_WINDOW && Warcraft3Window)
+		if (LOCK_MOUSE_IN_WINDOW)
 		{
 			POINT p;
 			tagWINDOWINFO pwi;
@@ -3695,8 +3695,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 					{
 						if (EnableSelectHelper)
 						{
-							if (selectedunits == 0 ||
-								(unitowner != GetLocalPlayerId() && !GetPlayerAlliance(Player(unitowner), Player(GetLocalPlayerId()), 6)))
+							if (unitowner != GetLocalPlayerId() && !GetPlayerAlliance(Player(unitowner), Player(GetLocalPlayerId()), 6))
 							{
 
 								WarcraftRealWNDProc_ptr(hWnd, WM_KEYDOWN, VK_F1, lpF1ScanKeyDOWN);
@@ -3730,7 +3729,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 									LastPressedKeysTime[wParam] = 0;
 									if (wParam >= VK_NUMPAD1 && wParam <= VK_NUMPAD8)
 									{
-										LastPressedKeysTime[wParam] = 0;
 										return DefWindowProc(hWnd, Msg, wParam, lParam);
 									}
 								}
@@ -4102,7 +4100,6 @@ int sub_6F339F00Offset = 0;
 int sub_6F339F80Offset = 0;
 int sub_6F33A010Offset = 0;
 
-// �������� ���� ����� ��� ��������
 void IssueFixerInit()
 {
 	IssueWithoutTargetOrderorg = (IssueWithoutTargetOrder)(GameDll + IssueWithoutTargetOrderOffset);

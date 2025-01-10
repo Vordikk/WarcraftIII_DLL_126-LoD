@@ -23,7 +23,7 @@ struct ObjInfoAction
 		ObjId = _ObjId;
 		ObjId2 = _ObjId2;
 		Action = _Action;
-		CustomMessage = _CustomMessage;
+		CustomMessage = std::move(_CustomMessage);
 	}
 };
 

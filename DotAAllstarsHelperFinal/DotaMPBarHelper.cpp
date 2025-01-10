@@ -132,7 +132,7 @@ int protect_integer2 = -1;
 int __stdcall GetMPBarUnlockNumber(int seed)
 {
 	//srand(seed);
-	protect_integer = 100 + rand() % 0xFFFFFF;
+	protect_integer = rand() ^ rand();
 	return protect_integer;
 }
 
