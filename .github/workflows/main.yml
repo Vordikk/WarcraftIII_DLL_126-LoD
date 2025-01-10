@@ -13,8 +13,6 @@ jobs:
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v4
-      - uses: ilammy/setup-nasm@v1
-      - uses: shogo82148/actions-setup-perl@v1
       - uses: microsoft/setup-msbuild@v2
       - name: Set up Visual Studio shell
         uses: egor-tensin/vs-shell@v2
@@ -29,7 +27,7 @@ jobs:
           arch: Win32
       - name: SIGNING
         run: |
-          SignRelease.bat
+          ./SignRelease.bat
       - name: PACK_IT_ALL
         run: >
           Compress-Archive -Path "Release/DotAAllstarsHelperFinal.dll" -DestinationPath "DotAAllstarsHelper.zip"
