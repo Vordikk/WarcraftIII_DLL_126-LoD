@@ -43,7 +43,6 @@ namespace fs = std::filesystem;
 #include "MegaPacketHandler.h"
 #include <stdlib.h>
 //#include <portaudio.h>
-//#pragma comment (lib, "portaudio.lib")
 #include "quantizer.h"
 #include "BlpReadWrite.h"
 #include <ijl.h>
@@ -51,9 +50,8 @@ namespace fs = std::filesystem;
 
 extern bool DEBUG_FULL;
 
-#pragma comment(lib,"legacy_stdio_definitions.lib")
-#pragma comment(lib,"Psapi.lib")
-#pragma comment (lib, "Ws2_32.lib")
+//#pragma comment(lib,"legacy_stdio_definitions.lib")
+//#pragma comment (lib, "Ws2_32.lib")
 
 #define IsKeyPressed(CODE) ((GetAsyncKeyState(CODE) & 0x8000) > 0)
 

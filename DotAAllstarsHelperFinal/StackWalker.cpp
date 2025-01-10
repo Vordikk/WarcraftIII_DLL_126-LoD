@@ -93,8 +93,6 @@
 #include <atomic>
 #include <mutex>
 
-#pragma comment(lib, "version.lib") // for "VerQueryValue"
-
 #pragma warning(disable : 4826)
 #if _MSC_VER >= 1900
 #pragma warning(disable : 4091)   // For fix unnamed enums from DbgHelp.h

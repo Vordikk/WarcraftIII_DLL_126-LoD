@@ -120,7 +120,6 @@ void SendData(unsigned char* sockstr, unsigned char header, unsigned char packet
 	EnterCriticalSection((LPCRITICAL_SECTION) * (unsigned char**)(sockstr + 0x44));
 	GAME_SendPacketDir(sockstr, sockstr, &send_data_buf[0], (int)send_data_buf.size());
 	LeaveCriticalSection((LPCRITICAL_SECTION) * (unsigned char**)(sockstr + 0x44));
-	WSAGetLastError();
 }
 
 void SendIngameAction(unsigned char* data, int datalen)

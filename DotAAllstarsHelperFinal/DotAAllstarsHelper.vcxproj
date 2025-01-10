@@ -30,8 +30,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>.\..\MinHook;$(LibraryPath);.\..\JPEG\;.\..\NTDLL\;.\..\includes\;.\..\portaudio\;.\..\openssl\;.\..\zlib\lib\</LibraryPath>
-    <IncludePath>$(IncludePath);.\..\JPEG\;.\..\NTDLL\;.\..\includes\;.\..\portaudio\include\;.\..\ydbase\;.\..\openssl\include\;.\..\zlib\include\;.\..\minhook_for_build\include</IncludePath>
+    <LibraryPath>.\..\MinHook;.\..\JPEG\;.\..\NTDLL\;.\..\includes\;.\..\portaudio\;.\..\openssl\;.\..\zlib\lib\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(WindowsSdk_71A_LibraryPath_x86)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);.\..\openssl\include\;$(WindowsSdk_71A_IncludePath);.\..\JPEG\;.\..\NTDLL\;.\..\includes\;.\..\portaudio\include\;.\..\ydbase\;.\..\zlib\include\;.\..\minhook_for_build\include</IncludePath>
     <CodeAnalysisRuleSet>CppCoreCheckRawPointerRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <IgnoreImportLibrary>
@@ -97,7 +97,7 @@
       <ModuleDefinitionFile>Source.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libcrypto.lib;libssl.lib;zlib.lib;ijl15.lib;libMinHook.x86.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libcrypto.lib;libssl.lib;zlib.lib;ijl15.lib;libMinHook.x86.lib;dbghelp.lib;mscoree.lib;psapi.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <LinkStatus>
