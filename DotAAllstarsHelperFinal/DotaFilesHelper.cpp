@@ -241,7 +241,7 @@ void ApplyIconFilter(std::string filename, unsigned char** OutDataPointer, size_
 			for (int y = 4; y < 60; y++)
 			{
 				int id = x * 64 + y;
-				int ave = (min(min(OutImage[id].R, OutImage[id].G), OutImage[id].B) + max(max(OutImage[id].R, OutImage[id].G), OutImage[id].B)) / 2;
+				int ave = (std::min(std::min(OutImage[id].R, OutImage[id].G), OutImage[id].B) + std::max(std::max(OutImage[id].R, OutImage[id].G), OutImage[id].B)) / 2;
 				OutImage[id].R = FixBounds((ave + OutImage[id].R) / 4);
 				OutImage[id].G = FixBounds((ave + OutImage[id].G) / 4);
 				OutImage[id].B = FixBounds((ave + OutImage[id].B) / 4);

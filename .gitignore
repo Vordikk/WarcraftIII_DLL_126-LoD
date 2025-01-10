@@ -274,3 +274,4 @@ __pycache__/
 *.map
 *.log
 /Signing
+MinHook/libMinHook.x86.lib

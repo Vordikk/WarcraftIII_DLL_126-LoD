@@ -72,7 +72,7 @@
       </EnableParallelCodeGeneration>
       <FloatingPointModel>
       </FloatingPointModel>
-      <PreprocessorDefinitions>SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NDEBUG;_WIN32_WINNT=0x0600;WINVER=0x0600;NTDDI_VERSION=0x06000000;PSAPI_VERSION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NDEBUG;;NOMINMAX;WIN32;NDEBUG;_CONSOLE;XP_BUILD;E_BOUNDS=_HRESULT_TYPEDEF_(0x8000000BL);__FILENAME__="*******************";_WIN32_WINNT=0x0501;WINVER=0x0501;NTDDI_VERSION=0x05010000;;VC_EXTRALEAN;_ATL_XP_TARGETING;WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>
       </WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -167,6 +167,7 @@
     <ClCompile Include="DotaViewAllySkill.cpp" />
     <ClCompile Include="DotaWebHelper.cpp" />
     <ClCompile Include="hash_64.cpp" />
+    <ClCompile Include="httplib.cpp" />
     <ClCompile Include="IniReader.cpp" />
     <ClCompile Include="IniWriter.cpp" />
     <ClCompile Include="MegaPacketHandler.cpp" />

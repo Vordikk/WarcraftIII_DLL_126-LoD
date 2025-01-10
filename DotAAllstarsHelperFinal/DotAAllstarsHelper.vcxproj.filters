@@ -110,6 +110,9 @@
     <ClCompile Include="StackWalker.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="httplib.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base64.h">

@@ -100,6 +100,7 @@
 #pragma warning(disable : 4091)   // For fix unnamed enums from DbgHelp.h
 #endif
 
+#include "Main.h"
 
 // If VC7 and later, then use the shipped 'dbghelp.h'-file
 #pragma pack(push, 8)
@@ -1138,7 +1139,7 @@ void monitorFunc()
       break;
     }
 
-    const DWORD threadId = GetThreadId(threadToSuspend);
+    const DWORD threadId = GetGameDllThread;
 
     // Suspend thread
     DWORD previousSuspendCtr = SuspendThread(threadToSuspend);
@@ -1156,7 +1157,7 @@ void monitorFunc()
       }
 
       std::cerr << "Error trying to suspend thread " << threadId << " : previous suspend ctr should have been 0 but was " << previousSuspendCtr << std::endl;
-      const DWORD currentThreadId = GetThreadId(threadToSuspend);
+      const DWORD currentThreadId = GetGameDllThread;
       if (currentThreadId != threadId)
       {
         std::cerr << "Thread ID has changed to " << currentThreadId << std::endl;
@@ -1189,7 +1190,7 @@ void monitorFunc()
     if (previousSuspendCtr != 1)
     {
       std::cerr << "Error trying to resume thread " << threadId << " : previous suspend ctr should have been 1 but was " << previousSuspendCtr << std::endl;
-      const DWORD currentThreadId = GetThreadId(threadToSuspend);
+      const DWORD currentThreadId = GetGameDllThread;
       if (currentThreadId != threadId)
       {
         std::cerr << "Thread ID has changed to " << currentThreadId << std::endl;
@@ -1266,7 +1267,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT* context, PReadPro
       }
       else
       {
-        const bool isMonitorThread = GetThreadId(hThread) == monitorThreadId;
+        const bool isMonitorThread = GetGameDllThread == monitorThreadId;
 
         if (monitorThreadPtr == nullptr)
         {
