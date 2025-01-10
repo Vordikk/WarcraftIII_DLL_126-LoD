@@ -854,6 +854,38 @@ void __stdcall SetMagicCampValue(int value)
 	magicampval = value;
 }
 
+
+
+
+static std::string magicAmpBonusStr1 = "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|nSpell Damage: %i%% (|cFF20FF20+%i%%|r)|n";
+int __stdcall SetMagicAmpBonusStr1(const char* str)
+{
+	magicAmpBonusStr1 = str;
+	return 0;
+}
+
+static std::string magicAmpBonusStr2 = "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|nSpell Damage: %i%% (0%%)|n";
+int __stdcall SetMagicAmpBonusStr2(const char* str)
+{
+	magicAmpBonusStr2 = str;
+	return 0;
+}
+
+static std::string attackBonusStr = "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|n";
+int __stdcall SetAttackBonusStr(const char* str)
+{
+	attackBonusStr = str;
+	return 0;
+}
+
+static std::string attackReloadStr = "%.3f (Reload: %.2f sec)";
+int __stdcall SetAttackReloadStr(const char* str)
+{
+	attackReloadStr = str;
+	return 0;
+}
+
+
 // Функция принимает данные о скорости атаки (и о увеличении урона от способностей) и сохраняет в буфер который будет использоваться при отрисовке
 int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspeed, float* BAT, unsigned char** unitaddr)
 {
@@ -919,9 +951,9 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 				float AttackSpeedBonus = realattackspeed * 100.0f - 100.0f;
 
 				if (magicampbonus)
-					sprintf_s(buffer, sizeof(buffer), "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|nSpell Damage: %i%% (|cFF20FF20+%i%%|r)|n", AttacksPerSec, AttackReload, AttackSpeedBonus, magicamp, magicampbonus);
+					sprintf_s(buffer, sizeof(buffer), magicAmpBonusStr1.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus, magicamp, magicampbonus);
 				else
-					sprintf_s(buffer, sizeof(buffer), "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|nSpell Damage: %i%% (0%%)|n", AttacksPerSec, AttackReload, AttackSpeedBonus, magicamp);
+					sprintf_s(buffer, sizeof(buffer), magicAmpBonusStr2.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus, magicamp);
 			}
 			else
 			{
@@ -936,7 +968,7 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 				}
 				float AttackSpeedBonus = realattackspeed * 100.0f - 100.0f;
 
-				sprintf_s(buffer, sizeof(buffer), "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|n", AttacksPerSec, AttackReload, AttackSpeedBonus);
+				sprintf_s(buffer, sizeof(buffer), attackBonusStr.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus);
 			}
 			if (fixedattackspeed > *(float*)(GameDll + pAttackSpeedLimit))
 				fixedattackspeed = *(float*)(GameDll + pAttackSpeedLimit);
@@ -964,7 +996,7 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 			if (fixedattackspeed < 0.2f)
 				fixedattackspeed = 0.2f;
 
-			sprintf_s(buffer, sizeof(buffer), "%.3f (Reload: %.2f sec)", (fixedattackspeed / *(float*)BAT), 1.0f / (fixedattackspeed / *(float*)BAT));
+			sprintf_s(buffer, sizeof(buffer), attackReloadStr.c_str(), (fixedattackspeed / *(float*)BAT), 1.0f / (fixedattackspeed / *(float*)BAT));
 
 			__asm
 			{
@@ -1081,6 +1113,14 @@ float __stdcall GetMagicProtectionForHero_by_abiladdr(unsigned char* abil_addr)
 	return 0.0f;
 }
 
+static std::string magicProtStr = "Magic Protection";
+
+int __stdcall SetMagicProtectionString(const char* str)
+{
+	magicProtStr = str;
+	return 0;
+}
+
 int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned char* AmovAddr)
 {
 	if (DEBUG_FULL)
@@ -1096,11 +1136,11 @@ int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned cha
 		if (fabs(MagicProtection) < 0.00001f)
 			sprintf_s(buffer, sizeof(buffer), "%.1f", (*(float*)movespeed));
 		else if (MagicProtection > 30.0f)
-			sprintf_s(buffer, sizeof(buffer), "%.1f|nMagic Protection: |cFF00C800%.1f|r%%", (*(float*)movespeed), MagicProtection);
+			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFF00C800%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		else if (MagicProtection <= 30.0f && MagicProtection > 0.0f)
-			sprintf_s(buffer, sizeof(buffer), "%.1f|nMagic Protection: %.1f%%", (*(float*)movespeed), MagicProtection);
+			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: %.1f%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		else
-			sprintf_s(buffer, sizeof(buffer), "%.1f|nMagic Protection: |cFFD82005%.1f|r%%", (*(float*)movespeed), MagicProtection);
+			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFFD82005%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		__asm
 		{
 			PUSH 0x200;
@@ -1201,19 +1241,26 @@ const char* GetPlayerColorString2(int player)
 }
 
 
+static std::string ownedByStr = "Owned by";
+
+int __stdcall SetOwnedByString(const char* str)
+{
+	ownedByStr = str;
+	return 0;
+}
+
 
 unsigned char* __stdcall SaveStringsForPrintItem(unsigned char* itemaddr)
 {
 	if (itemaddr)
 	{
-
 		if (IsNotBadItem(itemaddr))
 		{
 			int itemowner = *(int*)(itemaddr + 0x74);
 			if (itemowner <= 15 && itemowner >= 0)
 			{
-				sprintf_s(itemstr1, 512, "Owned by %s%s|r|n%%s%%s%%s%%s%%s", GetPlayerColorString2(Player(itemowner)), GetPlayerName(itemowner, 0));
-				sprintf_s(itemstr2, 512, "Owned by %s%s|r|n%%s%%s%%s", GetPlayerColorString2(Player(itemowner)), GetPlayerName(itemowner, 0));
+				sprintf_s(itemstr1, 512, "%s %s%s|r|n%%s%%s%%s%%s%%s", ownedByStr.c_str(), GetPlayerColorString2(Player(itemowner)), GetPlayerName(itemowner, 0));
+				sprintf_s(itemstr2, 512, "%s %s%s|r|n%%s%%s%%s", ownedByStr.c_str(), GetPlayerColorString2(Player(itemowner)), GetPlayerName(itemowner, 0));
 				return itemaddr;
 			}
 		}

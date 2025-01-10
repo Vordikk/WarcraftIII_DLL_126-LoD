@@ -216,3 +216,9 @@ ShowSkillPanelForEnemyNeurals
 GetEspValue
 GetEspValueStdCall
 Packet_Send_Ex
+SetMagicProtectionString
+SetOwnedByString
+SetMagicAmpBonusStr1
+SetMagicAmpBonusStr2
+SetAttackBonusStr
+SetAttackReloadStr
