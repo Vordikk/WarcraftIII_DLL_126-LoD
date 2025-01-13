@@ -5,6 +5,7 @@
 //#include "HttpClass.h"
 #include "base64.h"
 
+bool avaiableNow = true;
 int DownProgress = 0, DownStatus = 0;
 std::string LatestDownloadedString;
 
@@ -57,14 +58,23 @@ std::string SendHttpPostRequest(const char* url, const char* data)
 
 		if (res)
 		{
-			if (res->status == httplib::StatusCode::OK_200)
+			if (res->status == httplib::MovedPermanently_301 || res->status == httplib::PermanentRedirect_308)
+			{
+				client.set_follow_location(true);
+				res = client.Post(uril.path, data, "text/plain");
+			}
+
+			if (res && res->status == httplib::StatusCode::OK_200)
 			{
 				DownStatus = 1;
 				return res->body;
 			}
-
+		}
+		if (res)
+		{
+			auto err = res.error();
 			DownStatus = -1;
-			return res->body;
+			return "[POST] HTTP error: " + httplib::to_string(err).substr(0, 64);
 		}
 	}
 	catch (std::exception& ex)
@@ -93,18 +103,32 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 
 		auto res = client.Get(path);
 
+		client.set_read_timeout(5, 0);
+		client.set_write_timeout(5, 0);
+		client.set_connection_timeout(5, 0);
+
 		if (res)
 		{
-			if (res->status == httplib::StatusCode::OK_200)
+			if (res->status == httplib::MovedPermanently_301 || res->status == httplib::PermanentRedirect_308)
+			{
+				client.set_follow_location(true);
+				res = client.Get(path);
+			}
+
+			if (res && res->status == httplib::StatusCode::OK_200)
 			{
 				DownStatus = 1;
 				return res->body;
 			}
+		}
+		if (res)
+		{
+			auto err = res.error();
 			DownStatus = -1;
-			return res->body;
+			return "[GET] HTTP error: " + httplib::to_string(err).substr(0, 64);
 		}
 	}
-	catch (std::exception & ex)
+	catch (std::exception& ex)
 	{
 		DownStatus = -3;
 		return ex.what() ? ex.what() : "";
@@ -137,20 +161,27 @@ void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 			if (total > 0) {
 				DownProgress = (int)((static_cast<double>(current) / total) * 100.0);
 			}
-			return true; 
+			return true;
 			};
 
 		auto res = client.Get("/", progress_callback);
 
+		if (res && (res->status == httplib::MovedPermanently_301 || res->status == httplib::PermanentRedirect_308))
+		{
+			client.set_follow_location(true);
+			res = client.Get("/", progress_callback);
+		}
+
 		if (res && res->status == httplib::StatusCode::OK_200)
 		{
 			std::ofstream ofs(filepath, std::ios::binary);
-			if (ofs.is_open()) 
+			if (ofs.is_open())
 			{
 				ofs.write(res->body.c_str(), res->body.size());
 				ofs.close();
 				DownStatus = 1;
 				DownProgress = 100;
+				return;
 			}
 			else
 			{
@@ -158,117 +189,112 @@ void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 				DownProgress = 0;
 			}
 		}
-		else {
+		if (res)
+		{
+			auto err = res.error();
+			LatestDownloadedString = "[MAP DOWNLOAD] HTTP error: " + httplib::to_string(err).substr(0, 64);
 			DownStatus = -1;
 			DownProgress = 0;
 		}
 	}
 	catch (...)
 	{
-		DownStatus = -1;
-		DownProgress = 0;
 	}
-	return;
-}
-
-std::string _addr;
-std::string _request;
-std::string _filepath;
-
-unsigned long __stdcall SENDGETREQUEST(LPVOID)
-{
-	try
-	{
-		LatestDownloadedString = SendHttpGetRequest(_addr.c_str(), _request.c_str());
-		_addr.clear();
-		_request.clear();
-	}
-	catch (...)
-	{
-		DownStatus = -1;
-	}
-	return 0;
-}
-
-
-unsigned long __stdcall SENDPOSTREQUEST(LPVOID)
-{
-	try
-	{
-		LatestDownloadedString = SendHttpPostRequest(_addr.c_str(), _request.c_str());
-		_addr.clear();
-		_request.clear();
-	}
-	catch (...)
-	{
-		DownStatus = -1;
-	}
-	return 0;
-}
-
-
-
-unsigned long __stdcall SENDSAVEFILEREQUEST(LPVOID)
-{
-	DownloadNewMapToFile(_addr.c_str(), _filepath.c_str());
-	_addr.clear();
-	_request.clear();
-	_filepath.clear();
-	return 0;
+	DownStatus = -2;
+	DownProgress = 0;
 }
 
 int __stdcall SendGetRequest(const char* url, const  char* path)
 {
+	if (!avaiableNow)
+		return 0;
+	LatestDownloadedString = "Error: you need wait response!";
+	avaiableNow = false;
 	DownProgress = 0;
-	_addr = url; 
-	_request = path;
 	DownStatus = 0;
+
+	if (SetInfoObjDebugVal)
+	{
+		PrintText(("Send host:" + std::string(url) + ". Path:").c_str());
+		PrintText(std::string(path).c_str());
+	}
 	std::thread([&]() {
-		SENDGETREQUEST(0);
+		try
+		{
+			LatestDownloadedString = SendHttpGetRequest(url, path);
+		}
+		catch (...)
+		{
+			DownStatus = -1;
+		}
+		avaiableNow = true;
 		}).detach();
-	return 0;
+	return 1;
 }
 
 int __stdcall SendPostRequest(const char* url, const  char* request)
 {
+	if (!avaiableNow)
+		return 0;
+	LatestDownloadedString = "Error: you need wait response!";
+	avaiableNow = false;
 	DownProgress = 0;
-	_addr = url ? url : "";
-	_request = request ? request : "";
 	DownStatus = 0;
 
 	std::thread([&]() {
-		SENDPOSTREQUEST(0);
+		try
+		{
+			LatestDownloadedString = SendHttpPostRequest(url, request);
+		}
+		catch (...)
+		{
+			DownStatus = -1;
+		}
+		avaiableNow = true;
 		}).detach();
 
 	return 0;
 }
 
 
-int __stdcall SendPostRequestEx(const char* url, const char * path, const  char* request)
+int __stdcall SendPostRequestEx(const char* url, const char* path, const  char* request)
 {
+	if (!avaiableNow)
+		return 0;
+	LatestDownloadedString = "Error: you need wait response!";
+	avaiableNow = false;
 	DownProgress = 0;
-	_addr = url && path ? std::string(url) + std::string(path) : "";
-	_request = request ? request : "";
 	DownStatus = 0;
 
 	std::thread([&]() {
-		SENDPOSTREQUEST(0);
+		try
+		{
+			LatestDownloadedString = SendHttpPostRequest((std::string(url) + std::string(path)).c_str(), request);
+		}
+		catch (...)
+		{
+			DownStatus = -1;
+		}
+		avaiableNow = true;
 		}).detach();
 
-	return 0;
+	return 1;
 }
 
 int __stdcall SaveNewDotaVersionFromUrl(const  char* addr, const  char* filepath)
 {
+	if (!avaiableNow)
+		return 0;
+	avaiableNow = false;
 	DownProgress = 0;
-	_addr = addr ? addr : ""; _filepath = filepath ? filepath : "";
 	DownStatus = 0;
 
 	std::thread([&]() {
-		SENDSAVEFILEREQUEST(0);
+		DownloadNewMapToFile(addr, filepath);
+		avaiableNow = true;
 		}).detach();
 
-	return 0;
+	return 1;
 }
 
 int __stdcall GetDownloadStatus(int)
@@ -283,9 +309,13 @@ int __stdcall GetDownloadProgress(int)
 
 const char* __stdcall GetLatestDownloadedString(int)
 {
-	return LatestDownloadedString.length() > 1023 ?
-		std::string(LatestDownloadedString.begin(), LatestDownloadedString.begin() + 1023).c_str()
-		: LatestDownloadedString.c_str();
+	if (LatestDownloadedString.size() > 1023)
+		LatestDownloadedString = LatestDownloadedString.substr(0, 1023);
+	if (SetInfoObjDebugVal)
+	{
+		PrintText(("Recv data:" + LatestDownloadedString.substr(0,100)).c_str());
+	}
+	return LatestDownloadedString.c_str();
 }
 
 //
@@ -306,20 +336,27 @@ const char* __stdcall GetLatestDownloadedString(int)
 
 bool IsOkayLogFile(std::string file)
 {
-	if (fs::path(file).extension().string() == ".txt")
+	try
 	{
-		std::string filedata = ToLower(GetFileContent(file));
-		if (filedata.length() > 0)
+		if (fs::path(file).extension().string() == ".txt")
 		{
-			if (strstr(filedata.c_str(), ToLower("DotAAllstarsHelper").c_str()))
+			std::string filedata = ToLower(GetFileContent(file));
+			if (filedata.length() > 0)
 			{
-				return true;
-			}
-			if (strstr(filedata.c_str(), ToLower("DotA Allstars").c_str()))
-			{
-				return true;
+				if (strstr(filedata.c_str(), ToLower("DotAAllstarsHelper").c_str()))
+				{
+					return true;
+				}
+				if (strstr(filedata.c_str(), ToLower("DotA Allstars").c_str()))
+				{
+					return true;
+				}
 			}
 		}
+	}
+	catch (...)
+	{
+
 	}
 	return false;
 }
@@ -345,7 +382,7 @@ int __stdcall SendLatestError(const char* url)
 		}
 	}
 
-	for (auto & s : Errors)
+	for (auto& s : Errors)
 	{
 
 		if (IsOkayLogFile(s))

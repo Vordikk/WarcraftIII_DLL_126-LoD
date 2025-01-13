@@ -483,3 +483,8 @@ extern BOOL TICK_HOOK_ENABLED;
 int __stdcall HookTickTimer(int val);
 extern unsigned long start_point_latest;
 extern unsigned int tick_accuracy;
+
+extern bool avaiableNow;
+extern int DownProgress;
+extern int DownStatus;
+extern std::string LatestDownloadedString;
