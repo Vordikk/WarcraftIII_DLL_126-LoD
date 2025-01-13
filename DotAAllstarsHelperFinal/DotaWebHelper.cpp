@@ -52,7 +52,6 @@ std::string SendHttpPostRequest(const char* url, const char* data)
 	try
 	{
 		httplib::Client client(uril.host);
-		client.set_follow_location(true);
 
 		auto res = client.Post(uril.path, data, "text/plain");
 
@@ -98,8 +97,6 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 	try
 	{
 		httplib::Client client(host);
-
-		client.set_follow_location(true);
 
 		auto res = client.Get(path);
 
