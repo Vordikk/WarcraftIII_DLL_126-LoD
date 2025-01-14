@@ -316,13 +316,13 @@ const char* __stdcall GetLatestDownloadedString(int)
 }
 
 //
-//std::filesystem::file_time_type GetLastFileTime( const std::vector<std::string> & files )
+//fs::file_time_type GetLastFileTime( const std::vector<std::string> & files )
 //{
-//	std::filesystem::file_time_type retval = std::filesystem::file_time_type( );
+//	fs::file_time_type retval = fs::file_time_type( );
 //	std::string file = files
 //	for ( auto s : files )
 //	{
-//		auto curfiletime = std::filesystem::last_write_time( s );
+//		auto curfiletime = fs::last_write_time( s );
 //		if ( curfiletime > retval )
 //		{
 //			retval = curfiletime;
@@ -335,7 +335,7 @@ bool IsOkayLogFile(std::string file)
 {
 	try
 	{
-		if (fs::path(file).extension().string() == ".txt")
+		if (file.size() && fs::path(file).extension().string() == ".txt")
 		{
 			std::string filedata = ToLower(GetFileContent(file));
 			if (filedata.length() > 0)
@@ -362,9 +362,10 @@ bool IsOkayLogFile(std::string file)
 int __stdcall SendLatestError(const char* url)
 {
 	auto Errors = get_file_list("Errors", true);
+	std::error_code err{};
 	std::string sendfilename = "Errors\\lastcheck.txt";
 	auto LatestError = FileExist(sendfilename.c_str()) ?
-		std::filesystem::last_write_time(sendfilename) : std::filesystem::file_time_type();
+		fs::last_write_time(sendfilename, err) : fs::file_time_type();
 	bool foundlatesterror = false;
 
 	if (SetInfoObjDebugVal)
@@ -388,7 +389,7 @@ int __stdcall SendLatestError(const char* url)
 			{
 				PrintText("Process file:" + s);
 			}
-			auto curfiletime = std::filesystem::last_write_time(s);
+			auto curfiletime = fs::last_write_time(s,err);
 			if (curfiletime > LatestError)
 			{
 				if (SetInfoObjDebugVal)

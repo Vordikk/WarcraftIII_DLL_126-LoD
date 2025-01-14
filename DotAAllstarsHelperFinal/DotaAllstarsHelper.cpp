@@ -14,7 +14,8 @@
 
 bool FileExist(const char* name)
 {
-	return std::filesystem::exists(name) && !std::filesystem::is_directory(name);
+	std::error_code err{};
+	return fs::exists(name,err) && !fs::is_directory(name,err);
 }
 
 bool DEBUG_FULL = false;

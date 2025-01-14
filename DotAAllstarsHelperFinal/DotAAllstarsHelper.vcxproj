@@ -119,7 +119,7 @@
       <AssemblyDebug>
       </AssemblyDebug>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
-      <LargeAddressAware>false</LargeAddressAware>
+      <LargeAddressAware>true</LargeAddressAware>
       <FixedBaseAddress>false</FixedBaseAddress>
       <BaseAddress>
       </BaseAddress>

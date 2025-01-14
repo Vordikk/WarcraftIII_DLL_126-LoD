@@ -302,7 +302,8 @@ void ApplyIconFilter(std::string filename, unsigned char** OutDataPointer, size_
 
 				if (dir.string().length() > 0)
 				{
-					fs::create_directories(dir.string());
+					std::error_code err;
+					fs::create_directories(dir.string(),err);
 				}
 
 				FILE* f;
@@ -2071,10 +2072,11 @@ std::vector<std::string> get_file_list(const fs::path& path, bool dotolower)
 	std::vector<std::string> m_file_list;
 	if (!path.empty())
 	{
+		std::error_code err{};
 		fs::path apk_path(path);
 		fs::recursive_directory_iterator end;
 
-		for (fs::recursive_directory_iterator i(apk_path); i != end; ++i)
+		for (fs::recursive_directory_iterator i(apk_path,err); i != end; ++i)
 		{
 			const fs::path cp = (*i);
 
