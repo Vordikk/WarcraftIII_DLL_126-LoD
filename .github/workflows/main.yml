@@ -27,6 +27,7 @@ jobs:
       - name: PACK_IT_ALL
         run: >
           Compress-Archive -Path "Release/DotAAllstarsHelperFinal.dll" -DestinationPath "DotAAllstarsHelper.zip"
+          
           Compress-Archive -Path "Release/DotAAllstarsHelperFinal.pdb" -DestinationPath "DotAAllstarsHelper.zip"
       - name: Bump version and push tag
         id: tag_version
