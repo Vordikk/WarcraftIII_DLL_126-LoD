@@ -180,7 +180,7 @@ int __stdcall LoadRawImage(const char* filename)
 			}
 		}
 	}
-	if (PatchFileData != 0 || PatchFileSize != 0)
+	if (PatchFileData != 0 && PatchFileSize != 0)
 	{
 		bool IsBlp = memcmp((LPCVOID)PatchFileData, "BLP1", 4) == 0;
 		int w = 0, h = 0, bpp = 0, mipmaps = 0, alphaflag = 8, compress = 1, alphaenconding = 5;

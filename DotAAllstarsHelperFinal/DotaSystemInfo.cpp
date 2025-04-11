@@ -381,6 +381,8 @@ const char* __stdcall GetSystemInfo2(SystemInfo info, unsigned int DIV/*or arg2*
 			ReleaseDC(Warcraft3Window, ourWindowHandleToDeviceContext);
 			return "Error #5: Unable to make OpenGL context current";
 		}
+		wglDeleteContext(ourOpenGLRenderingContext);
+		ReleaseDC(Warcraft3Window, ourWindowHandleToDeviceContext);
 	}
 
 

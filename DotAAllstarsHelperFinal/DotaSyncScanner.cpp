@@ -253,7 +253,7 @@ int __stdcall ReplayDesyncScan(int scan_or_check)
 
 			if (f)
 			{
-				if (ScanId != 0)
+				if (replayscandata && ScanId != 0)
 					fwrite(replayscandata, size, 1, f);
 				FillScanList();
 				ScanStructHead tmpcountstr = ScanStructHead();
