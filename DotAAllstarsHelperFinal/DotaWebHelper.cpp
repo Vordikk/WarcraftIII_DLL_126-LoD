@@ -46,34 +46,38 @@ UrlComponents parse_url(const std::string& url) {
 std::string SendHttpPostRequest(const char* url, const char* data)
 {
 	if (!url || url[0] == '\0' || !data)
-		return "";
+		return "[ERROR] Bad hostname or request";
 
 	UrlComponents uril = parse_url(url);
 	try
 	{
 		httplib::Client client(uril.host);
 
+		client.set_follow_location(true);
+		client.set_read_timeout(20, 0);
+		client.set_write_timeout(20, 0);
+		client.set_connection_timeout(10, 0);
+
 		auto res = client.Post(uril.path, data, "text/plain");
 
 		if (res)
 		{
-			if (res->status == httplib::MovedPermanently_301 || res->status == httplib::PermanentRedirect_308)
-			{
-				client.set_follow_location(true);
-				res = client.Post(uril.path, data, "text/plain");
-			}
-
-			if (res && res->status == httplib::StatusCode::OK_200)
+			if (res->status == httplib::StatusCode::OK_200)
 			{
 				DownStatus = 1;
 				return res->body;
 			}
+			else
+			{
+				auto err = res.error();
+				DownStatus = -1;
+				return "[ERROR] HTTP error: " + httplib::to_string(err);
+			}
 		}
-		if (res)
+		else
 		{
-			auto err = res.error();
 			DownStatus = -1;
-			return "[POST] HTTP error: " + httplib::to_string(err).substr(0, 64);
+			return "[ERROR] No response";
 		}
 	}
 	catch (std::exception& ex)
@@ -86,13 +90,13 @@ std::string SendHttpPostRequest(const char* url, const char* data)
 
 	}
 	DownStatus = -2;
-	return "";
+	return "[ERROR] Unhandled error";
 }
 
 std::string SendHttpGetRequest(const char* host, const char* path)
 {
 	if (!host || host[0] == '\0' || !path)
-		return "";
+		return "[ERROR] Bad hostname or request";
 
 	try
 	{
@@ -100,29 +104,29 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 
 		auto res = client.Get(path);
 
-		client.set_read_timeout(5, 0);
-		client.set_write_timeout(5, 0);
-		client.set_connection_timeout(5, 0);
+		client.set_follow_location(true);
+		client.set_read_timeout(20, 0);
+		client.set_write_timeout(20, 0);
+		client.set_connection_timeout(10, 0);
 
 		if (res)
 		{
-			if (res->status == httplib::MovedPermanently_301 || res->status == httplib::PermanentRedirect_308)
-			{
-				client.set_follow_location(true);
-				res = client.Get(path);
-			}
-
-			if (res && res->status == httplib::StatusCode::OK_200)
+			if (res->status == httplib::StatusCode::OK_200)
 			{
 				DownStatus = 1;
 				return res->body;
 			}
+			else
+			{
+				auto err = res.error();
+				DownStatus = -1;
+				return "[ERROR] HTTP error: " + httplib::to_string(err);
+			}
 		}
-		if (res)
+		else
 		{
-			auto err = res.error();
 			DownStatus = -1;
-			return "[GET] HTTP error: " + httplib::to_string(err).substr(0, 64);
+			return "[ERROR] No response";
 		}
 	}
 	catch (std::exception& ex)
@@ -136,7 +140,7 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 	}
 
 	DownStatus = -2;
-	return "";
+	return "[ERROR] Unhandled error";
 }
 
 
@@ -189,7 +193,7 @@ void DownloadNewMapToFile(const char* szUrl, const char* filepath)
 		if (res)
 		{
 			auto err = res.error();
-			LatestDownloadedString = "[MAP DOWNLOAD] HTTP error: " + httplib::to_string(err).substr(0, 64);
+			LatestDownloadedString = "[ERROR] HTTP error: " + httplib::to_string(err).substr(0, 64);
 			DownStatus = -1;
 			DownProgress = 0;
 		}
@@ -205,7 +209,7 @@ int __stdcall SendGetRequest(const char* url, const  char* path)
 {
 	if (!avaiableNow)
 		return 0;
-	LatestDownloadedString = "Error: you need wait response!";
+	LatestDownloadedString = "[ERROR] you need wait response!";
 	avaiableNow = false;
 	DownProgress = 0;
 	DownStatus = 0;
@@ -233,7 +237,7 @@ int __stdcall SendPostRequest(const char* url, const  char* request)
 {
 	if (!avaiableNow)
 		return 0;
-	LatestDownloadedString = "Error: you need wait response!";
+	LatestDownloadedString = "[ERROR] You need wait response!";
 	avaiableNow = false;
 	DownProgress = 0;
 	DownStatus = 0;
@@ -258,7 +262,7 @@ int __stdcall SendPostRequestEx(const char* url, const char* path, const  char* 
 {
 	if (!avaiableNow)
 		return 0;
-	LatestDownloadedString = "Error: you need wait response!";
+	LatestDownloadedString = "[ERROR] You need wait response!";
 	avaiableNow = false;
 	DownProgress = 0;
 	DownStatus = 0;
@@ -310,7 +314,20 @@ const char* __stdcall GetLatestDownloadedString(int)
 		LatestDownloadedString = LatestDownloadedString.substr(0, 1023);
 	if (SetInfoObjDebugVal)
 	{
-		PrintText(("Recv data:" + LatestDownloadedString.substr(0,100)).c_str());
+		const std::string& str = LatestDownloadedString;
+		size_t length = str.length();
+		size_t pos = 0;
+		size_t chunkSize = 100;
+
+		while (pos < length)
+		{
+			std::string chunk = str.substr(pos, chunkSize);
+			if (pos)
+				PrintText(("Recv data:" + chunk).c_str());
+			else 
+				PrintText(chunk.c_str());
+			pos += chunkSize;
+		}
 	}
 	return LatestDownloadedString.c_str();
 }
