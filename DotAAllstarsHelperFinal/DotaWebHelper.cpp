@@ -71,7 +71,7 @@ std::string SendHttpPostRequest(const char* url, const char* data)
 			{
 				auto err = res.error();
 				DownStatus = -1;
-				return "[ERROR] HTTP error: " + httplib::to_string(err);
+				return "[ERROR] HTTP error: " + httplib::to_string(err) + " status " + std::to_string(res->status);
 			}
 		}
 		else
@@ -120,7 +120,7 @@ std::string SendHttpGetRequest(const char* host, const char* path)
 			{
 				auto err = res.error();
 				DownStatus = -1;
-				return "[ERROR] HTTP error: " + httplib::to_string(err);
+				return "[ERROR] HTTP error: " + httplib::to_string(err) + " status " + std::to_string(res->status);
 			}
 		}
 		else
