@@ -1648,15 +1648,10 @@ namespace NWar3Frame
 		Visibled = false;
 		Pressed = false;
 		FrameOk = false;
-		for (unsigned int i = 0; i < FramesList.size(); i++)
-		{
-			if (this == FramesList[i])
-			{
-				FramesList.erase(FramesList.begin() + i);
-				i--;
-				break;
-			}
-		}
+		FramesList.erase(
+	std::remove_if(FramesList.begin(), FramesList.end(),
+		[this](auto* frame) { return frame == this; }),
+	FramesList.end());
 	}
 
 
