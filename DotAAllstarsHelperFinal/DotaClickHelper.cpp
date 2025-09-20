@@ -3718,7 +3718,8 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 
 					if (!ClickHelperWork && DoubleClickHelper)
 					{
-						if (GetTickCount() - LastPressedKeysTime[wParam] < 450 && ((wParam == LatestPressedKey && LatestButtonClickTime + 500 > GetTickCount()) || wParam != LatestPressedKey))
+						if (GetTickCount() - LastPressedKeysTime[wParam] < 450 && 
+							((wParam == LatestPressedKey && LatestButtonClickTime + 500 > GetTickCount()) || (wParam != LatestPressedKey)) )
 						{
 							itempressed = itempressed || (wParam >= VK_NUMPAD1 && wParam <= VK_NUMPAD8);
 

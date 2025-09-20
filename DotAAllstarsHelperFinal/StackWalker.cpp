@@ -829,12 +829,12 @@ public:
 
   BOOL GetModuleInfo(HANDLE hProcess, DWORD64 baseAddr, IMAGEHLP_MODULE64_V3* pModuleInfo)
   {
-    memset(pModuleInfo, 0, sizeof(IMAGEHLP_MODULE64_V3));
-    if (this->pSGMI == NULL)
+    if (!pModuleInfo || this->pSGMI == NULL)
     {
       SetLastError(ERROR_DLL_INIT_FAILED);
       return FALSE;
     }
+    memset(pModuleInfo, 0, sizeof(IMAGEHLP_MODULE64_V3));
     // First try to use the larger ModuleInfo-Structure
     pModuleInfo->SizeOfStruct = sizeof(IMAGEHLP_MODULE64_V3);
     void* pData = malloc(

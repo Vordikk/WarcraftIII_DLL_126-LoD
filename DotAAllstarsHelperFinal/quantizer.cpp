@@ -22,7 +22,7 @@ CQuantizer::CQuantizer(unsigned int nMaxColors, unsigned int nColorBits)
 	m_nLeafCount = 0;
 	m_lastIndex = 0;
 	m_needsAlpha = false;
-	for (int i = 0; i <= (int)m_nColorBits; i++)
+	for (int i = 0; i <= (int)m_nColorBits && i < 8; i++)
 		m_pReducibleNodes[i] = 0;
 	m_nMaxColors = m_nOutputMaxColors = nMaxColors;
 	if (m_nMaxColors < 16)m_nMaxColors = 16;
