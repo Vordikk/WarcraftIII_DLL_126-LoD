@@ -39,7 +39,7 @@ jobs:
         run: |
           msbuild DotAAllstarsHelper.sln `
             /p:Configuration=Release `
-            /p:Platform=Win32 `
+            /p:Platform=x86 `
             /p:PlatformToolset=v141_xp `
             /p:WindowsTargetPlatformVersion=7.1A `
             /p:VisualStudioVersion=15.0
