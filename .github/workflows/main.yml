@@ -1,40 +1,88 @@
----
 name: C/C++ CI
+
 on:
   push:
-    branches:
-      - '*'
+    branches: ['*']
   pull_request:
-    branches:
-      - '*'
+    branches: ['*']
+
 jobs:
   build_xp:
-    name: WindowsXP
-    runs-on: windows-2019
+    name: Windows XP
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
-      - uses: microsoft/setup-msbuild@v2
-      - name: Set up Visual Studio shell
+      - uses: ilammy/setup-nasm@v1
+      - uses: shogo82148/actions-setup-perl@v1
+
+      - name: Install VS2017 XP tools
+        shell: powershell
+        run: |
+          if (-not (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise")) {
+              Invoke-WebRequest -Uri "https://aka.ms/vs/15/release/vs_buildtools.exe" -OutFile "$env:RUNNER_TEMP\vs_buildtools.exe"
+              Start-Process -Wait -FilePath "$env:RUNNER_TEMP\vs_buildtools.exe" -ArgumentList @(
+                  "--quiet", "--wait", "--norestart", "--nocache",
+                  "--add Microsoft.VisualStudio.Workload.VCTools",
+                  "--add Microsoft.VisualStudio.Component.VC.v141.x86.x64",
+                  "--add Microsoft.VisualStudio.Component.Windows10SDK.17134",
+                  "--add Microsoft.VisualStudio.Component.VC.ATL",
+                  "--add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.WinXP"
+              )
+          }
+
+      - name: Set up Visual Studio (Win32)
         uses: egor-tensin/vs-shell@v2
         with:
           arch: Win32
-      - name: Build XP
-        run: >
-          msbuild DotAAllstarsHelper.sln -m /p:Configuration=Release
-      - name: SIGNING
+
+      - name: Build DotAAllstarsHelper (XP)
+        run: |
+          msbuild DotAAllstarsHelper.sln `
+            /p:Configuration=Release `
+            /p:Platform=Win32 `
+            /p:PlatformToolset=v141_xp `
+            /p:WindowsTargetPlatformVersion=7.1A `
+            /p:VisualStudioVersion=15.0
+
+      - name: Sign binaries
         run: |
           ./SignRelease.bat
-      - name: PACK_IT_ALL
-        run: >
-          Compress-Archive -Path "Release/DotAAllstarsHelperFinal.dll" -DestinationPath "DotAAllstarsHelper.zip"
-          
-          Compress-Archive -Path "Release/DotAAllstarsHelperFinal.pdb" -DestinationPath "DotAAllstarsHelper.zip" -Update
-      - name: Bump version and push tag
+
+      - name: Create ZIP (Store method - no compression)
+        run: |
+          7z a -mx=1 DotAAllstarsHelper.zip Release/DotAAllstarsHelperFinal.dll Release/DotAAllstarsHelperFinal.pdb
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DotAAllstarsHelper
+          path: DotAAllstarsHelper.zip
+
+  package:
+    name: Create Release
+    runs-on: windows-latest
+    needs: [build_xp]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: DotAAllstarsHelper
+          path: .
+
+      - name: Delete temp artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: DotAAllstarsHelper
+
+      - name: Tag version
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish binaries for windows XP+
+
+      - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
