@@ -858,7 +858,7 @@ void __stdcall SetMagicCampValue(int value)
 
 
 
-static std::string attackBonusStr = "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|n";
+static std::string attackBonusStr = "%.1f/sec (Reload: %.2f sec)|nAttack speed: %.0f|n";
 int __stdcall SetAttackBonusStr(const char* str)
 {
 	attackBonusStr = str;
@@ -916,8 +916,8 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 				AttacksPerSec = fixedattackspeed / realBAT;
 				AttackReload = 1.0f / (fixedattackspeed / realBAT);
 			}
-			float AttackSpeedBonus = realattackspeed * 100.0f - 100.0f;
-			sprintf_s(buffer, sizeof(buffer), attackBonusStr.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus);
+			float AttackSpeed = realattackspeed * 100.0f;
+			sprintf_s(buffer, sizeof(buffer), attackBonusStr.c_str(), AttacksPerSec, AttackReload, AttackSpeed);
 
 			if (fixedattackspeed > *(float*)(GameDll + pAttackSpeedLimit))
 				fixedattackspeed = *(float*)(GameDll + pAttackSpeedLimit);
