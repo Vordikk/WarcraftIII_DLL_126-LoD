@@ -1,7 +1,7 @@
 ﻿#include "Main.h"
 
 
-pGetHeroInt GetHeroInt;
+//pGetHeroInt GetHeroInt;
 // Получить владельца юнита
 int __stdcall GetUnitOwnerSlot(unsigned char* unitaddr)
 {

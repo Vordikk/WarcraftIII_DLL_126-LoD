@@ -858,20 +858,6 @@ void __stdcall SetMagicCampValue(int value)
 
 
 
-static std::string magicAmpBonusStr1 = "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|nSpell Damage: %i%% (|cFF20FF20+%i%%|r)|n";
-int __stdcall SetMagicAmpBonusStr1(const char* str)
-{
-	magicAmpBonusStr1 = str;
-	return 0;
-}
-
-static std::string magicAmpBonusStr2 = "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|nSpell Damage: %i%% (0%%)|n";
-int __stdcall SetMagicAmpBonusStr2(const char* str)
-{
-	magicAmpBonusStr2 = str;
-	return 0;
-}
-
 static std::string attackBonusStr = "%.1f/sec (Reload: %.2f sec)|nAttack speed bonus: %.0f|n";
 int __stdcall SetAttackBonusStr(const char* str)
 {
@@ -922,55 +908,17 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 					realBAT = 0.0001f;
 				}*/
 
-			if (magicampval > 0)
+			float AttacksPerSec = 0.0f;
+			float AttackReload = 0.0f; 
+		
+			if (fabs(fixedattackspeed) > 0.00001f && fabs(realBAT) > 0.00001f)
 			{
-				int magicamp = GetHeroInt(*unitaddr, 0, true) / magicampval;
-
-
-				int magicampbonus = 0;
-
-				for (int i = 0; i < 6; i++)
-				{
-					int item = GetItemTypeInSlot(*unitaddr, i);
-					for (auto const& s : SpellBonusItemList)
-					{
-						if (IsClassEqual(item, s.id))
-						{
-							magicampbonus += s.pc;
-						}
-					}
-				}
-
-				float AttacksPerSec = 0.0f;
-
-				float AttackReload = 0.0f;
-				if (fabs(fixedattackspeed) > 0.00001f && fabs(realBAT) > 0.00001f)
-				{
-					AttacksPerSec = fixedattackspeed / realBAT;
-					AttackReload = 1.0f / (fixedattackspeed / realBAT);
-				}
-				float AttackSpeedBonus = realattackspeed * 100.0f - 100.0f;
-
-				if (magicampbonus)
-					sprintf_s(buffer, sizeof(buffer), magicAmpBonusStr1.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus, magicamp, magicampbonus);
-				else
-					sprintf_s(buffer, sizeof(buffer), magicAmpBonusStr2.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus, magicamp);
+				AttacksPerSec = fixedattackspeed / realBAT;
+				AttackReload = 1.0f / (fixedattackspeed / realBAT);
 			}
-			else
-			{
-				float AttacksPerSec = 0.0f;
+			float AttackSpeedBonus = realattackspeed * 100.0f - 100.0f;
+			sprintf_s(buffer, sizeof(buffer), attackBonusStr.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus);
 
-				float AttackReload = 0.0f; 
-				
-				if (fabs(fixedattackspeed) > 0.00001f && fabs(realBAT) > 0.00001f)
-				{
-					AttacksPerSec = fixedattackspeed / realBAT;
-					AttackReload = 1.0f / (fixedattackspeed / realBAT);
-				}
-				float AttackSpeedBonus = realattackspeed * 100.0f - 100.0f;
-
-				sprintf_s(buffer, sizeof(buffer), attackBonusStr.c_str(), AttacksPerSec, AttackReload, AttackSpeedBonus);
-			}
 			if (fixedattackspeed > *(float*)(GameDll + pAttackSpeedLimit))
 				fixedattackspeed = *(float*)(GameDll + pAttackSpeedLimit);
 
@@ -2406,7 +2354,7 @@ unsigned int __stdcall InitDotaHelper(int)
 	pGameClass1 = GameDll + 0xAB7788;
 	UnitVtable = GameDll + 0x931934;
 	ItemVtable = GameDll + 0x9320B4;
-	GetHeroInt = (pGetHeroInt)(GameDll + 0x277850);
+//	GetHeroInt = (pGetHeroInt)(GameDll + 0x277850);
 	Storm_503 = (pStorm_503)(*(int*)(GameDll + 0x86D584));
 	_GlobalGlueObj = GameDll + 0xACE66C;
 	_GameUI = GameDll + 0x93631C;
