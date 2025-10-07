@@ -969,7 +969,7 @@ void __declspec(naked)  PrintAttackSpeedAndOtherInfoHook127a()
 
 int mainHT = 0;
 
-void __stdcall InitHashtableForDLL(unsigned char* htable)
+void __stdcall InitHashtableForDLL(int htable)
 {
 	mainHT = htable;
 }
