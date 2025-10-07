@@ -972,7 +972,7 @@ int mainHT = 0;
 
 void __stdcall InitHashtableForDLL(unsigned char* htable)
 {
-	mainHT = htable;
+	mainHT = (int)htable;
 }
 
 float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
