@@ -1041,10 +1041,18 @@ int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned cha
 		float MagicProtection = GetMagicProtectionForHero_by_abiladdr(AmovAddr);
 		
 		bufferaddr = buffer;
-		if (MagicProtection > 0.0f)
+		if (MagicProtection > 5.0f)
+		{
 			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFF00C800%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
-		else
+		}
+		elseif (MagicProtection < -5.0f)
+		{
 			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFFD82005%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
+		}
+		else
+		{
+			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: %.1f%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
+		}
 		__asm
 		{
 			PUSH 0x200;
