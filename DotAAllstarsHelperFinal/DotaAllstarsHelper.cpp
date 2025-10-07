@@ -977,13 +977,13 @@ void __stdcall InitHashtableForDLL(unsigned char* htable)
 
 float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 {
-	std::cout << __func__ << std::endl;
 	float indmg = 100.0f;
 	if (IsNotBadUnit(UnitAddr))
 	{
 		if (mainHT!=0)
 		{
-			float retval = LoadReal(mainHT,(int)'mapk',(int)UnitAddr);
+			float retval = (float)(LoadInteger(mainHT,(int)'mapk',(int)UnitAddr));
+			//float retval = LoadReal(mainHT,(int)'mapk',(int)UnitAddr);
 			return retval;
 		}
 		else
