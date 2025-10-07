@@ -997,8 +997,8 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 					float DmgProt = *(float*)(pData + 0x20 + 0x68 * (*(int*)(abils[i] + 0x50) + 1));
 					indmg = indmg * DmgProt;
 				}
-			return (float)(100.0f - indmg);
 			}
+			return (float)(100.0f - indmg);
 		}
 	}	
 }
