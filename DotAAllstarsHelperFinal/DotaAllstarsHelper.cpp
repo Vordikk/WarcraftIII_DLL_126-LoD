@@ -1045,7 +1045,7 @@ int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned cha
 		{
 			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFF00C800%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		}
-		elseif (MagicProtection < -5.0f)
+		else if (MagicProtection < -5.0f)
 		{
 			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFFD82005%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		}
