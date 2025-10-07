@@ -111,7 +111,7 @@ unsigned char* Warcraft3WindowProcOffset = 0;
 unsigned char* pPreferencesOffset = 0;
 unsigned char* pCurrentFrameFocusedAddr = 0;
 pGetPlayerAlliance GetPlayerAlliance;
-float pLoadReal LoadReal;
+pLoadReal float LoadReal;
 
 
 unsigned char* DrawUnitBarOffset = 0;
@@ -982,11 +982,12 @@ unsigned char* __stdcall returnmainHT()
 float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 {
 	float indmg = 100.0f;
-	unsigned char* mainhtaddress = mainHT
+	unsigned char* mainhtaddress = mainHT;
 	if (IsNotBadUnit(UnitAddr))
 	{
 		if (mainHT!=0)
-			return *(float*)(LoadReal(mainhtaddress,'mapk',UnitAddr));
+			float retval = LoadReal(mainhtaddress,'mapk',UnitAddr);
+			return *(float*)(retval);
 		else
 		{
 			unsigned int abilscount = 0;
@@ -1043,10 +1044,6 @@ int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned cha
 		float MagicProtection = GetMagicProtectionForHero_by_abiladdr(AmovAddr);
 		
 		bufferaddr = buffer;
-		else
-		{
-			movespeed = 0.0f;
-		}
 		if (MagicProtection > 0.0f)
 			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFF00C800%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		else
