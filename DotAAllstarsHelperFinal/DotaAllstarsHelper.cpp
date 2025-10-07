@@ -982,22 +982,19 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 		if (mainHT!=0)
 		{
 			float retval = LoadReal(mainHT,(int)UnitAddr,(int)'mapk');
-			std::cout << "mainHT = " << mainHT << std::endl;
-			std::cout << "UnitAddr = " << (int)UnitAddr << std::endl;
-			std::cout << "mapk = " << (int)'mapk' << std::endl;
-			return 111.0f;
+			return retval;
 		}
 		else
 		{
 			float indmg = 100.0f;
 			unsigned int abilscount = 0;
-			unsigned char** abils = FindUnitAbils(UnitAddr, &abilscount, 0, 'AIdd');
+			unsigned char** abils = FindUnitAbils(UnitAddr, &abilscount, 0, 'AIsr');
 			for (unsigned int i = 0; i < abilscount; i++)
 			{
 				int pData = *(int*)(abils[i] + 0x54);
 				if (pData != 0)
 				{
-					float DmgProt = *(float*)(pData + 0x20 + 0x68 * (*(int*)(abils[i] + 0x50) + 1));
+					float DmgProt = *(float*)(pData + 0x4C));//(pData + 0x4C + ... + 0x68 * (*(int*)(abils[i] + 0x50) + 1 stands for level skip
 					indmg = indmg * DmgProt;
 				}
 			}
