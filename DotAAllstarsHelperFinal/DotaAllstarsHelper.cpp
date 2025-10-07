@@ -111,7 +111,7 @@ unsigned char* Warcraft3WindowProcOffset = 0;
 unsigned char* pPreferencesOffset = 0;
 unsigned char* pCurrentFrameFocusedAddr = 0;
 pGetPlayerAlliance GetPlayerAlliance;
-pLoadReal float LoadReal;
+pLoadReal LoadReal;
 
 
 unsigned char* DrawUnitBarOffset = 0;
@@ -986,8 +986,10 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 	if (IsNotBadUnit(UnitAddr))
 	{
 		if (mainHT!=0)
+		{
 			float retval = LoadReal(mainhtaddress,'mapk',UnitAddr);
 			return *(float*)(retval);
+		}
 		else
 		{
 			unsigned int abilscount = 0;
