@@ -131,7 +131,7 @@ extern int player_local_id;
 typedef int(__cdecl* pGetPlayerAlliance)(unsigned int hPlayer1, unsigned int hPlayer2, int hAlliancetype);
 extern pGetPlayerAlliance GetPlayerAlliance;
 
-typedef float(__cdecl* pLoadReal)(unsigned char* table, int parentKey, int childKey);
+typedef float(__cdecl* pLoadReal)(int table, int parentKey, int childKey);
 extern pLoadReal LoadReal;
 
 typedef unsigned int(__cdecl* pGetPlayerColor)(unsigned int whichPlayer);
