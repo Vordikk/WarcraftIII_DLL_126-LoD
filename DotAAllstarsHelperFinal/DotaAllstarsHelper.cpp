@@ -982,7 +982,7 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 	{
 		if (mainHT!=0)
 		{
-			float retval = LoadReal(mainHT,(int)'mapk',(int)UnitAddr);
+			float retval = *(float*)(LoadReal(mainHT,(int)'mapk',(int)UnitAddr));
 			return retval;
 		}
 		else
