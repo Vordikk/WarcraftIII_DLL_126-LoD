@@ -848,15 +848,12 @@ void __stdcall AddSpellBonusItem(int id, int pc)
 	}
 }
 
-int magicampval = 0;
+unsigned char* mainHT = 0;
 
-void __stdcall SetMagicCampValue(int value)
+void __stdcall InitHashtableForDLL(unsigned char* htable)
 {
-	magicampval = value;
+	mainHT = htable;
 }
-
-
-
 
 static std::string attackBonusStr = "%.1f/sec (Reload: %.2f sec)|nAttack speed: %.0f|n";
 int __stdcall SetAttackBonusStr(const char* str)
@@ -873,7 +870,7 @@ int __stdcall SetAttackReloadStr(const char* str)
 }
 
 
-// Функция принимает данные о скорости атаки (и о увеличении урона от способностей) и сохраняет в буфер который будет использоваться при отрисовке
+// Функция принимает данные о скорости атаки и сохраняет в буфер который будет использоваться при отрисовке
 int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspeed, float* BAT, unsigned char** unitaddr)
 {
 	if (DEBUG_FULL)
@@ -883,7 +880,7 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 	if (unitaddr)
 	{
 
-		if (IsNotBadUnit(*unitaddr) && IsHero(*unitaddr))
+		if (IsNotBadUnit(*unitaddr))
 		{
 			bufferaddr = buffer;
 			float realBAT = *(float*)BAT;
@@ -891,22 +888,6 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 			float realattackspeed = fixedattackspeed;
 			if (fixedattackspeed > *(float*)(GameDll + pAttackSpeedLimit))
 				fixedattackspeed = *(float*)(GameDll + pAttackSpeedLimit);
-
-			if (realattackspeed < 0.0f)
-				realattackspeed = 0.01f;
-			if (fixedattackspeed < 0.0f)
-				fixedattackspeed = 0.01f;
-
-
-			/*	if ( fixedattackspeed == 0 )
-				{
-					fixedattackspeed = 0.0001f;
-				}
-
-				if ( realBAT == 0 )
-				{
-					realBAT = 0.0001f;
-				}*/
 
 			float AttacksPerSec = 0.0f;
 			float AttackReload = 0.0f; 
@@ -924,28 +905,6 @@ int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspe
 
 			if (fixedattackspeed < 0.2f)
 				fixedattackspeed = 0.2f;
-
-			__asm
-			{
-				PUSH 0x200;
-				PUSH bufferaddr;
-				PUSH addr;
-				CALL Storm_503;
-			}
-		}
-		else
-		{
-			bufferaddr = buffer;
-			float oldaddtackspeed = *(float*)attackspeed;
-			float fixedattackspeed = oldaddtackspeed;
-
-			if (fixedattackspeed > *(float*)(GameDll + pAttackSpeedLimit))
-				fixedattackspeed = *(float*)(GameDll + pAttackSpeedLimit);
-
-			if (fixedattackspeed < 0.2f)
-				fixedattackspeed = 0.2f;
-
-			sprintf_s(buffer, sizeof(buffer), attackReloadStr.c_str(), (fixedattackspeed / *(float*)BAT), 1.0f / (fixedattackspeed / *(float*)BAT));
 
 			__asm
 			{
@@ -1021,28 +980,25 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 	float indmg = 100.0f;
 	if (IsNotBadUnit(UnitAddr))
 	{
-		unsigned int abilscount = 0;
-		unsigned char** abils = FindUnitAbils(UnitAddr, &abilscount, 0, 'AIdd');
-		for (unsigned int i = 0; i < abilscount; i++)
+		if (mainHT!=0)
+			return (float)(LoadReal(MainHT,'mapk',UnitAddr))
+		else
 		{
-			int pData = *(int*)(abils[i] + 0x54);
-			if (pData != 0)
+			unsigned int abilscount = 0;
+			unsigned char** abils = FindUnitAbils(UnitAddr, &abilscount, 0, 'AIdd');
+			for (unsigned int i = 0; i < abilscount; i++)
 			{
-				float DmgProt = *(float*)(pData + 0x20 + 0x68 * (*(int*)(abils[i] + 0x50) + 1));
-				indmg = indmg * DmgProt;
+				int pData = *(int*)(abils[i] + 0x54);
+				if (pData != 0)
+				{
+					float DmgProt = *(float*)(pData + 0x20 + 0x68 * (*(int*)(abils[i] + 0x50) + 1));
+					indmg = indmg * DmgProt;
+				}
+			return (float)(100.0f - indmg);
 			}
 		}
-
-		// new 
-		if (*(int*)(UnitAddr + 0x158))
-		{
-			indmg *= 1.4f;
-		}
-	}
-
-	return (float)(100.0f - indmg);
+	}	
 }
-
 
 // Only for game. Int retval = fix missing eax
 int __stdcall GetMagicProtectionForHero(unsigned char* UnitAddr)
@@ -1062,7 +1018,7 @@ float __stdcall GetMagicProtectionForHero_by_abiladdr(unsigned char* abil_addr)
 	return 0.0f;
 }
 
-static std::string magicProtStr = "Magic Protection";
+static std::string magicProtStr = "Magic Resistance";
 
 int __stdcall SetMagicProtectionString(const char* str)
 {
@@ -1076,18 +1032,18 @@ int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned cha
 		std::cout << __func__ << std::endl;
 	int retval = 0;
 	__asm mov retval, eax;
+	
 	if (AmovAddr)
 	{
 		float MagicProtection = GetMagicProtectionForHero_by_abiladdr(AmovAddr);
 		
 		bufferaddr = buffer;
-
-		if (fabs(MagicProtection) < 0.00001f)
-			sprintf_s(buffer, sizeof(buffer), "%.1f", (*(float*)movespeed));
-		else if (MagicProtection > 30.0f)
+		else
+		{
+			movespeed = 0.0f;
+		}
+		if (MagicProtection > 0.0f)
 			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFF00C800%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
-		else if (MagicProtection <= 30.0f && MagicProtection > 0.0f)
-			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: %.1f%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		else
 			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFFD82005%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
 		__asm
@@ -2354,7 +2310,8 @@ unsigned int __stdcall InitDotaHelper(int)
 	pGameClass1 = GameDll + 0xAB7788;
 	UnitVtable = GameDll + 0x931934;
 	ItemVtable = GameDll + 0x9320B4;
-//	GetHeroInt = (pGetHeroInt)(GameDll + 0x277850);
+	LoadInteger = (pLoadInteger)(GameDll + 0x3CAA90);
+	LoadReal = (pLoadReal)(GameDll + 0x3CAAD0);
 	Storm_503 = (pStorm_503)(*(int*)(GameDll + 0x86D584));
 	_GlobalGlueObj = GameDll + 0xACE66C;
 	_GameUI = GameDll + 0x93631C;

@@ -117,7 +117,7 @@ InitHpBar
 EnableFeatures
 InitOverlay
 RawImage_MoveTimed
-GetMagicProtectionForHero
+GetMagicProtectionForUnit
 CFrame_GetLastEventId
 CFrame_GetTriggerCFrame
 CFrame_SetCustomValue
@@ -220,3 +220,4 @@ SetMagicProtectionString
 SetOwnedByString
 SetAttackBonusStr
 SetAttackReloadStr
+InitHashtableForDLL

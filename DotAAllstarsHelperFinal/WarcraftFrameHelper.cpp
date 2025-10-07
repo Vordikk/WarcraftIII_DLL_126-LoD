@@ -1477,7 +1477,7 @@ namespace NWar3Frame
 		FrameType = newframetype;
 	}
 
-	// Были внесены изменения!
+	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!
 	CWar3Frame::CWar3Frame(const char* name, int id, bool show, unsigned char* relativeframe, bool showerror)
 	{
 		//CONSOLE_Print( "Create Frame 3" );

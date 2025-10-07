@@ -65,7 +65,9 @@ void* __stdcall DllSelfUnloading(void* hModule);
 extern bool FIRST_GAME_START_FOUND;
 bool IsGame();
 
-extern unsigned char* ConvertHandle(int handle);
+extern unsigned char *ConvertHandle(int handle);
+
+void NewFunction();
 
 extern int InitFunctionCalled;
 
@@ -176,6 +178,10 @@ int __stdcall IsUnitIllusion(unsigned char* unitaddr);
 int __stdcall IsNotBadItem(unsigned char * itemaddr, int extracheck = false);
 //typedef int(__fastcall* pGetHeroInt)(unsigned char* unitaddr, int unused, int withbonus);
 //extern pGetHeroInt GetHeroInt;
+typedef int(__fastcall* pLoadInteger)(unsigned char* htableaddr, int parent, int child);
+extern pLoadInteger LoadInteger;
+typedef int(__fastcall* pLoadReal)(unsigned char* htableaddr, int parent, int child);
+extern pLoadReal LoadReal;
 int GetSelectedUnitCountBigger(int slot);
 unsigned char* GetSelectedUnit(int slot);
 void GetItemLocation2D(unsigned char * itemaddr, float* x, float* y);
