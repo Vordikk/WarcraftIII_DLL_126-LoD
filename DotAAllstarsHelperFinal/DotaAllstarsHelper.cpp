@@ -111,6 +111,7 @@ unsigned char* Warcraft3WindowProcOffset = 0;
 unsigned char* pPreferencesOffset = 0;
 unsigned char* pCurrentFrameFocusedAddr = 0;
 pGetPlayerAlliance GetPlayerAlliance;
+float pLoadReal LoadReal;
 
 
 unsigned char* DrawUnitBarOffset = 0;
@@ -832,13 +833,6 @@ int IsClassEqual(int ClassID1, int ClassID2)
 	return ClassID1 == ClassID2;
 }
 
-
-	
-typedef int(__cdecl* pLoadInteger)(unsigned char* htableaddr, int parent, int child);
-pLoadInteger LoadInteger;
-typedef float(__cdecl* pLoadReal)(unsigned char* htableaddr, int parent, int child);
-pLoadReal; LoadReal;
-
 std::vector<SpellBonusItemStruct> SpellBonusItemList;
 
 void __stdcall AddSpellBonusItem(int id, int pc)
@@ -988,10 +982,11 @@ unsigned char* __stdcall returnmainHT()
 float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 {
 	float indmg = 100.0f;
+	unsigned char* mainhtaddress = mainHT
 	if (IsNotBadUnit(UnitAddr))
 	{
 		if (mainHT!=0)
-			return *(float*)(LoadReal(returnmainHT(),'mapk',UnitAddr));
+			return *(float*)(LoadReal(mainhtaddress,'mapk',UnitAddr));
 		else
 		{
 			unsigned int abilscount = 0;
@@ -2327,8 +2322,6 @@ unsigned int __stdcall InitDotaHelper(int)
 	_ChatSendEvent = GameDll + 0x2FC700;
 	GetItemInSlotAddr = GameDll + 0x3C7730 + 0xA;
 	GetItemTypeId = (pGetItemTypeId)(GameDll + 0x3C4C60);
-	LoadInteger = (pLoadInteger)(GameDll + 0x3CAA90);
-	LoadReal = (pLoadReal)(GameDll + 0x3CAAD0);
 	GetPlayerColor2 = (pGetPlayerColor)(GameDll + 0x3C1240);
 	_Player = (pPlayer)(GameDll + 0x3BBB30);
 	GetPlayerName = (p_GetPlayerName)(GameDll + 0x2F8F90);
@@ -2613,6 +2606,7 @@ unsigned int __stdcall InitDotaHelper(int)
 	GetPlayerAlliance = (pGetPlayerAlliance)(GameDll + 0x3C9D70);
 	Wc3ControlClickButton_offset = GameDll + 0x601F20;
 
+	LoadReal = (pLoadReal)(GameDll + 0x3CAAD0);
 
 	DrawUnitBarOffset = GameDll + 0x2C74B0;
 
