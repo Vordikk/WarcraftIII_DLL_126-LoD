@@ -970,7 +970,7 @@ void __declspec(naked)  PrintAttackSpeedAndOtherInfoHook127a()
 
 int mainHT = 0;
 
-void __stdcall InitHashtableForDLL(uintptr_t htable)
+void __stdcall InitHashtableForDLL(unsigned char* htable)
 {
 	mainHT = htable;
 }
@@ -982,7 +982,7 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 	{
 		if (mainHT!=0)
 		{
-			float retval = LoadReal(mainHT,'mapk',UnitAddr);
+			float retval = LoadReal(mainHT,(int)'mapk',(int)UnitAddr);
 			return retval;
 		}
 		else
