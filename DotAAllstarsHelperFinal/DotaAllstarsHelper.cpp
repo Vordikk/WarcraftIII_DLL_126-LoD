@@ -994,7 +994,7 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 				int pData = *(int*)(abils[i] + 0x54);
 				if (pData != 0)
 				{
-					float DmgProt = *(float*)(pData + 0x4C));//(pData + 0x4C + ... + 0x68 * (*(int*)(abils[i] + 0x50) + 1 stands for level skip
+					float DmgProt = *(float*)(pData + 0x4C);//(pData + 0x4C + ... + 0x68 * (*(int*)(abils[i] + 0x50) + 1 stands for level skip
 					indmg = indmg * DmgProt;
 				}
 			}
