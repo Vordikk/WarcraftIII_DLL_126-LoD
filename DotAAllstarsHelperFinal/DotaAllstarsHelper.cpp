@@ -111,6 +111,7 @@ unsigned char* Warcraft3WindowProcOffset = 0;
 unsigned char* pPreferencesOffset = 0;
 unsigned char* pCurrentFrameFocusedAddr = 0;
 pGetPlayerAlliance GetPlayerAlliance;
+pLoadInteger LoadInteger;
 pLoadReal LoadReal;
 
 
@@ -967,16 +968,11 @@ void __declspec(naked)  PrintAttackSpeedAndOtherInfoHook127a()
 	}
 }
 
-uintptr_t mainHT = 0;
+int mainHT = 0;
 
 void __stdcall InitHashtableForDLL(uintptr_t htable)
 {
 	mainHT = htable;
-}
-
-int __stdcall returnmainHT()
-{
-	return mainHT;
 }
 
 float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
@@ -986,7 +982,7 @@ float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 	{
 		if (mainHT!=0)
 		{
-			float retval = LoadReal(int(mainHT),'mapk',(int)(uintptr_t)UnitAddr);
+			float retval = LoadReal(mainHT,'mapk',UnitAddr);
 			return retval;
 		}
 		else
@@ -2604,6 +2600,7 @@ unsigned int __stdcall InitDotaHelper(int)
 	GetPlayerAlliance = (pGetPlayerAlliance)(GameDll + 0x3C9D70);
 	Wc3ControlClickButton_offset = GameDll + 0x601F20;
 
+	LoadInteger = (pLoadInteger)(GameDll + 0x3CAA90);
 	LoadReal = (pLoadReal)(GameDll + 0x3CAAD0);
 
 	DrawUnitBarOffset = GameDll + 0x2C74B0;
