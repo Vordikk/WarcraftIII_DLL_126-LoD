@@ -833,6 +833,11 @@ int IsClassEqual(int ClassID1, int ClassID2)
 }
 
 
+	
+typedef int(__cdecl* pLoadInteger)(unsigned char* htableaddr, int parent, int child);
+pLoadInteger LoadInteger;
+typedef float(__cdecl* pLoadReal)(unsigned char* htableaddr, int parent, int child);
+pLoadReal; LoadReal;
 
 std::vector<SpellBonusItemStruct> SpellBonusItemList;
 
@@ -846,13 +851,6 @@ void __stdcall AddSpellBonusItem(int id, int pc)
 	{
 		SpellBonusItemList.push_back({ id,pc });
 	}
-}
-
-unsigned char* mainHT = 0;
-
-void __stdcall InitHashtableForDLL(unsigned char* htable)
-{
-	mainHT = htable;
 }
 
 static std::string attackBonusStr = "%.1f/sec (Reload: %.2f sec)|nAttack speed: %.0f|n";
@@ -975,13 +973,25 @@ void __declspec(naked)  PrintAttackSpeedAndOtherInfoHook127a()
 	}
 }
 
+unsigned char* mainHT = 0;
+
+void __stdcall InitHashtableForDLL(unsigned char* htable)
+{
+	mainHT = htable;
+}
+
+unsigned char* __stdcall returnmainHT()
+{
+	return mainHT;
+}
+
 float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
 {
 	float indmg = 100.0f;
 	if (IsNotBadUnit(UnitAddr))
 	{
 		if (mainHT!=0)
-			return (float)(LoadReal(MainHT,'mapk',UnitAddr))
+			return *(float*)(LoadReal(returnmainHT(),'mapk',UnitAddr));
 		else
 		{
 			unsigned int abilscount = 0;
@@ -2310,8 +2320,6 @@ unsigned int __stdcall InitDotaHelper(int)
 	pGameClass1 = GameDll + 0xAB7788;
 	UnitVtable = GameDll + 0x931934;
 	ItemVtable = GameDll + 0x9320B4;
-	LoadInteger = (pLoadInteger)(GameDll + 0x3CAA90);
-	LoadReal = (pLoadReal)(GameDll + 0x3CAAD0);
 	Storm_503 = (pStorm_503)(*(int*)(GameDll + 0x86D584));
 	_GlobalGlueObj = GameDll + 0xACE66C;
 	_GameUI = GameDll + 0x93631C;
@@ -2319,6 +2327,8 @@ unsigned int __stdcall InitDotaHelper(int)
 	_ChatSendEvent = GameDll + 0x2FC700;
 	GetItemInSlotAddr = GameDll + 0x3C7730 + 0xA;
 	GetItemTypeId = (pGetItemTypeId)(GameDll + 0x3C4C60);
+	LoadInteger = (pLoadInteger)(GameDll + 0x3CAA90);
+	LoadReal = (pLoadReal)(GameDll + 0x3CAAD0);
 	GetPlayerColor2 = (pGetPlayerColor)(GameDll + 0x3C1240);
 	_Player = (pPlayer)(GameDll + 0x3BBB30);
 	GetPlayerName = (p_GetPlayerName)(GameDll + 0x2F8F90);
