@@ -117,7 +117,6 @@ InitHpBar
 EnableFeatures
 InitOverlay
 RawImage_MoveTimed
-GetMagicProtectionForUnit
 CFrame_GetLastEventId
 CFrame_GetTriggerCFrame
 CFrame_SetCustomValue
@@ -197,7 +196,6 @@ TriggerRegisterPlayerKeyboardBlock
 AddSpellBonusItem
 GetMouseFrameX
 GetMouseFrameY
-SetMagicCampValue
 SetGlobalCallbackForRegisteredHotkeys
 GetLatestRegisteredHotkeyWPARAM
 GetLatestRegisteredHotkeyMsg
