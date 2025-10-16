@@ -193,7 +193,6 @@ SetMpBarWhiteListUnitTypeID
 ShowConfigEditButton
 UnloadAllOldHelpers
 TriggerRegisterPlayerKeyboardBlock
-AddSpellBonusItem
 GetMouseFrameX
 GetMouseFrameY
 SetGlobalCallbackForRegisteredHotkeys
@@ -216,6 +215,4 @@ GetEspValueStdCall
 Packet_Send_Ex
 SetMagicProtectionString
 SetOwnedByString
-SetAttackBonusStr
-SetAttackReloadStr
 InitHashtableForDLL

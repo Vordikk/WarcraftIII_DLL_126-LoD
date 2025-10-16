@@ -506,10 +506,4 @@ struct KeyActionStruct
 	unsigned long LastPressTime;
 };
 
-struct SpellBonusItemStruct
-{
-	int id;
-	int pc;
-};
-
 #pragma pack(pop)

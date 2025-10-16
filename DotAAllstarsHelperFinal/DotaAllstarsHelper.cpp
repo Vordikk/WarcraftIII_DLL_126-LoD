@@ -111,8 +111,6 @@ unsigned char* Warcraft3WindowProcOffset = 0;
 unsigned char* pPreferencesOffset = 0;
 unsigned char* pCurrentFrameFocusedAddr = 0;
 pGetPlayerAlliance GetPlayerAlliance;
-pLoadInteger LoadInteger;
-pLoadReal LoadReal;
 
 
 unsigned char* DrawUnitBarOffset = 0;
@@ -834,85 +832,6 @@ int IsClassEqual(int ClassID1, int ClassID2)
 	return ClassID1 == ClassID2;
 }
 
-std::vector<SpellBonusItemStruct> SpellBonusItemList;
-
-void __stdcall AddSpellBonusItem(int id, int pc)
-{
-	if (id == 0)
-	{
-		SpellBonusItemList.clear();
-	}
-	else
-	{
-		SpellBonusItemList.push_back({ id,pc });
-	}
-}
-
-static std::string attackBonusStr = "%.1f/sec (Reload: %.2f sec)|nAttack speed: %.0f|n";
-int __stdcall SetAttackBonusStr(const char* str)
-{
-	attackBonusStr = str;
-	return 0;
-}
-
-static std::string attackReloadStr = "%.3f (Reload: %.2f sec)";
-int __stdcall SetAttackReloadStr(const char* str)
-{
-	attackReloadStr = str;
-	return 0;
-}
-
-
-// Функция принимает данные о скорости атаки и сохраняет в буфер который будет использоваться при отрисовке
-int __stdcall PrintAttackSpeedAndOtherInfo(unsigned char* addr, float* attackspeed, float* BAT, unsigned char** unitaddr)
-{
-	if (DEBUG_FULL)
-		std::cout << __func__ << std::endl;
-	int retval = 0;
-	__asm mov retval, eax;
-	if (unitaddr)
-	{
-
-		if (IsNotBadUnit(*unitaddr))
-		{
-			bufferaddr = buffer;
-			float realBAT = *(float*)BAT;
-			float fixedattackspeed = *(float*)attackspeed;
-			float realattackspeed = fixedattackspeed;
-			if (fixedattackspeed > *(float*)(GameDll + pAttackSpeedLimit))
-				fixedattackspeed = *(float*)(GameDll + pAttackSpeedLimit);
-
-			float AttacksPerSec = 0.0f;
-			float AttackReload = 0.0f; 
-		
-			if (fabs(fixedattackspeed) > 0.00001f && fabs(realBAT) > 0.00001f)
-			{
-				AttacksPerSec = fixedattackspeed / realBAT;
-				AttackReload = 1.0f / (fixedattackspeed / realBAT);
-			}
-			float AttackSpeed = realattackspeed * 100.0f;
-			sprintf_s(buffer, sizeof(buffer), attackBonusStr.c_str(), AttacksPerSec, AttackReload, AttackSpeed);
-
-			if (fixedattackspeed > *(float*)(GameDll + pAttackSpeedLimit))
-				fixedattackspeed = *(float*)(GameDll + pAttackSpeedLimit);
-
-			if (fixedattackspeed < 0.2f)
-				fixedattackspeed = 0.2f;
-
-			__asm
-			{
-				PUSH 0x200;
-				PUSH bufferaddr;
-				PUSH addr;
-				CALL Storm_503;
-			}
-		}
-
-	}
-
-	return retval;
-}
-
 int saveeax = 0;
 int saveebx = 0;
 int saveecx = 0;
@@ -922,182 +841,12 @@ int saveedi = 0;
 int saveebp = 0;
 int saveesp = 0;
 
-
-void __declspec(naked)  PrintAttackSpeedAndOtherInfoHook126a()
-{
-	__asm
-	{
-		mov saveeax, eax;
-		mov eax, [esp + 0x14];
-		cmp eax, 0;
-		JE JUSTEND;
-		add eax, 0x30;
-		push eax;
-		add eax, 0x128;
-		push eax;
-		add eax, 0x58;
-		push eax;
-		push esi;
-		call PrintAttackSpeedAndOtherInfo;
-	JUSTEND:;
-		mov eax, saveeax;
-		ret 8;
-	}
-}
-
-
-void __declspec(naked)  PrintAttackSpeedAndOtherInfoHook127a()
-{
-	__asm
-	{
-		mov saveeax, eax;
-		mov eax, [esp + 0x10];
-		cmp eax, 0;
-		JE JUSTEND;
-		add eax, 0x30;
-		push eax;
-		add eax, 0x128;
-		push eax;
-		add eax, 0x58;
-		push eax;
-		push ecx;
-		call PrintAttackSpeedAndOtherInfo;
-	JUSTEND:;
-		mov eax, saveeax;
-		ret 8;
-	}
-}
-
 int mainHT = 0;
 
 void __stdcall InitHashtableForDLL(unsigned char* htable)
 {
 	mainHT = (int)htable;
 }
-
-float __stdcall GetMagicProtectionForHero_org(unsigned char* UnitAddr)
-{
-	if (IsNotBadUnit(UnitAddr))
-	{
-		if (mainHT!=0)
-		{
-			float retval = LoadReal(mainHT,(int)UnitAddr,(int)'mapk');
-			return retval;
-		}
-		else
-		{
-			float indmg = 100.0f;
-			unsigned int abilscount = 0;
-			unsigned char** abils = FindUnitAbils(UnitAddr, &abilscount, 0, 'AIsr');
-			for (unsigned int i = 0; i < abilscount; i++)
-			{
-				int pData = *(int*)(abils[i] + 0x54);
-				if (pData != 0)
-				{
-					float DmgProt = *(float*)(pData + 0x20 + 0x68 * (*(int*)(abils[i] + 0x50) + 1));// + 0x68 * (*(int*)(abils[i] + 0x50) + 1 stands for level skip
-					indmg = indmg * DmgProt;
-				}
-			}
-			return (float)(100.0f - indmg);
-		}
-	}	
-}
-
-// Only for game. Int retval = fix missing eax
-int __stdcall GetMagicProtectionForHero(unsigned char* UnitAddr)
-{
-	if (DEBUG_FULL)
-		std::cout << __func__ << std::endl;
-	float retval = GetMagicProtectionForHero_org(UnitAddr);
-	return *(int*)&retval;
-}
-
-float __stdcall GetMagicProtectionForHero_by_abiladdr(unsigned char* abil_addr)
-{
-	if (abil_addr)
-	{
-		return GetMagicProtectionForHero_org(*(unsigned char**)(abil_addr + 0x30));
-	}
-	return 0.0f;
-}
-
-static std::string magicProtStr = "Magic Resistance";
-
-int __stdcall SetMagicProtectionString(const char* str)
-{
-	magicProtStr = str;
-	return 0;
-}
-
-int __stdcall PrintMoveSpeed(unsigned char* addr, float* movespeed, unsigned char* AmovAddr)
-{
-	if (DEBUG_FULL)
-		std::cout << __func__ << std::endl;
-	int retval = 0;
-	__asm mov retval, eax;
-	
-	if (AmovAddr)
-	{
-		float MagicProtection = GetMagicProtectionForHero_by_abiladdr(AmovAddr);
-		
-		bufferaddr = buffer;
-		if (MagicProtection > 5.0f)
-		{
-			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFF00C800%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
-		}
-		else if (MagicProtection < -5.0f)
-		{
-			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: |cFFD82005%.1f|r%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
-		}
-		else
-		{
-			sprintf_s(buffer, sizeof(buffer), "%.1f|n%s: %.1f%%", (*(float*)movespeed), magicProtStr.c_str(), MagicProtection);
-		}
-		__asm
-		{
-			PUSH 0x200;
-			PUSH bufferaddr;
-			PUSH addr;
-			CALL Storm_503;
-		}
-	}
-	return retval;
-}
-
-
-void __declspec(naked)  PrintMoveSpeedHook126a()
-{
-	__asm
-	{
-		mov saveeax, eax;
-		mov eax, esp;
-		add eax, 4;
-		push ebx;
-		push eax;
-		push esi;
-		call PrintMoveSpeed;
-		mov eax, saveeax;
-		ret 8;
-	}
-}
-
-void __declspec(naked)  PrintMoveSpeedHook127a()
-{
-	__asm
-	{
-		mov saveeax, eax;
-		mov eax, esp;
-		add eax, 4;
-		push edi;
-		push eax;
-		push ecx;
-		call PrintMoveSpeed;
-		mov eax, saveeax;
-		ret 8;
-	}
-}
-
-
 
 char itemstr1[512];
 char itemstr2[512];
@@ -1118,7 +867,6 @@ unsigned int         PLAYER_COLOR_LIGHT_GRAY = 8;
 unsigned int         PLAYER_COLOR_LIGHT_BLUE = 9;
 unsigned int         PLAYER_COLOR_AQUA = 10;
 unsigned int         PLAYER_COLOR_BROWN = 11;
-
 
 const char* GetPlayerColorString2(int player)
 {
@@ -1990,9 +1738,6 @@ void __stdcall DisableAllHooks(int)
 	if (!InfoWhitelistedObj.empty())
 		InfoWhitelistedObj.clear();
 
-	if (!SpellBonusItemList.empty())
-		SpellBonusItemList.clear();
-
 	UninitializePacketHandler();
 
 	LatestDownloadedString.clear();
@@ -2361,22 +2106,6 @@ unsigned int __stdcall InitDotaHelper(int)
 
 	GameFrameAtMouseStructOffset = GameDll + 0xA9A444;
 
-
-	unsigned char* pDrawAttackSpeed = GameDll + 0x339150;
-	AddNewOffset_(pDrawAttackSpeed, *(int*)pDrawAttackSpeed, Feature_AttackSpeed);
-	AddNewOffset_(pDrawAttackSpeed + 3, *(int*)(pDrawAttackSpeed + 3), Feature_AttackSpeed);
-	PlantDetourJMP((unsigned char*)(pDrawAttackSpeed), (unsigned char*)PrintAttackSpeedAndOtherInfoHook126a, 5);
-	UpdateNewDataOffest(pDrawAttackSpeed);
-	UpdateNewDataOffest(pDrawAttackSpeed + 3);
-
-	unsigned char* pDrawMoveSpeed = GameDll + 0x338FB0;
-	AddNewOffset_(pDrawMoveSpeed, *(int*)pDrawMoveSpeed, Feature_MoveSpeed);
-	AddNewOffset_(pDrawMoveSpeed + 3, *(int*)(pDrawMoveSpeed + 3), Feature_MoveSpeed);
-	PlantDetourJMP((unsigned char*)(pDrawMoveSpeed), (unsigned char*)PrintMoveSpeedHook126a, 5);
-	UpdateNewDataOffest(pDrawMoveSpeed);
-	UpdateNewDataOffest(pDrawMoveSpeed + 3);
-
-
 	unsigned char* pDrawItemText1 = GameDll + 0x369e72;
 	AddNewOffset_(pDrawItemText1, *(int*)pDrawItemText1, Feature_ItemText);
 	AddNewOffset_(pDrawItemText1 + 3, *(int*)(pDrawItemText1 + 3), Feature_ItemText);
@@ -2607,9 +2336,6 @@ unsigned int __stdcall InitDotaHelper(int)
 
 	GetPlayerAlliance = (pGetPlayerAlliance)(GameDll + 0x3C9D70);
 	Wc3ControlClickButton_offset = GameDll + 0x601F20;
-
-	LoadInteger = (pLoadInteger)(GameDll + 0x3CAA90);
-	LoadReal = (pLoadReal)(GameDll + 0x3CAAD0);
 
 	DrawUnitBarOffset = GameDll + 0x2C74B0;
 
