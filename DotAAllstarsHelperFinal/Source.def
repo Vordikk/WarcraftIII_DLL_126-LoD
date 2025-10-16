@@ -213,6 +213,5 @@ ShowSkillPanelForEnemyNeurals
 GetEspValue
 GetEspValueStdCall
 Packet_Send_Ex
-SetMagicProtectionString
 SetOwnedByString
 InitHashtableForDLL
