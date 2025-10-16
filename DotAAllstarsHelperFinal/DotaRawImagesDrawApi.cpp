@@ -86,7 +86,7 @@ int __stdcall RestoreRawImage(unsigned int RawImage)
 	return true;
 }
 
-// Создает RawImage (RGBA) с указанным цветом
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ RawImage (RGBA) пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 int __stdcall CreateRawImage(int width, int height, COLOR4 defaultcolor)
 {
 	if (!InitFunctionCalled)
@@ -133,7 +133,7 @@ int __stdcall CreateRawImage(int width, int height, COLOR4 defaultcolor)
 	return resultid;
 }
 
-// Загружает RawImage из filename (tga,blp)
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ RawImage пїЅпїЅ filename (tga,blp)
 int __stdcall LoadRawImage(const char* filename)
 {
 	if (!InitFunctionCalled || !filename || filename[0] == '\0')
@@ -266,7 +266,7 @@ int __stdcall RawImage_EnableAutoFix(int enable)
 	return 0;
 }
 
-// Рисует RawImage2 на RawImage
+// пїЅпїЅпїЅпїЅпїЅпїЅ RawImage2 пїЅпїЅ RawImage
 int __stdcall RawImage_DrawImg(unsigned int RawImage, unsigned int RawImage2, int drawx, int drawy, int blendmode)
 {
 	if (!InitFunctionCalled)
@@ -323,7 +323,7 @@ int __stdcall RawImage_DrawImg(unsigned int RawImage, unsigned int RawImage2, in
 	return true;
 }
 
-// Заполняет выбранный пиксель указанным цветом
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 int __stdcall RawImage_DrawPixel(unsigned int RawImage, unsigned int x, unsigned int y, COLOR4 color)//COLOR4 = unsigned int
 {
 	if (!InitFunctionCalled)
@@ -384,7 +384,7 @@ int __stdcall RawImage_FillRectangle(unsigned int RawImage, unsigned int x1, uns
 }
 
 
-// Рисует прямоугольник с указанным цветом и размером
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 int __stdcall RawImage_DrawRect(unsigned int RawImage, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, unsigned int size, COLOR4 color)
 {
 	if (!InitFunctionCalled)
@@ -730,7 +730,7 @@ void drawThickLine(unsigned int RawImage, int aXStart, int aYStart, int aXEnd, i
 	}
 }
 
-// Рисует линию с указанным цветом и размером
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 int __stdcall RawImage_DrawLine(unsigned int RawImage, unsigned int x1, unsigned int y1, unsigned int x2
 	, unsigned int y2, unsigned int size, COLOR4 color)
 {
@@ -750,7 +750,7 @@ int __stdcall RawImage_DrawLine(unsigned int RawImage, unsigned int x1, unsigned
 	return true;
 }
 
-// Рисует круг с указанным радиусом и толщиной
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 int __stdcall RawImage_DrawCircle(unsigned int RawImage, unsigned int x, unsigned int y, unsigned int radius,
 	unsigned int size, COLOR4 color)
 {
@@ -797,7 +797,7 @@ int __stdcall RawImage_DrawCircle(unsigned int RawImage, unsigned int x, unsigne
 
 
 
-// Заполняет круг указанным цветом
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 int __stdcall RawImage_FillCircle(unsigned int RawImage, unsigned int x, unsigned int y, unsigned int radius, COLOR4 color)
 {
 	if (!InitFunctionCalled)
@@ -836,7 +836,7 @@ int __stdcall RawImage_FillCircle(unsigned int RawImage, unsigned int x, unsigne
 	return true;
 }
 
-// Оставляет только круг с указанным радиусом
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 int __stdcall RawImage_EraseCircle(unsigned int RawImage, unsigned int x, unsigned int y, unsigned int radius, int inverse)
 {
 	if (!InitFunctionCalled)
@@ -879,7 +879,7 @@ int __stdcall RawImage_EraseCircle(unsigned int RawImage, unsigned int x, unsign
 	return true;
 	}
 
-// Делает пиксели с цветом color - прозрачными, power от 0 до 255
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ color - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, power пїЅпїЅ 0 пїЅпїЅ 255
 int __stdcall RawImage_EraseColor(unsigned int RawImage, COLOR4 color, int power)
 {
 	if (!InitFunctionCalled)
@@ -934,7 +934,7 @@ unsigned int _flags = 0;
 // 0x1 = BOLD
 
 
-// Устанавливает настройки шрифта для RawImage_DrawText
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ RawImage_DrawText
 int __stdcall RawImage_LoadFontFromResource(const char* filepath)
 {
 	if (!InitFunctionCalled)
@@ -950,7 +950,7 @@ int __stdcall RawImage_LoadFontFromResource(const char* filepath)
 }
 
 
-// Устанавливает настройки шрифта для RawImage_DrawText
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ RawImage_DrawText
 int __stdcall RawImage_SetFontSettings(const char* fontname, int fontsize, unsigned int flags)
 {
 	_fontname = fontname;
@@ -959,7 +959,7 @@ int __stdcall RawImage_SetFontSettings(const char* fontname, int fontsize, unsig
 	return true;
 }
 
-// Пишет текст в указанных координатах с указанными цветом и настройками шрифта RawImage_SetFontSettings
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ RawImage_SetFontSettings
 int __stdcall RawImage_DrawText(unsigned int RawImage, const char* text, unsigned int x, unsigned int y, COLOR4 color)
 {
 	if (!InitFunctionCalled)
@@ -1105,7 +1105,7 @@ int __stdcall RawImage_DrawText(unsigned int RawImage, const char* text, unsigne
 					colorstr[9] = text[i + 3];
 					colorstr[10] = '\0';
 
-					// Смысла от прозрачного текста нет так что считаем что FF это 0 прозрачность
+					// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ FF пїЅпїЅпїЅ 0 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 					textcolor = strtoul(colorstr, NULL, 0);
 					if ((textcolor & 0xFF000000) == 0xFF000000)
 						textcolor -= 0xFF000000;
@@ -1181,7 +1181,7 @@ int __stdcall RawImage_DrawText(unsigned int RawImage, const char* text, unsigne
 }
 
 
-// Сохраняет RawImage в blp и делает доступным для использования в игре
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ RawImage пїЅ blp пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 int __stdcall SaveRawImageToGameFile(unsigned int RawImage, const char* filename, int IsTga, int enabled)
 {
 	if (!InitFunctionCalled)
@@ -1219,7 +1219,7 @@ int __stdcall SaveRawImageToGameFile(unsigned int RawImage, const char* filename
 }
 
 
-// Сохраняет RawImage на диск в TGA по выбранному пути
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ RawImage пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ TGA пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 int __stdcall DumpRawImageToFile(unsigned int RawImage, const char* filename)
 {
 	if (!InitFunctionCalled)
@@ -1251,7 +1251,7 @@ int __stdcall DumpRawImageToFile(unsigned int RawImage, const char* filename)
 }
 
 
-// Получает RawImage из списка RawImages по имени файла.
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ RawImage пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ RawImages пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.
 int __stdcall GetRawImageByFile(const char* filename)
 {
 	if (!InitFunctionCalled)
@@ -1267,7 +1267,7 @@ int __stdcall GetRawImageByFile(const char* filename)
 	return 0;
 }
 
-// Получает ширину RawImage
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ RawImage
 int __stdcall RawImage_GetWidth(unsigned int RawImage)
 {
 	if (RawImage >= (int)ListOfRawImages.size())
@@ -1278,7 +1278,7 @@ int __stdcall RawImage_GetWidth(unsigned int RawImage)
 	return ListOfRawImages[RawImage].width;
 }
 
-// Получает высоту RawImage
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ RawImage
 int __stdcall RawImage_GetHeight(unsigned int RawImage)
 {
 	if (RawImage >= (int)ListOfRawImages.size())
@@ -1289,7 +1289,7 @@ int __stdcall RawImage_GetHeight(unsigned int RawImage)
 	return ListOfRawImages[RawImage].height;
 }
 
-// Изменяет размер RawImage
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ RawImage
 int __stdcall RawImage_Resize(unsigned int RawImage, unsigned int newwidth, unsigned int newheight)
 {
 	if (!InitFunctionCalled)
@@ -1336,7 +1336,7 @@ unsigned int PowerOfTwo(int Value)
 	return InitValue;
 }
 
-// Рисует RawImage по заданным координатам (от 0.0 до 1.0) в игре. 
+// пїЅпїЅпїЅпїЅпїЅпїЅ RawImage пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ 0.0 пїЅпїЅ 1.0) пїЅ пїЅпїЅпїЅпїЅ. 
 int __stdcall RawImage_DrawOverlay(unsigned int RawImage, int enabled, float xpos, float ypos)
 {
 	if (!InitFunctionCalled)
@@ -1948,7 +1948,7 @@ int __stdcall GetWindowHeight(int)
 float DefaultSceenWidth = (float)GetSystemMetrics(SM_CXSCREEN);
 float DefaultSceenHeight = (float)GetSystemMetrics(SM_CYSCREEN);
 
-int __stdcall SetDefaultSceenSize(int w, int h)
+int __stdcall SetDefaultScreenSize(int w, int h)
 {
 	DefaultSceenWidth = (float)w;
 	DefaultSceenHeight = (float)h;

@@ -106,7 +106,7 @@ ShowSkillPanelForAllUnits
 SetAutoSelectHero
 ScanJassStringForErrors
 GetJassStringCount
-SetDefaultSceenSize
+SetDefaultScreenSize
 ReplayDesyncScan
 FileHelperReleaseStorm
 UpdatePlayerCache
