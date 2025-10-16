@@ -843,11 +843,6 @@ int saveesp = 0;
 
 int mainHT = 0;
 
-void __stdcall InitHashtableForDLL(unsigned char* htable)
-{
-	mainHT = (int)htable;
-}
-
 char itemstr1[512];
 char itemstr2[512];
 
