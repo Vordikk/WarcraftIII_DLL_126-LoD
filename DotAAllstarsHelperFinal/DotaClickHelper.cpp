@@ -37,7 +37,7 @@ unsigned char* GlobalCasterUnit = 0;
 + * @return void
 + */
 
-int __stdcall SetGlobalCasterUnit(unsigned char* addr)
+void __stdcall SetGlobalCasterUnit(unsigned char* addr)
 {
 	GlobalCasterUnit = addr;
 }
