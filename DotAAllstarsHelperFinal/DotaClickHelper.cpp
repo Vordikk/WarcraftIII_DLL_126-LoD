@@ -1296,6 +1296,11 @@ void PressKeyWithDelay_timed()
 											}
 											else
 											{
+												if (SetInfoObjDebugVal)
+												{
+													PrintText("NOT IsNULLButtonFound 1");
+												}
+												
 												if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 												{
 													if (SetInfoObjDebugVal)
@@ -1324,7 +1329,10 @@ void PressKeyWithDelay_timed()
 														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													}
 												}
-
+												else if (SetInfoObjDebugVal)
+												{
+													PrintText("DelayedPressList[i].NeedPresslParam & 0x40000000 == 0");
+												}
 											}
 											if (keyAction.IsQuickCast && PressedButton && IsCursorSelectTarget() && Warcraft3Window)
 											{
