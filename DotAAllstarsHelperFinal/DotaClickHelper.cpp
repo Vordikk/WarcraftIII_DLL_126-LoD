@@ -26,7 +26,7 @@ unsigned long SingleShift = 0;
 
 bool SkipAllMessages = false;
 
-unsigned int GlobalCasterUnit = 0;
+unsigned char* GlobalCasterUnit = 0;
 
 
 /**
@@ -37,7 +37,7 @@ unsigned int GlobalCasterUnit = 0;
 + * @return void
 + */
 
-int __stdcall SetGlobalCasterUnit(unsigned int addr)
+int __stdcall SetGlobalCasterUnit(unsigned char* addr)
 {
 	GlobalCasterUnit = addr;
 }
@@ -1242,7 +1242,7 @@ void PressKeyWithDelay_timed()
 								)
 							{
 								int selectedunits = GetSelectedUnitCountBigger(GetLocalPlayerId());
-								int itempressed = keyAction.IsSkill ? 0 : 1;
+								int itempressed = keyAction.AblType == 0;
 
 								// fixme?
 								if (itempressed || !IsCursorSelectTarget())
@@ -1290,7 +1290,6 @@ void PressKeyWithDelay_timed()
 												}
 
 											}
-	*/
 											if (keyAction.IsQuickCast && PressedButton && IsCursorSelectTarget() && Warcraft3Window)
 											{
 												if (SetInfoObjDebugVal)
@@ -2377,7 +2376,7 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 						{
 							if (SetInfoObjDebugVal)
 							{
-								PrintText("Bad selected unit( player 15 ) or hotkey disabled.");
+								PrintText("Bad selected unit ( player 15 ) or hotkey disabled.");
 							}
 						}
 					}
