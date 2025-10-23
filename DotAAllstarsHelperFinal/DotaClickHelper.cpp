@@ -1257,6 +1257,10 @@ void PressKeyWithDelay_timed()
 
 											if (IsNULLButtonFound(GetSkillPanelButton(11)))
 											{
+												if (SetInfoObjDebugVal)
+												{
+													PrintText("IsNULLButtonFound 1");
+												}
 												if (keyAction.altbtnID >= 0)
 												{
 													if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
@@ -1267,10 +1271,23 @@ void PressKeyWithDelay_timed()
 															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 														else
 														{
-															if (GlobalCasterUnit != 0)
+															if (SetInfoObjDebugVal)
 															{
+																PrintText("AblType = 2");
+															}
+															if (GlobalCasterUnit)
+															{
+																if (SetInfoObjDebugVal)
+																{
+																	PrintText("Found GlobalCasterUnit - 1");
+																}
 																SelectUnit(GlobalCasterUnit);
-															}															
+															}
+															else if (SetInfoObjDebugVal)
+																{
+																	PrintText("NOT Found GlobalCasterUnit - 1");
+																}
+																
 															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 														}
 													}
@@ -1281,6 +1298,10 @@ void PressKeyWithDelay_timed()
 											{
 												if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 												{
+													if (SetInfoObjDebugVal)
+													{
+														PrintText("Delayed Press 28");
+													}
 													if (keyAction.AblType == 0)
 														PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 													else if (keyAction.AblType == 1)
@@ -1289,8 +1310,17 @@ void PressKeyWithDelay_timed()
 													{	
 														if (GlobalCasterUnit != 0)
 														{
+															if (SetInfoObjDebugVal)
+															{
+																PrintText("Found GlobalCasterUnit - 2");
+															}
 															SelectUnit(GlobalCasterUnit);
 														}
+														else if (SetInfoObjDebugVal)
+														{	
+															PrintText("NOT Found GlobalCasterUnit - 2");
+														}
+														
 														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													}
 												}
