@@ -1622,7 +1622,7 @@ std::string GetObjectNameByID(int clid)
 }
 
 std::string IsCooldownMessage = "%s > On cooldown ( %02i:%02i ).";
-std::string IsCooldownAndNoMana = "%s > On cooldown and no mana.";
+std::string IsCooldownAndNoMana = "%s > On cooldown ( %02i:%02i ), need %i more mana.";
 std::string IsReadyMessage = "%s > is ready.";
 std::string WantToLearnMessage = "I want to %s";
 std::string WantToPickMessage = "I want to pick > %s";
@@ -2097,7 +2097,20 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 				if (AbilManacost > UnitMana)
 				{
 					if (incooldown)
-						sprintf_s(PrintAbilState, IsCooldownAndNoMana.c_str(), AbilName.c_str());
+						{
+							int pAbilData = *(int*)(pAbil + 0xDC);
+							if (pAbilData)
+							{
+								float pAbilDataVal1 = *(float*)(pAbilData + 0x4);
+								int pAbilDataVal2tmp = *(int*)(pAbilData + 0xC);
+								float pAbilDataVal2 = *(float*)(pAbilDataVal2tmp + 0x40);
+								float AbilCooldown = pAbilDataVal1 - pAbilDataVal2;
+								int AbilCooldownMinutes = (int)(AbilCooldown / 60.0f);
+								int AbilCooldownSeconds = (int)((int)AbilCooldown % 60);
+
+								sprintf_s(PrintAbilState, IsCooldownAndNoMana.c_str(), AbilName.c_str(), AbilCooldownMinutes, AbilCooldownSeconds, (AbilManacost - UnitMana));
+							}
+						}
 					else
 						sprintf_s(PrintAbilState, NeedMoreMana.c_str(), (AbilManacost - UnitMana), AbilName.c_str());
 				}
