@@ -1267,7 +1267,10 @@ void PressKeyWithDelay_timed()
 															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 														else
 														{
-															SelectUnit(GlobalCasterUnit);
+															if (GlobalCasterUnit != 0)
+															{
+																SelectUnit(GlobalCasterUnit);
+															}															
 															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 														}
 													}
@@ -1283,8 +1286,11 @@ void PressKeyWithDelay_timed()
 													else if (keyAction.AblType == 1)
 														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													else
-													{
-														SelectUnit(GlobalCasterUnit);
+													{	
+														if (GlobalCasterUnit != 0)
+														{
+															SelectUnit(GlobalCasterUnit);
+														}
 														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													}
 												}
