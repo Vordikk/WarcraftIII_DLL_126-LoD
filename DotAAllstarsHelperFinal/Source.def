@@ -214,4 +214,3 @@ GetEspValue
 GetEspValueStdCall
 Packet_Send_Ex
 SetOwnedByString
-SetGlobalCasterUnit

@@ -497,7 +497,7 @@ struct KeyActionStruct
 	int VK;
 	int btnID;
 	int altbtnID;
-	int AblType;
+	int IsSkill;
 	bool IsShift;
 	bool IsCtrl;
 	bool IsAlt;
