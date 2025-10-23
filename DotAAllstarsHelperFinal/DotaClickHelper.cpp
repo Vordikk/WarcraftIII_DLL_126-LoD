@@ -26,6 +26,8 @@ unsigned long SingleShift = 0;
 
 bool SkipAllMessages = false;
 
+unsigned int GlobalCasterUnit = 0;
+
 
 /**
 + * Нажимает клавишу на клавиатуре, указанную кодом виртуальной клавиши.
@@ -34,6 +36,12 @@ bool SkipAllMessages = false;
 + *
 + * @return void
 + */
+
+int __stdcall SetGlobalCasterUnit(unsigned int addr)
+{
+	GlobalCasterUnit = addr;
+}
+
 void PressKeyboard(int VK)
 {
 	bool PressedKey = false;
@@ -624,7 +632,7 @@ int __stdcall AddKeyCalbackAction(unsigned int KeyCode, int arg2, int arg3, int 
 }
 
 
-int __stdcall AddKeyButtonAction(unsigned int KeyCode, int btnID, int IsSkill)
+int __stdcall AddKeyButtonAction(unsigned int KeyCode, int btnID, int AblType)
 {
 	if (DEBUG_FULL)
 		std::cout << __func__ << std::endl;
@@ -638,9 +646,9 @@ int __stdcall AddKeyButtonAction(unsigned int KeyCode, int btnID, int IsSkill)
 	KeyActionStruct tmpstr;
 	tmpstr.VK = KeyCode & 0xFF;
 	tmpstr.btnID = btnID;
-	tmpstr.IsSkill = IsSkill;
+	tmpstr.AblType = AblType;
 
-	if (IsSkill)
+	if (AblType == 0)
 		tmpstr.altbtnID = (GetAltBtnID(btnID));
 	else
 		tmpstr.altbtnID = 0;
@@ -1253,10 +1261,15 @@ void PressKeyWithDelay_timed()
 												{
 													if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 													{
-														if (keyAction.IsSkill)
+														if (keyAction.AblType == 0)
+															PressedButton = PressItemPanelButton(keyAction.btnID, 0);
+														else if (keyAction.AblType == 1)
 															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 														else
-															PressedButton = PressItemPanelButton(keyAction.btnID, 0);
+														{
+															SelectUnit(GlobalCasterUnit);
+															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
+														}
 													}
 
 												}
@@ -1265,23 +1278,18 @@ void PressKeyWithDelay_timed()
 											{
 												if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 												{
-													if (keyAction.IsSkill)
+													if (keyAction.AblType == 0)
+														PressedButton = PressItemPanelButton(keyAction.btnID, 0);
+													else if (keyAction.AblType == 1)
 														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													else
-														PressedButton = PressItemPanelButton(keyAction.btnID, 0);
-													//PressedButton = true;
-												}
-
-											}
-
-											/*	if ( !PressedButton )
-												{
-													if ( SetInfoObjDebugVal )
 													{
-														PrintText( "NO ButtonPressed!" );
+														SelectUnit(GlobalCasterUnit);
+														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													}
 												}
 
+											}
 	*/
 											if (keyAction.IsQuickCast && PressedButton && IsCursorSelectTarget() && Warcraft3Window)
 											{
@@ -2197,12 +2205,11 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 			{
 				bool DoubleClicked = false;
 
-
 				if (!keyAction.IsQuickCast)
 				{
 					if (GetTickCount() - keyAction.LastPressTime < 200)
 					{
-						itempressed = !keyAction.IsSkill;
+						itempressed = keyAction.AblType == 0;
 						if (SetInfoObjDebugVal)
 						{
 							PrintText("need doubleclick!");
@@ -2266,11 +2273,11 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 
 				if (SetInfoObjDebugVal)
 				{
-					PrintText("Hotkey availabled!");
+					PrintText("Hotkey available!");
 				}
 
-				//if (itempressed || (keyAction.IsSkill && !IsCursorSelectTarget()))
-				{
+				//if (itempressed || (keyAction.AblType && !IsCursorSelectTarget()))
+				//{
 					int selectedunits = GetSelectedUnitCountBigger(GetLocalPlayerId());
 
 					unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
@@ -2315,29 +2322,19 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 							{
 								if (keyAction.altbtnID >= 0)
 								{
-									if (keyAction.IsSkill)
-										PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-									else
+									if (!keyAction.AblType)
 										PressedButton = PressItemPanelButton(keyAction.btnID, 0);
-									//PressedButton = true;
+									else
+										PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 								}
 							}
 							else
 							{
-								if (keyAction.IsSkill)
-									PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
-								else
+								if (!keyAction.AblType)
 									PressedButton = PressItemPanelButton(keyAction.btnID, 0);
-								//PressedButton = true;
+								else
+									PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 							}
-
-							/*	if ( !PressedButton )
-							{
-							if ( SetInfoObjDebugVal )
-							{
-							PrintText( "NO ButtonPressed!" );
-							}
-							}*/
 
 							if (keyAction.IsQuickCast && PressedButton && IsCursorSelectTarget() && Warcraft3Window)
 							{
@@ -2352,9 +2349,6 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 									SkipSingleShift = GetTickCount();
 								}
 
-								/*int x = ( int )( *GetWindowXoffset );
-								int y = ( int )( *GetWindowYoffset );
-								*/
 								POINT cursorhwnd;
 								GetCursorPos(&cursorhwnd);
 								ScreenToClient(Warcraft3Window, &cursorhwnd);
@@ -2363,24 +2357,6 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 								WarcraftRealWNDProc_ptr(Warcraft3Window, WM_LBUTTONUP, 0, MAKELPARAM(cursorhwnd.x, cursorhwnd.y));
 
 								DisableTargetCurcorWORK = 3;
-
-
-								/*	if ( IsCursorSelectTarget( ) )
-								{
-								PressSkillPanelButton( 11, false );
-								}*/
-
-								//POINT cursor;
-								//GetCursorPos( &cursor );
-
-								//x = x - cursorhwnd.x;
-								//y = y - cursorhwnd.y;
-
-								//cursor.x = cursor.x + x;
-								//cursor.y = cursor.y + y;
-								////( toXX, toYY );
-
-								//MouseClick( cursor.x, cursor.y );
 							}
 							else if (!keyAction.IsQuickCast)
 							{
@@ -2396,48 +2372,6 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 									PrintText("Skip quick cast: Button not pressed!");
 								}
 							}
-
-
-							//if ( IsNULLButtonFound( GetSkillPanelButton( 11 ) ) )
-							//{
-							//	if ( keyAction.altbtnID >= 0 )
-							//	{
-							//		if ( SetInfoObjDebugVal )
-							//		{
-							//			PrintText( "OK. Now press panel button." );
-							//		}
-							//		//if ( !( lParam & 0x40000000 ) )
-							//	//	{
-							//		if ( keyAction.IsSkill )
-							//			PressSkillPanelButton( keyAction.altbtnID, keyAction.IsRightClick );
-							//		else
-							//			PressItemPanelButton( keyAction.btnID, keyAction.IsRightClick );
-							//		//	}
-
-							//	}
-							//	else
-							//	{
-							//		if ( SetInfoObjDebugVal )
-							//		{
-							//			PrintText( "ERROR. NO ACTION FOUND!" );
-							//		}
-							//	}
-							//}
-							//else
-							//{
-							//	if ( SetInfoObjDebugVal )
-							//	{
-							//		PrintText( "OK. Now press panel button." );
-							//	}
-							//	//if ( !( lParam & 0x40000000 ) )
-							////	{
-							//	if ( keyAction.IsSkill )
-							//		PressSkillPanelButton( keyAction.btnID, keyAction.IsRightClick );
-							//	else
-							//		PressItemPanelButton( keyAction.btnID, keyAction.IsRightClick );
-							//	//	}
-
-							//}
 						}
 						else
 						{
@@ -2447,7 +2381,7 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 							}
 						}
 					}
-				}
+				//}
 				/*else
 				{
 					if (SetInfoObjDebugVal)
