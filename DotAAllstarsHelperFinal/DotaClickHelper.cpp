@@ -38,10 +38,10 @@ int __stdcall SetCourierIndicatorAbilityId(int AbilId)
 	CourierIndicatorAbilityId = AbilId;
 }
 
-bool IsCourier(int addr)
+bool IsCourier(unsigned char* addr)
 {
 	unsigned int abilscount = 0;
-	FindUnitAbils(selectedunit, &abilscount, CourierIndicatorAbilityId);
+	FindUnitAbils(addr, &abilscount, CourierIndicatorAbilityId);
 	return abilscount>0;
 }
 
@@ -634,14 +634,20 @@ int __stdcall AddKeyButtonAction(unsigned int KeyCode, int btnID, int IsSkill)
 	tmpstr.IsSkill = IsSkill;
 
 	if (IsSkill == 2)
+	{
 		tmpstr.courbtnID = (GetAltBtnID(btnID));
 		tmpstr.altbtnID = 0;
+	}
 	else if (IsSkill == 1)
+	{
 		tmpstr.altbtnID = (GetAltBtnID(btnID));
 		tmpstr.courbtnID = 0;
+	}
 	else
+	{
 		tmpstr.altbtnID = 0;
 		tmpstr.courbtnID = 0;
+	}
 
 	tmpstr.IsAlt = (KeyCode & 0x10000) > 0;
 	tmpstr.IsCtrl = (KeyCode & 0x20000) > 0;
