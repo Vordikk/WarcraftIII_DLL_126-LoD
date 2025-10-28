@@ -28,12 +28,12 @@ bool SkipAllMessages = false;
 int TeleportAbilityId = 0;
 int CourierIndicatorAbilityId = 0;
 
-int __stdcall SetTeleportAbilityId(int AbilId)
+void __stdcall SetTeleportAbilityId(int AbilId)
 {
 	TeleportAbilityId = AbilId;
 }
 
-int __stdcall SetCourierIndicatorAbilityId(int AbilId)
+void __stdcall SetCourierIndicatorAbilityId(int AbilId)
 {
 	CourierIndicatorAbilityId = AbilId;
 }
