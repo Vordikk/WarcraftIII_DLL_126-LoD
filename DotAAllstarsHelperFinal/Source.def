@@ -40,6 +40,8 @@ SetMainFuncWork
 TriggerRegisterPlayerKeyboardEvent
 BlockKeyAction
 AddKeyButtonAction
+SetCourierIndicatorAbilityId
+SetCourierIndicatorAbilityId
 SetCustomGameDllandStormDLL
 JassLog
 FreeExecutableMemory
