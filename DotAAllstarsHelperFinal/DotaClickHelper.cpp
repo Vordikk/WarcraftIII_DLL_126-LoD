@@ -1246,9 +1246,9 @@ void PressKeyWithDelay_timed()
 												{
 													if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 													{
-														if (keyAction.IsSkill)
+														if (keyAction.IsSkill == 1)
 															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-														else
+														else if (keyAction.IsSkill == 0)
 															PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 													}
 
@@ -2298,9 +2298,9 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 							{
 								if (keyAction.altbtnID >= 0)
 								{
-									if (keyAction.IsSkill)
+									if (keyAction.IsSkill == 1)
 										PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-									else
+									else if (keyAction.IsSkill == 0)
 										PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 									//PressedButton = true;
 								}
