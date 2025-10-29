@@ -1240,15 +1240,15 @@ void PressKeyWithDelay_timed()
 										{
 											bool PressedButton = false;
 
-											if (IsNULLButtonFound(GetSkillPanelButton(11)))//skill learn menu
-											{	
+											if (IsNULLButtonFound(GetSkillPanelButton(11)))
+											{
 												if (keyAction.altbtnID >= 0)
 												{
 													if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 													{
-														if (keyAction.IsSkill == 1)
+														if (keyAction.IsSkill)
 															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-														else if (keyAction.IsSkill == 0)
+														else
 															PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 													}
 
@@ -1258,24 +1258,10 @@ void PressKeyWithDelay_timed()
 											{
 												if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 												{
-													if (keyAction.IsSkill == 2)
-													{
-														if (IsCourier(selectedunit))
-														{
-															PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
-														}
-													}
-													else if (keyAction.IsSkill == 1)
-													{
-														if (!IsCourier(selectedunit))
-														{
-															PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
-														}
-													}
+													if (keyAction.IsSkill)
+														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													else
-													{
 														PressedButton = PressItemPanelButton(keyAction.btnID, 0);
-													}
 													//PressedButton = true;
 												}
 											}
@@ -2294,37 +2280,23 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 
 							bool PressedButton = false;
 
-							if (IsNULLButtonFound(GetSkillPanelButton(11)))//skill learn menu
+							if (IsNULLButtonFound(GetSkillPanelButton(11)))
 							{
 								if (keyAction.altbtnID >= 0)
 								{
-									if (keyAction.IsSkill == 1)
+									if (keyAction.IsSkill)
 										PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-									else if (keyAction.IsSkill == 0)
+									else
 										PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 									//PressedButton = true;
 								}
 							}
 							else
 							{
-								if (keyAction.IsSkill == 2)
-								{
-									if (IsCourier(selectedunit))
-									{
-										PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
-									}
-								}
-								else if (keyAction.IsSkill == 1)
-								{
-									if (!IsCourier(selectedunit))
-									{
-										PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
-									}
-								}
+								if (keyAction.IsSkill)
+									PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 								else
-								{
 									PressedButton = PressItemPanelButton(keyAction.btnID, 0);
-								}
 								//PressedButton = true;
 							}
 
@@ -2553,6 +2525,7 @@ int ProcessCallbackHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, c
 	}
 	return false;
 }
+
 int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
 	bool& _IsCtrlPressed, bool& _IsShiftPressed, int WithModifiers)
 {
@@ -2595,6 +2568,56 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 	return false;
 
 }
+
+int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
+{
+	if (ShopHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
+	{
+
+		if (
+			wParam == 'E' ||
+			wParam == 'C' ||
+			wParam == 'F' ||
+			wParam == 'T' ||
+			wParam == 'R' ||
+			wParam == 'G' ||
+			wParam == 'D' 
+			)
+		{
+			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
+			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
+			{
+				if (IsCourier(selectedunit))
+				{
+					// | 0 | 3 | 6 | 9  |
+					// | 1 | 4 | 7 | 10 | 
+					// | 2 | 5 | 8 | 11 |
+
+					if (wParam == 'E')
+						PressSkillPanelButton(2, false);
+					else if (wParam == 'C')
+						PressSkillPanelButton(3, false);
+					else if (wParam == 'F')
+						PressSkillPanelButton(4, false);
+					else if (wParam == 'T')
+						PressSkillPanelButton(7, false);
+					else if (wParam == 'R')
+						PressSkillPanelButton(8, false);
+					else if (wParam == 'G')
+						PressSkillPanelButton(10, false);
+					else if (wParam == 'D')
+						PressSkillPanelButton(11, false);
+					else
+						return false;
+					//}
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
 	if (ShopHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
@@ -2623,9 +2646,6 @@ int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const 
 					// | 0 | 3 | 6 | 9  |
 					// | 1 | 4 | 7 | 10 | 
 					// | 2 | 5 | 8 | 11 |
-
-					/*	if ( Msg == WM_KEYDOWN && !( lParam & 0x40000000 ) )
-					{*/
 
 					if (wParam == 'Q')
 						PressSkillPanelButton(0, false);
@@ -2661,6 +2681,7 @@ int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const 
 	}
 	return false;
 }
+
 int SkipKeyboardAndMouseWhenTeleport(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
 	if (BlockKeyboardAndMouseWhenTeleport)
@@ -3490,6 +3511,26 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 					PrintText("ProcessShopHelper...");
 				}
 
+				if (ProcessShopHelper(hWnd, Msg, wParam, lParam))
+				{
+					return DefWindowProc(hWnd, Msg, wParam, lParam);
+				}
+
+				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
+				{
+					PrintText("ProcessCourierHelper...");
+				}
+
+				if (ProcessCourierHelper(hWnd, Msg, wParam, lParam))
+				{
+					return DefWindowProc(hWnd, Msg, wParam, lParam);
+				}
+				
+
+				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
+				{
+					PrintText("ProcessChatHotkeys...");
+				}
 
 				if (ProcessShopHelper(hWnd, Msg, wParam, lParam))
 				{
@@ -3499,7 +3540,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 				{
 					PrintText("ProcessChatHotkeys...");
 				}
-
 
 				if (ProcessChatHotkeys(hWnd, Msg, wParam, lParam, _IsAltPressed, _IsCtrlPressed, _IsShiftPressed, true) ||
 					ProcessChatHotkeys(hWnd, Msg, wParam, lParam, _IsAltPressed, _IsCtrlPressed, _IsShiftPressed, false))
@@ -3549,7 +3589,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 					{
 						return DefWindowProc(hWnd, Msg, wParam, lParam);
 					}
-
 				}
 
 				Msg = _Msg;
