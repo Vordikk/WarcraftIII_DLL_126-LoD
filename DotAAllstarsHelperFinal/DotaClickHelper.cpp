@@ -2569,7 +2569,7 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 
 }
 
-int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
+int ProcessCourierHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
 	if (ShopHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 	{
@@ -3525,17 +3525,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 				{
 					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
-				
 
-				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
-				{
-					PrintText("ProcessChatHotkeys...");
-				}
-
-				if (ProcessShopHelper(hWnd, Msg, wParam, lParam))
-				{
-					return DefWindowProc(hWnd, Msg, wParam, lParam);
-				}
 				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
 				{
 					PrintText("ProcessChatHotkeys...");
@@ -3546,6 +3536,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 				{
 					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
+
 				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
 				{
 					PrintText("ProcessHotkeys...");
@@ -3567,6 +3558,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 				{
 					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
+				
 				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
 				{
 					PrintText("ProcessSelectActionHotkeys...");
