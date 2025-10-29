@@ -633,21 +633,10 @@ int __stdcall AddKeyButtonAction(unsigned int KeyCode, int btnID, int IsSkill)
 	tmpstr.btnID = btnID;
 	tmpstr.IsSkill = IsSkill;
 
-	if (IsSkill == 2)
-	{
-		tmpstr.courbtnID = (GetAltBtnID(btnID));
-		tmpstr.altbtnID = 0;
-	}
-	else if (IsSkill == 1)
-	{
+	if (IsSkill)
 		tmpstr.altbtnID = (GetAltBtnID(btnID));
-		tmpstr.courbtnID = 0;
-	}
 	else
-	{
 		tmpstr.altbtnID = 0;
-		tmpstr.courbtnID = 0;
-	}
 
 	tmpstr.IsAlt = (KeyCode & 0x10000) > 0;
 	tmpstr.IsCtrl = (KeyCode & 0x20000) > 0;
@@ -699,7 +688,7 @@ int __stdcall AddKeyButtonAction(unsigned int KeyCode, int btnID, int IsSkill)
 
 
 
-int IsNULLButtonFound(unsigned char* pButton)
+int IsNULLButtonFound(unsigned char* pButton)//skill learn menu
 {
 	if (pButton && *(int*)(pButton) > 0)
 	{
@@ -1251,24 +1240,14 @@ void PressKeyWithDelay_timed()
 										{
 											bool PressedButton = false;
 
-											if (IsNULLButtonFound(GetSkillPanelButton(11)))
+											if (IsNULLButtonFound(GetSkillPanelButton(11)))//skill learn menu
 											{	
-												bool cour = IsCourier(selectedunit);
-												if ((keyAction.altbtnID >= 0 && !cour) || (keyAction.courbtnID >= 0 && cour))
+												if (keyAction.altbtnID >= 0)
 												{
 													if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 													{
 														if (keyAction.IsSkill)
-														{
-															if (cour)
-															{
-																PressedButton = PressSkillPanelButton(keyAction.courbtnID, 0);
-															}
-															else
-															{
-																PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-															}
-														}
+															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 														else
 															PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 													}
@@ -1280,21 +1259,11 @@ void PressKeyWithDelay_timed()
 												if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 												{
 													if (keyAction.IsSkill)
-													{
-														if (IsCourier(selectedunit))
-														{
-															PressedButton = PressSkillPanelButton(keyAction.courbtnID, 0);
-														}
-														else
-														{
-															PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-														}
-													}
+														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 													else
 														PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 													//PressedButton = true;
 												}
-
 											}
 											if (keyAction.IsQuickCast && PressedButton && IsCursorSelectTarget() && Warcraft3Window)
 											{
@@ -2311,22 +2280,12 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 
 							bool PressedButton = false;
 
-							if (IsNULLButtonFound(GetSkillPanelButton(11)))
+							if (IsNULLButtonFound(GetSkillPanelButton(11)))//skill learn menu
 							{
-								bool cour = IsCourier(selectedunit);
-								if ((keyAction.altbtnID >= 0 && !cour) || (keyAction.courbtnID >= 0 && cour))
+								if (keyAction.altbtnID >= 0)
 								{
 									if (keyAction.IsSkill)
-									{
-										if (cour)
-										{
-											PressedButton = PressSkillPanelButton(keyAction.courbtnID, 0);
-										}
-										else
-										{
-											PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-										}
-									}
+										PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
 									else
 										PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 									//PressedButton = true;
@@ -2335,16 +2294,7 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 							else
 							{
 								if (keyAction.IsSkill)
-								{
-									if (IsCourier(selectedunit))
-									{
-										PressedButton = PressSkillPanelButton(keyAction.courbtnID, 0);
-									}
-									else
-									{
-										PressedButton = PressSkillPanelButton(keyAction.altbtnID, 0);
-									}
-								}
+									PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
 								else
 									PressedButton = PressItemPanelButton(keyAction.btnID, 0);
 								//PressedButton = true;
@@ -2362,10 +2312,7 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 								{
 									SkipSingleShift = GetTickCount();
 								}
-
-								/*int x = ( int )( *GetWindowXoffset );
-								int y = ( int )( *GetWindowYoffset );
-								*/
+								
 								POINT cursorhwnd;
 								GetCursorPos(&cursorhwnd);
 								ScreenToClient(Warcraft3Window, &cursorhwnd);
