@@ -1258,10 +1258,24 @@ void PressKeyWithDelay_timed()
 											{
 												if (!((DelayedPressList[i].NeedPresslParam & 0x40000000) > 0))
 												{
-													if (keyAction.IsSkill)
-														PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
+													if (keyAction.IsSkill == 2)
+													{
+														if (IsCourier(selectedunit))
+														{
+															PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
+														}
+													}
+													else if (keyAction.IsSkill == 1)
+													{
+														if (!IsCourier(selectedunit))
+														{
+															PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
+														}
+													}
 													else
+													{
 														PressedButton = PressItemPanelButton(keyAction.btnID, 0);
+													}
 													//PressedButton = true;
 												}
 											}
@@ -2293,10 +2307,24 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 							}
 							else
 							{
-								if (keyAction.IsSkill)
-									PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
+								if (keyAction.IsSkill == 2)
+								{
+									if (IsCourier(selectedunit))
+									{
+										PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
+									}
+								}
+								else if (keyAction.IsSkill == 1)
+								{
+									if (!IsCourier(selectedunit))
+									{
+										PressedButton = PressSkillPanelButton(keyAction.btnID, keyAction.IsRightClick);
+									}
+								}
 								else
+								{
 									PressedButton = PressItemPanelButton(keyAction.btnID, 0);
+								}
 								//PressedButton = true;
 							}
 
@@ -2312,7 +2340,7 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 								{
 									SkipSingleShift = GetTickCount();
 								}
-								
+
 								POINT cursorhwnd;
 								GetCursorPos(&cursorhwnd);
 								ScreenToClient(Warcraft3Window, &cursorhwnd);
