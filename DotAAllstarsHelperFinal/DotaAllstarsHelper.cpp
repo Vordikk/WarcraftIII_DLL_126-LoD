@@ -2032,7 +2032,7 @@ unsigned int __stdcall InitDotaHelper(int)
 	ScanId = 0;
 	PlayerEnemyCache.clear();
 
-	sprintf_s(MyFpsString, 512, "%s", "|nFPS: %.1f / 64.0 ");
+	sprintf_s(MyFpsString, 512, "%s", "|nFPS: %.1f / 240.0 ");
 
 	if (!GlobalTextBuffer)
 		GlobalTextBuffer = new char[0x2000];
