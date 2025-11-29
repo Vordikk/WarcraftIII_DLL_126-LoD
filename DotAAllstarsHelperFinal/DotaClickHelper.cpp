@@ -2643,7 +2643,7 @@ int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wPara
 			wParam == 'S' ||
 			wParam == 'D' ||
 			wParam == 'X' ||
-			wParam == 'C' ||
+			wParam == 'C'
 			)
 		
 		{
@@ -2656,7 +2656,7 @@ int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wPara
 					// | 1 | 4 | 7 | 10 | 
 					// | 2 | 5 | 8 | 11 |
 					
-					if IsNULLButtonFound(GetSkillPanelButton(11))
+					if (IsNULLButtonFound(GetSkillPanelButton(11)))
 					{
 						if (wParam == 'Q')
 							PressSkillPanelButton(0, false);
