@@ -2704,7 +2704,7 @@ int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wPara
 					{
 						if (wParam == 'Z')
 							PressSkillPanelButton(3, false);
-						else if (wParam == 'E')
+						else if (wParam == 'U')
 							PressSkillPanelButton(6, false);
 						else if (wParam == 'C')
 							PressSkillPanelButton(4, false);

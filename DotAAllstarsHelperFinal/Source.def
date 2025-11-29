@@ -60,6 +60,8 @@ DrawRegenAllways
 TeleportHelper
 TeleportWhiteListKey
 ShopHelper
+CourierHelper
+CircleHelper
 _FlushInstructionCache
 ShowConfigWindow
 AddDoubleClickSkillID
