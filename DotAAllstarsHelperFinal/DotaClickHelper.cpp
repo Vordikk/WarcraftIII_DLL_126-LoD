@@ -1099,6 +1099,8 @@ int __stdcall TeleportWhiteListKey(int VK)
 }
 
 bool ShopHelperEnabled = false;
+bool CourierHelperEnabled = true;
+bool CircleHelperEnabled = true;
 
 int __stdcall ShopHelper(int enable)
 {
@@ -1107,6 +1109,23 @@ int __stdcall ShopHelper(int enable)
 	ShopHelperEnabled = enable;
 	return enable;
 }
+
+int __stdcall CourierHelper(int enable)
+{
+	if (DEBUG_FULL)
+		std::cout << __func__ << std::endl;
+	CourierHelperEnabled = enable;
+	return enable;
+}
+
+int __stdcall CircleHelper(int enable)
+{
+	if (DEBUG_FULL)
+		std::cout << __func__ << std::endl;
+	CircleHelperEnabled = enable;
+	return enable;
+}
+
 bool rawimage_skipmouseevent = true;
 
 int __stdcall RawImage_SkipMouseClick(int enabled)
@@ -2584,7 +2603,7 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 
 int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
-	if (ShopHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
+	if (CourierHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 	{
 
 		if (
@@ -2622,11 +2641,12 @@ int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wPara
 						PressSkillPanelButton(11, false);
 					else
 						return false;
-					//}
 					return true;
 				}
 			}
 		}
+	
+	if (CircleHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 		if (
 			wParam == 'Z' ||
 			wParam == 'U' ||
@@ -2764,7 +2784,6 @@ int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const 
 						PressSkillPanelButton(11, false);
 					else
 						return false;
-					//}
 					return true;
 				}
 			}
