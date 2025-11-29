@@ -41,7 +41,7 @@ TriggerRegisterPlayerKeyboardEvent
 BlockKeyAction
 AddKeyButtonAction
 SetCourierIndicatorAbilityId
-SetCourierIndicatorAbilityId
+SetCircleIndicatorAbilityId
 SetCustomGameDllandStormDLL
 JassLog
 FreeExecutableMemory
