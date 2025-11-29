@@ -27,6 +27,7 @@ bool SkipAllMessages = false;
 
 int TeleportAbilityId = 0;
 int CourierIndicatorAbilityId = 0;
+int CircleIndicatorAbilityId = 0;
 
 void __stdcall SetTeleportAbilityId(int AbilId)
 {
@@ -38,10 +39,22 @@ void __stdcall SetCourierIndicatorAbilityId(int AbilId)
 	CourierIndicatorAbilityId = AbilId;
 }
 
+void __stdcall SetCircleIndicatorAbilityId(int AbilId)
+{
+	CircleIndicatorAbilityId = AbilId;
+}
+
 bool IsCourier(unsigned char* addr)
 {
 	unsigned int abilscount = 0;
 	FindUnitAbils(addr, &abilscount, CourierIndicatorAbilityId);
+	return abilscount>0;
+}
+
+bool IsCircle(unsigned char* addr)
+{
+	unsigned int abilscount = 0;
+	FindUnitAbils(addr, &abilscount, CircleIndicatorAbilityId);
 	return abilscount>0;
 }
 
@@ -2569,7 +2582,7 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 
 }
 
-int ProcessCourierHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
+int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
 {
 	if (ShopHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 	{
@@ -2611,6 +2624,84 @@ int ProcessCourierHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, con
 						return false;
 					//}
 					return true;
+				}
+			}
+		}
+		if (
+			wParam == 'Z' ||
+			wParam == 'U' ||
+			wParam == 'C' ||
+			wParam == 'F' ||
+			wParam == 'A' ||
+			wParam == 'D' ||
+			wParam == 'B' ||
+			wParam == 'O' ||			
+			wParam == 'Q' ||
+			wParam == 'W' ||
+			wParam == 'E' ||
+			wParam == 'A' ||
+			wParam == 'S' ||
+			wParam == 'D' ||
+			wParam == 'X' ||
+			wParam == 'C' ||
+			)
+		
+		{
+			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
+			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
+			{
+				if (IsCircle(selectedunit))
+				{
+					// | 0 | 3 | 6 | 9  |
+					// | 1 | 4 | 7 | 10 | 
+					// | 2 | 5 | 8 | 11 |
+					
+					if IsNULLButtonFound(GetSkillPanelButton(11))
+					{
+						if (wParam == 'Q')
+							PressSkillPanelButton(0, false);
+						else if (wParam == 'W')
+							PressSkillPanelButton(3, false);
+						else if (wParam == 'E')
+							PressSkillPanelButton(6, false);
+						else if (wParam == 'A')
+							PressSkillPanelButton(1, false);
+						else if (wParam == 'S')
+							PressSkillPanelButton(4, false);
+						else if (wParam == 'D')
+							PressSkillPanelButton(7, false);
+						else if (wParam == 'Z')
+							PressSkillPanelButton(2, false);
+						else if (wParam == 'X')
+							PressSkillPanelButton(5, false);
+						else if (wParam == 'C')
+							PressSkillPanelButton(8, false);
+						else
+							return false;
+						return true;
+					}
+					else
+					{
+						if (wParam == 'Z')
+							PressSkillPanelButton(3, false);
+						else if (wParam == 'E')
+							PressSkillPanelButton(6, false);
+						else if (wParam == 'C')
+							PressSkillPanelButton(4, false);
+						else if (wParam == 'F')
+							PressSkillPanelButton(7, false);
+						else if (wParam == 'A')
+							PressSkillPanelButton(2, false);
+						else if (wParam == 'D')
+							PressSkillPanelButton(5, false);
+						else if (wParam == 'B')
+							PressSkillPanelButton(8, false);
+						else if (wParam == 'O')
+							PressSkillPanelButton(11, false);
+						else
+							return false;
+						return true;
+					}
 				}
 			}
 		}
@@ -3518,10 +3609,10 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 
 				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
 				{
-					PrintText("ProcessCourierHelper...");
+					PrintText("ProcessCourierCircleHelper...");
 				}
 
-				if (ProcessCourierHelper(hWnd, Msg, wParam, lParam))
+				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam))
 				{
 					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
