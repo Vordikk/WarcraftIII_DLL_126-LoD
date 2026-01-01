@@ -2175,6 +2175,135 @@ float __fastcall GetCameraHeight_my(unsigned int a1)
 }
 
 
+
+int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
+{
+	if (CourierHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
+	{
+
+		if (
+			wParam == 'E' ||
+			wParam == 'C' ||
+			wParam == 'F' ||
+			wParam == 'T' ||
+			wParam == 'R' ||
+			wParam == 'G' ||
+			wParam == 'D' 
+			)
+		{
+			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
+			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
+			{
+				if (IsCourier(selectedunit))
+				{
+					// | 0 | 3 | 6 | 9  |
+					// | 1 | 4 | 7 | 10 | 
+					// | 2 | 5 | 8 | 11 |
+
+					if (wParam == 'E')
+						PressSkillPanelButton(2, false);
+					else if (wParam == 'C')
+						PressSkillPanelButton(3, false);
+					else if (wParam == 'F')
+						PressSkillPanelButton(4, false);
+					else if (wParam == 'T')
+						PressSkillPanelButton(7, false);
+					else if (wParam == 'R')
+						PressSkillPanelButton(8, false);
+					else if (wParam == 'G')
+						PressSkillPanelButton(10, false);
+					else if (wParam == 'D')
+						PressSkillPanelButton(11, false);
+					else
+						return false;
+					return true;
+				}
+			}
+		}
+	
+	if (CircleHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
+		if (
+			wParam == 'Z' ||
+			wParam == 'U' ||
+			wParam == 'C' ||
+			wParam == 'F' ||
+			wParam == 'A' ||
+			wParam == 'D' ||
+			wParam == 'B' ||
+			wParam == 'O' ||			
+			wParam == 'Q' ||
+			wParam == 'W' ||
+			wParam == 'E' ||
+			wParam == 'A' ||
+			wParam == 'S' ||
+			wParam == 'D' ||
+			wParam == 'X' ||
+			wParam == 'C'
+			)
+		
+		{
+			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
+			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
+			{
+				if (IsCircle(selectedunit))
+				{
+					// | 0 | 3 | 6 | 9  |
+					// | 1 | 4 | 7 | 10 | 
+					// | 2 | 5 | 8 | 11 |
+					
+					if (IsNULLButtonFound(GetSkillPanelButton(11)))
+					{
+						if (wParam == 'Q')
+							PressSkillPanelButton(0, false);
+						else if (wParam == 'W')
+							PressSkillPanelButton(3, false);
+						else if (wParam == 'E')
+							PressSkillPanelButton(6, false);
+						else if (wParam == 'A')
+							PressSkillPanelButton(1, false);
+						else if (wParam == 'S')
+							PressSkillPanelButton(4, false);
+						else if (wParam == 'D')
+							PressSkillPanelButton(7, false);
+						else if (wParam == 'Z')
+							PressSkillPanelButton(2, false);
+						else if (wParam == 'X')
+							PressSkillPanelButton(5, false);
+						else if (wParam == 'C')
+							PressSkillPanelButton(8, false);
+						else
+							return false;
+						return true;
+					}
+					else
+					{
+						if (wParam == 'Z')
+							PressSkillPanelButton(3, false);
+						else if (wParam == 'U')
+							PressSkillPanelButton(6, false);
+						else if (wParam == 'C')
+							PressSkillPanelButton(4, false);
+						else if (wParam == 'F')
+							PressSkillPanelButton(7, false);
+						else if (wParam == 'A')
+							PressSkillPanelButton(2, false);
+						else if (wParam == 'D')
+							PressSkillPanelButton(5, false);
+						else if (wParam == 'B')
+							PressSkillPanelButton(8, false);
+						else if (wParam == 'O')
+							PressSkillPanelButton(11, false);
+						else
+							return false;
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
 unsigned long GroupSelectLastTime = GetTickCount();
 int LastSelectedGroupHandle = 0;
 
@@ -2281,7 +2410,7 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 						{
 							PrintText("ProcessCourierCircleHelper...");
 						}
-						return true
+						return true;
 					}
 					
 					int selectedunits = GetSelectedUnitCountBigger(GetLocalPlayerId());
@@ -2608,134 +2737,6 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 	}
 	return false;
 
-}
-
-int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
-{
-	if (CourierHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
-	{
-
-		if (
-			wParam == 'E' ||
-			wParam == 'C' ||
-			wParam == 'F' ||
-			wParam == 'T' ||
-			wParam == 'R' ||
-			wParam == 'G' ||
-			wParam == 'D' 
-			)
-		{
-			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
-			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
-			{
-				if (IsCourier(selectedunit))
-				{
-					// | 0 | 3 | 6 | 9  |
-					// | 1 | 4 | 7 | 10 | 
-					// | 2 | 5 | 8 | 11 |
-
-					if (wParam == 'E')
-						PressSkillPanelButton(2, false);
-					else if (wParam == 'C')
-						PressSkillPanelButton(3, false);
-					else if (wParam == 'F')
-						PressSkillPanelButton(4, false);
-					else if (wParam == 'T')
-						PressSkillPanelButton(7, false);
-					else if (wParam == 'R')
-						PressSkillPanelButton(8, false);
-					else if (wParam == 'G')
-						PressSkillPanelButton(10, false);
-					else if (wParam == 'D')
-						PressSkillPanelButton(11, false);
-					else
-						return false;
-					return true;
-				}
-			}
-		}
-	
-	if (CircleHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
-		if (
-			wParam == 'Z' ||
-			wParam == 'U' ||
-			wParam == 'C' ||
-			wParam == 'F' ||
-			wParam == 'A' ||
-			wParam == 'D' ||
-			wParam == 'B' ||
-			wParam == 'O' ||			
-			wParam == 'Q' ||
-			wParam == 'W' ||
-			wParam == 'E' ||
-			wParam == 'A' ||
-			wParam == 'S' ||
-			wParam == 'D' ||
-			wParam == 'X' ||
-			wParam == 'C'
-			)
-		
-		{
-			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
-			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
-			{
-				if (IsCircle(selectedunit))
-				{
-					// | 0 | 3 | 6 | 9  |
-					// | 1 | 4 | 7 | 10 | 
-					// | 2 | 5 | 8 | 11 |
-					
-					if (IsNULLButtonFound(GetSkillPanelButton(11)))
-					{
-						if (wParam == 'Q')
-							PressSkillPanelButton(0, false);
-						else if (wParam == 'W')
-							PressSkillPanelButton(3, false);
-						else if (wParam == 'E')
-							PressSkillPanelButton(6, false);
-						else if (wParam == 'A')
-							PressSkillPanelButton(1, false);
-						else if (wParam == 'S')
-							PressSkillPanelButton(4, false);
-						else if (wParam == 'D')
-							PressSkillPanelButton(7, false);
-						else if (wParam == 'Z')
-							PressSkillPanelButton(2, false);
-						else if (wParam == 'X')
-							PressSkillPanelButton(5, false);
-						else if (wParam == 'C')
-							PressSkillPanelButton(8, false);
-						else
-							return false;
-						return true;
-					}
-					else
-					{
-						if (wParam == 'Z')
-							PressSkillPanelButton(3, false);
-						else if (wParam == 'U')
-							PressSkillPanelButton(6, false);
-						else if (wParam == 'C')
-							PressSkillPanelButton(4, false);
-						else if (wParam == 'F')
-							PressSkillPanelButton(7, false);
-						else if (wParam == 'A')
-							PressSkillPanelButton(2, false);
-						else if (wParam == 'D')
-							PressSkillPanelButton(5, false);
-						else if (wParam == 'B')
-							PressSkillPanelButton(8, false);
-						else if (wParam == 'O')
-							PressSkillPanelButton(11, false);
-						else
-							return false;
-						return true;
-					}
-				}
-			}
-		}
-	}
-	return false;
 }
 
 int ProcessShopHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
