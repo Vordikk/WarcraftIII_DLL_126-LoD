@@ -2604,7 +2604,7 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
 	bool& _IsCtrlPressed, bool& _IsShiftPressed)
 {
-	if (!(keyAction.IsAlt && _IsAltPressed) && !(keyAction.IsCtrl && _IsCtrlPressed) && !(keyAction.IsShift && _IsShiftPressed))
+	if (!_IsAltPressed && !_IsCtrlPressed && !_IsShiftPressed)
 	{
 		if (CourierHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 		{
