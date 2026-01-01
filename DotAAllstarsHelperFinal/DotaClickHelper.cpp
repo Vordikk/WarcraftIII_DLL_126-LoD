@@ -3628,11 +3628,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 
 				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
 				{
-					PrintText("ProcessCourierCircleHelper...");
-				}
-
-				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
-				{
 					PrintText("ProcessChatHotkeys...");
 				}
 
@@ -3649,11 +3644,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 
 				if (ProcessHotkeys(hWnd, Msg, wParam, lParam, _IsAltPressed, _IsCtrlPressed, _IsShiftPressed, itempressed, ClickHelperWork, true) ||
 					ProcessHotkeys(hWnd, Msg, wParam, lParam, _IsAltPressed, _IsCtrlPressed, _IsShiftPressed, itempressed, ClickHelperWork, false))
-				{
-					return DefWindowProc(hWnd, Msg, wParam, lParam);
-				}
-
-				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam))
 				{
 					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
@@ -3691,6 +3681,16 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 					{
 						return DefWindowProc(hWnd, Msg, wParam, lParam);
 					}
+				}
+
+				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
+				{
+					PrintText("ProcessCourierCircleHelper...");
+				}
+
+				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam))
+				{
+					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
 
 				Msg = _Msg;
