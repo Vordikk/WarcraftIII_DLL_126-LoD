@@ -273,8 +273,6 @@ void UpdateFPS()
 int __stdcall EnableAutoFPSlimit(int enable)
 {
 	FPS_LIMIT_ENABLED = enable;
-	if (!FPS_LIMIT_ENABLED)
-		_SetMaxFps(200);
 	return enable;
 }
 

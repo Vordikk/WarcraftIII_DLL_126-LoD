@@ -1666,7 +1666,6 @@ void __stdcall DisableAllHooks(int)
 	Warcraft3Window = NULL;
 	Storm::Cleanup();
 	// Вернуть стандартное ограничение FPS
-	//_SetMaxFps( 200 );
 	sprintf_s(MyFpsString, 512, "%s", "|nFPS: %.1f");
 	ClipCursor(0);
 	// Выгрузить перехватчики функций
@@ -2032,7 +2031,7 @@ unsigned int __stdcall InitDotaHelper(int)
 	ScanId = 0;
 	PlayerEnemyCache.clear();
 
-	sprintf_s(MyFpsString, 512, "%s", "|nFPS: %.1f / 240.0 ");
+	sprintf_s(MyFpsString, 512, "%s", "|nFPS: %.1f / 480.0 ");
 
 	if (!GlobalTextBuffer)
 		GlobalTextBuffer = new char[0x2000];
@@ -2308,7 +2307,7 @@ unsigned int __stdcall InitDotaHelper(int)
 	GameChatSetState = (pGameChatSetState)(GameDll + 0x341460);
 
 	_SetMaxFps = (p_SetMaxFps)(GameDll + 0x383640);
-	_SetMaxFps(200);
+	_SetMaxFps(480);
 	LoadFrameDefList = (pLoadFrameDefList)(GameDll + 0x5C8510);
 	//ManaBarSwitch( true );
 
