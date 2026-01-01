@@ -2275,6 +2275,15 @@ int ProcessHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPA
 
 				//if (itempressed || (keyAction.IsSkill && !IsCursorSelectTarget()))
 				{
+					if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam))
+					{
+						if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
+						{
+							PrintText("ProcessCourierCircleHelper...");
+						}
+						return true
+					}
+					
 					int selectedunits = GetSelectedUnitCountBigger(GetLocalPlayerId());
 
 					unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
@@ -3622,16 +3631,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 				}
 
 				if (ProcessShopHelper(hWnd, Msg, wParam, lParam))
-				{
-					return DefWindowProc(hWnd, Msg, wParam, lParam);
-				}
-
-				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
-				{
-					PrintText("ProcessCourierCircleHelper...");
-				}
-
-				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam))
 				{
 					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
