@@ -2601,122 +2601,46 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 
 }
 
-int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam)
+int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
+	bool& _IsCtrlPressed, bool& _IsShiftPressed)
 {
-	if (CourierHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
+	if (!(keyAction.IsAlt && _IsAltPressed) && !(keyAction.IsCtrl && _IsCtrlPressed) && !(keyAction.IsShift && _IsShiftPressed))
 	{
-
-		if (
-			wParam == 'E' ||
-			wParam == 'C' ||
-			wParam == 'F' ||
-			wParam == 'T' ||
-			wParam == 'R' ||
-			wParam == 'G' ||
-			wParam == 'D' 
-			)
+		if (CourierHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 		{
-			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
-			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
-			{
-				if (IsCourier(selectedunit))
-				{
-					// | 0 | 3 | 6 | 9  |
-					// | 1 | 4 | 7 | 10 | 
-					// | 2 | 5 | 8 | 11 |
 
-					if (wParam == 'E')
-						PressSkillPanelButton(2, false);
-					else if (wParam == 'C')
-						PressSkillPanelButton(3, false);
-					else if (wParam == 'F')
-						PressSkillPanelButton(4, false);
-					else if (wParam == 'T')
-						PressSkillPanelButton(7, false);
-					else if (wParam == 'R')
-						PressSkillPanelButton(8, false);
-					else if (wParam == 'G')
-						PressSkillPanelButton(10, false);
-					else if (wParam == 'D')
-						PressSkillPanelButton(11, false);
-					else
-						return false;
-					return true;
-				}
-			}
-		}
-	
-	if (CircleHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
-		if (
-			wParam == 'Z' ||
-			wParam == 'U' ||
-			wParam == 'C' ||
-			wParam == 'F' ||
-			wParam == 'A' ||
-			wParam == 'D' ||
-			wParam == 'B' ||
-			wParam == 'O' ||			
-			wParam == 'Q' ||
-			wParam == 'W' ||
-			wParam == 'E' ||
-			wParam == 'A' ||
-			wParam == 'S' ||
-			wParam == 'D' ||
-			wParam == 'X' ||
-			wParam == 'C'
-			)
-		
-		{
-			unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
-			if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
+			if (
+				wParam == 'E' ||
+				wParam == 'C' ||
+				wParam == 'F' ||
+				wParam == 'T' ||
+				wParam == 'R' ||
+				wParam == 'G' ||
+				wParam == 'D' 
+				)
 			{
-				if (IsCircle(selectedunit))
+				unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
+				if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
 				{
-					// | 0 | 3 | 6 | 9  |
-					// | 1 | 4 | 7 | 10 | 
-					// | 2 | 5 | 8 | 11 |
-					
-					if (IsNULLButtonFound(GetSkillPanelButton(11)))
+					if (IsCourier(selectedunit))
 					{
-						if (wParam == 'Q')
-							PressSkillPanelButton(0, false);
-						else if (wParam == 'W')
-							PressSkillPanelButton(3, false);
-						else if (wParam == 'E')
-							PressSkillPanelButton(6, false);
-						else if (wParam == 'A')
-							PressSkillPanelButton(1, false);
-						else if (wParam == 'S')
-							PressSkillPanelButton(4, false);
-						else if (wParam == 'D')
-							PressSkillPanelButton(7, false);
-						else if (wParam == 'Z')
+						// | 0 | 3 | 6 | 9  |
+						// | 1 | 4 | 7 | 10 | 
+						// | 2 | 5 | 8 | 11 |
+
+						if (wParam == 'E')
 							PressSkillPanelButton(2, false);
-						else if (wParam == 'X')
-							PressSkillPanelButton(5, false);
 						else if (wParam == 'C')
-							PressSkillPanelButton(8, false);
-						else
-							return false;
-						return true;
-					}
-					else
-					{
-						if (wParam == 'Z')
 							PressSkillPanelButton(3, false);
-						else if (wParam == 'U')
-							PressSkillPanelButton(6, false);
-						else if (wParam == 'C')
-							PressSkillPanelButton(4, false);
 						else if (wParam == 'F')
+							PressSkillPanelButton(4, false);
+						else if (wParam == 'T')
 							PressSkillPanelButton(7, false);
-						else if (wParam == 'A')
-							PressSkillPanelButton(2, false);
-						else if (wParam == 'D')
-							PressSkillPanelButton(5, false);
-						else if (wParam == 'B')
+						else if (wParam == 'R')
 							PressSkillPanelButton(8, false);
-						else if (wParam == 'O')
+						else if (wParam == 'G')
+							PressSkillPanelButton(10, false);
+						else if (wParam == 'D')
 							PressSkillPanelButton(11, false);
 						else
 							return false;
@@ -2724,7 +2648,88 @@ int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wPara
 					}
 				}
 			}
+		
+		if (CircleHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
+			if (
+				wParam == 'Z' ||
+				wParam == 'U' ||
+				wParam == 'C' ||
+				wParam == 'F' ||
+				wParam == 'A' ||
+				wParam == 'D' ||
+				wParam == 'B' ||
+				wParam == 'O' ||			
+				wParam == 'Q' ||
+				wParam == 'W' ||
+				wParam == 'E' ||
+				wParam == 'A' ||
+				wParam == 'S' ||
+				wParam == 'D' ||
+				wParam == 'X' ||
+				wParam == 'C'
+				)
+			
+			{
+				unsigned char* selectedunit = GetSelectedUnit(GetLocalPlayerId());
+				if (selectedunit && GetSelectedUnitCountBigger(GetLocalPlayerId()) > 0)
+				{
+					if (IsCircle(selectedunit))
+					{
+						// | 0 | 3 | 6 | 9  |
+						// | 1 | 4 | 7 | 10 | 
+						// | 2 | 5 | 8 | 11 |
+						
+						if (IsNULLButtonFound(GetSkillPanelButton(11)))
+						{
+							if (wParam == 'Q')
+								PressSkillPanelButton(0, false);
+							else if (wParam == 'W')
+								PressSkillPanelButton(3, false);
+							else if (wParam == 'E')
+								PressSkillPanelButton(6, false);
+							else if (wParam == 'A')
+								PressSkillPanelButton(1, false);
+							else if (wParam == 'S')
+								PressSkillPanelButton(4, false);
+							else if (wParam == 'D')
+								PressSkillPanelButton(7, false);
+							else if (wParam == 'Z')
+								PressSkillPanelButton(2, false);
+							else if (wParam == 'X')
+								PressSkillPanelButton(5, false);
+							else if (wParam == 'C')
+								PressSkillPanelButton(8, false);
+							else
+								return false;
+							return true;
+						}
+						else
+						{
+							if (wParam == 'Z')
+								PressSkillPanelButton(3, false);
+							else if (wParam == 'U')
+								PressSkillPanelButton(6, false);
+							else if (wParam == 'C')
+								PressSkillPanelButton(4, false);
+							else if (wParam == 'F')
+								PressSkillPanelButton(7, false);
+							else if (wParam == 'A')
+								PressSkillPanelButton(2, false);
+							else if (wParam == 'D')
+								PressSkillPanelButton(5, false);
+							else if (wParam == 'B')
+								PressSkillPanelButton(8, false);
+							else if (wParam == 'O')
+								PressSkillPanelButton(11, false);
+							else
+								return false;
+							return true;
+						}
+					}
+				}
+			}
 		}
+		return false;
 	}
 	return false;
 }
@@ -3628,6 +3633,16 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 
 				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
 				{
+					PrintText("ProcessCourierCircleHelper...");
+				}
+
+				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam, _IsAltPressed, _IsCtrlPressed, _IsShiftPressed))
+				{
+					return DefWindowProc(hWnd, Msg, wParam, lParam);
+				}
+
+				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
+				{
 					PrintText("ProcessChatHotkeys...");
 				}
 
@@ -3681,16 +3696,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 					{
 						return DefWindowProc(hWnd, Msg, wParam, lParam);
 					}
-				}
-
-				if (SetInfoObjDebugVal && (Msg == WM_KEYUP || Msg == WM_KEYDOWN))
-				{
-					PrintText("ProcessCourierCircleHelper...");
-				}
-
-				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam))
-				{
-					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
 
 				Msg = _Msg;
