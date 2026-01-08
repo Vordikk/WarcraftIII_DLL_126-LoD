@@ -2601,10 +2601,9 @@ int ProcessChatHotkeys(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const
 
 }
 
-int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsAltPressed,
-	bool& _IsCtrlPressed, bool& _IsShiftPressed)
+int ProcessCourierCircleHelper(HWND hWnd, unsigned int& Msg, const WPARAM& wParam, const LPARAM& lParam, bool& _IsCtrlPressed)
 {
-	if (!_IsAltPressed && !_IsCtrlPressed && !_IsShiftPressed)
+	if (!_IsCtrlPressed)
 	{
 		if (CourierHelperEnabled && IsGameFrameActive() && /*(*/ Msg == WM_KEYDOWN /*|| Msg == WM_KEYUP ) */)
 		{
@@ -3636,7 +3635,7 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 					PrintText("ProcessCourierCircleHelper...");
 				}
 
-				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam, _IsAltPressed, _IsCtrlPressed, _IsShiftPressed))
+				if (ProcessCourierCircleHelper(hWnd, Msg, wParam, lParam, _IsCtrlPressed))
 				{
 					return DefWindowProc(hWnd, Msg, wParam, lParam);
 				}
