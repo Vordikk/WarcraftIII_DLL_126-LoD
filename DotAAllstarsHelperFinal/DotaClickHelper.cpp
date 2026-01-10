@@ -3290,35 +3290,36 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 
 	TestValues[1]++;
 
-	if (_Msg == WM_MOUSEWHEEL && IsKeyPressed(VK_LCONTROL))
+	if IsKeyPressed(VK_LCONTROL)
 	{
-		short wheeltarg = HIWORD(_wParam);
-		if (wheeltarg > 0)
+		if (_Msg == WM_MOUSEWHEEL)
 		{
-			DecreaseCameraOffset();
+			short wheeltarg = HIWORD(_wParam);
+			if (wheeltarg > 0)
+			{
+				DecreaseCameraOffset();
+			}
+			else
+			{
+				IncreaseCameraOffset();
+			}
+
+			WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_PRIOR, NULL);
+			WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_NEXT, NULL);
+
+			return DefWindowProc(hWnd, Msg, wParam, lParam);
 		}
-		else
+		else if (_Msg == WM_MBUTTONDOWN)
 		{
-			IncreaseCameraOffset();
+			ResetCameraOffset();
+
+			WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_PRIOR, NULL);
+			WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_NEXT, NULL);
+
+			return DefWindowProc(hWnd, Msg, wParam, lParam);
 		}
 
-		WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_PRIOR, NULL);
-		WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_NEXT, NULL);
-
-		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
-
-	if (_Msg == WM_MBUTTONDOWN && IsKeyPressed(VK_LCONTROL))
-	{
-		ResetCameraOffset();
-
-		WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_PRIOR, NULL);
-		WarcraftRealWNDProc_ptr(hWnd, WM_SYSKEYDOWN, VK_NEXT, NULL);
-
-		return DefWindowProc(hWnd, Msg, wParam, lParam);
-	}
-
-
 
 	if (Msg == WM_LBUTTONDOWN || Msg == WM_RBUTTONDOWN || Msg == WM_MBUTTONDOWN || Msg == WM_LBUTTONUP || Msg == WM_RBUTTONUP || Msg == WM_MBUTTONUP)
 	{
@@ -4304,6 +4305,8 @@ int _StrToVKey(const std::string& skey) {
 	if (skey == "INSERT") return VK_INSERT; // INS key
 	if (skey == "DELETE") return VK_DELETE; // DEL key
 	if (skey == "HELP") return VK_HELP; // HELP key
+	if (skey == "MWUP") return 0x0A;
+	if (skey == "MWDN") return 0x0B;
 
 	if (skey == "0") return '0';
 	if (skey == "1") return '1';
@@ -4487,6 +4490,8 @@ std::string _VKeyToStr(int vkey) {
 	case VK_INSERT: return "INSERT"; // INS key
 	case VK_DELETE: return "DELETE"; // DEL key
 	case VK_HELP: return "HELP"; // HELP key
+	case 0x0A: return "MWUP";
+	case 0x0B: return "MWDN";
 
 	case '0': return "0";
 	case '1': return "1";
