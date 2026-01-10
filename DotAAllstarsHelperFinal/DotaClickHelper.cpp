@@ -3299,7 +3299,8 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 	{
 		if (_Msg == WM_MOUSEWHEEL)
 		{
-			if (HIWORD(_wParam) > 0)
+			short wheeltarg = HIWORD(_wParam);
+			if (wheeltarg > 0)
 			{
 				DecreaseCameraOffset();
 			}
@@ -3326,7 +3327,8 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 	else if (_Msg == WM_MOUSEWHEEL)
 	{
 		Msg = WM_KEYDOWN;
-		if (HIWORD(_wParam) > 0)
+		short wheeltarg = HIWORD(_wParam);
+		if (wheeltarg > 0)
 		{
 			wParam = 0x0A;
 		}
