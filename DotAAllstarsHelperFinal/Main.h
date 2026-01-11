@@ -402,8 +402,6 @@ extern pUpdateFrameFlags UpdateFrameFlags;
 typedef int(__thiscall* pWc3ControlClickButton)(void * btnaddr, int unk);
 extern pWc3ControlClickButton Wc3ControlClickButton_org, Wc3ControlClickButton_ptr;
 int __fastcall Wc3ControlClickButton_my(void* btnaddr, int, int unk);
-int __stdcall ShowConfigWindow(const char*);
-extern bool ConfigWindowCreated;
 void ProcessClickAtCustomFrames();
 extern bool GlyphButtonCreated;
 

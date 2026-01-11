@@ -3199,12 +3199,6 @@ LRESULT __fastcall WarcraftWindowProcHooked(HWND hWnd, unsigned int _Msg, WPARAM
 			v.needResetTexture = true;
 	}
 
-	// NEXT BLOCK ONLY FOR TEST!!!!
-	if (Msg == WM_KEYDOWN && TestModeActivated)
-	{
-		ShowConfigWindow(".\\config.dota");
-	}
-
 	if (SkipAllMessages)
 	{
 		if (SetInfoObjDebugVal)

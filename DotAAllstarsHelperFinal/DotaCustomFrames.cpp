@@ -111,34 +111,6 @@ void LoadCustomFramesIfNeed()
 	}
 }
 
-
-bool ConfigWindowCreated = false;
-unsigned char* ConfigFrameAddr = 0;
-
-int __stdcall ShowConfigWindow(const char* filename)
-{
-	LoadCustomFramesIfNeed();
-
-	sprintf_s(ConfigPath, MAX_PATH, "%s", filename);
-
-	if (!ConfigWindowCreated && filename && filename[0] != '\0')
-	{
-		ConfigFrameAddr = CreateNewFrameAndShow("DotaConfigEditor");
-		if (ConfigFrameAddr)
-		{
-			ShowFrameWithPosAlternativeAligned(ConfigFrameAddr, 0.0f, 0.6f, 2, 8);
-			ConfigWindowCreated = true;
-		}
-	}
-	else
-	{
-		ConfigWindowCreated = false;
-		DestroyFrame(ConfigFrameAddr);
-		ConfigFrameAddr = 0;
-	}
-	return TRUE;
-}
-
 pUpdateFrameFlags UpdateFrameFlags;
 
 

@@ -19,7 +19,7 @@ std::vector<FileRedirectStruct> FileRedirectList;
 int NeedDumpFilesToDisk = false;
 int __stdcall DumpFilesToDisk(int enabled)
 {
-	MessageBoxA(0, "ОШИБКА OSHIBKA ERROR", " ", 0);
+	MessageBoxA(0, "пїЅпїЅпїЅпїЅпїЅпїЅ OSHIBKA ERROR", " ", 0);
 	//NeedDumpFilesToDisk = enabled;
 	return enabled;
 }
@@ -229,10 +229,10 @@ void ApplyIconFilter(std::string filename, unsigned char** OutDataPointer, size_
 		{
 			for (int y = 0; y < 64; y++)
 			{
-				OutImage[x * 64 + y] = BlackPix;//верх
-				OutImage[y * 64 + x] = BlackPix;//лево
-				OutImage[(63 - x) * 64 + y] = BlackPix;//низ
-				OutImage[y * 64 + 63 - x] = BlackPix;//право
+				OutImage[x * 64 + y] = BlackPix;//пїЅпїЅпїЅпїЅ
+				OutImage[y * 64 + x] = BlackPix;//пїЅпїЅпїЅпїЅ
+				OutImage[(63 - x) * 64 + y] = BlackPix;//пїЅпїЅпїЅ
+				OutImage[y * 64 + 63 - x] = BlackPix;//пїЅпїЅпїЅпїЅпїЅ
 			}
 		}
 
@@ -248,29 +248,29 @@ void ApplyIconFilter(std::string filename, unsigned char** OutDataPointer, size_
 			}
 		}
 
-		//градиентные рамки
-		//8 полос градиента
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		//8 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		for (int x = 4; x < 12; x++)
 		{
 			for (int y = x; y < 64 - x; y++)
 			{
 				double colorfix = (x - 3.0) / 9.0;
 
-				OutImage[x * 64 + y].R = FixBounds(colorfix * OutImage[x * 64 + y].R);//верх
-				OutImage[x * 64 + y].G = FixBounds(colorfix * OutImage[x * 64 + y].G);//верх
-				OutImage[x * 64 + y].B = FixBounds(colorfix * OutImage[x * 64 + y].B);//верх
+				OutImage[x * 64 + y].R = FixBounds(colorfix * OutImage[x * 64 + y].R);//пїЅпїЅпїЅпїЅ
+				OutImage[x * 64 + y].G = FixBounds(colorfix * OutImage[x * 64 + y].G);//пїЅпїЅпїЅпїЅ
+				OutImage[x * 64 + y].B = FixBounds(colorfix * OutImage[x * 64 + y].B);//пїЅпїЅпїЅпїЅ
 
-				OutImage[y * 64 + x].R = FixBounds(colorfix * OutImage[y * 64 + x].R);//лево
-				OutImage[y * 64 + x].G = FixBounds(colorfix * OutImage[y * 64 + x].G);//лево
-				OutImage[y * 64 + x].B = FixBounds(colorfix * OutImage[y * 64 + x].B);//лево
+				OutImage[y * 64 + x].R = FixBounds(colorfix * OutImage[y * 64 + x].R);//пїЅпїЅпїЅпїЅ
+				OutImage[y * 64 + x].G = FixBounds(colorfix * OutImage[y * 64 + x].G);//пїЅпїЅпїЅпїЅ
+				OutImage[y * 64 + x].B = FixBounds(colorfix * OutImage[y * 64 + x].B);//пїЅпїЅпїЅпїЅ
 
-				OutImage[(63 - x) * 64 + y].R = FixBounds(colorfix * OutImage[(63 - x) * 64 + y].R);//низ
-				OutImage[(63 - x) * 64 + y].G = FixBounds(colorfix * OutImage[(63 - x) * 64 + y].G);//низ
-				OutImage[(63 - x) * 64 + y].B = FixBounds(colorfix * OutImage[(63 - x) * 64 + y].B);//низ
+				OutImage[(63 - x) * 64 + y].R = FixBounds(colorfix * OutImage[(63 - x) * 64 + y].R);//пїЅпїЅпїЅ
+				OutImage[(63 - x) * 64 + y].G = FixBounds(colorfix * OutImage[(63 - x) * 64 + y].G);//пїЅпїЅпїЅ
+				OutImage[(63 - x) * 64 + y].B = FixBounds(colorfix * OutImage[(63 - x) * 64 + y].B);//пїЅпїЅпїЅ
 
-				OutImage[y * 64 + 63 - x].R = FixBounds(colorfix * OutImage[y * 64 + 63 - x].R);//право
-				OutImage[y * 64 + 63 - x].G = FixBounds(colorfix * OutImage[y * 64 + 63 - x].G);//право
-				OutImage[y * 64 + 63 - x].B = FixBounds(colorfix * OutImage[y * 64 + 63 - x].B);//право
+				OutImage[y * 64 + 63 - x].R = FixBounds(colorfix * OutImage[y * 64 + 63 - x].R);//пїЅпїЅпїЅпїЅпїЅ
+				OutImage[y * 64 + 63 - x].G = FixBounds(colorfix * OutImage[y * 64 + 63 - x].G);//пїЅпїЅпїЅпїЅпїЅ
+				OutImage[y * 64 + 63 - x].B = FixBounds(colorfix * OutImage[y * 64 + 63 - x].B);//пїЅпїЅпїЅпїЅпїЅ
 			}
 		}
 
@@ -413,7 +413,7 @@ void ApplyTestFilter(std::string filename, unsigned char** OutDataPointer, size_
 		//	for ( int y = 0; y < w; x++ )
 		//	{
 		//		BlackPix.A = OutImage[ x * h + y ].A;
-		//		OutImage[ x * h + y ] = BlackPix;//верх
+		//		OutImage[ x * h + y ] = BlackPix;//пїЅпїЅпїЅпїЅ
 		//	}
 		//}
 
@@ -1604,7 +1604,7 @@ void ProcessMdx(std::string filename, unsigned char** OutDataPointer, size_t* Ou
 			tmpih._hash = GetBufHash(filename.c_str(), tmpih.hashlen);
 			ICONMDLCACHELIST.push_back(tmpih);
 
-			// Не чистить файл который был создан не нами
+			// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 			//Storm::MemFree((void*)*OutDataPointer);
 
 
@@ -2020,26 +2020,6 @@ int __stdcall CreateIconFrameMask(const char* iconpath)
 
 	return true;
 }
-
-
-
-//Storm_279 Storm_279_org;
-//Storm_279 Storm_279_ptr;
-//int __stdcall Storm_279_my( const char * filename, int arg1, int arg2, size_t arg3, int arg4 )
-//{
-//
-//	if ( ConfigWindowCreated )
-//	{
-//		if ( ToLower( "UI\\FrameDef\\Glue\\DialogWar3.fdf" ) == ToLower( filename ) )
-//		{
-//			return Storm_279_ptr( "DotaConfigEditor.fdf", arg1, arg2, arg3, arg4 );
-//		}
-//	}
-//
-//	return Storm_279_ptr( filename, arg1, arg2, arg3, arg4 );
-//}
-
-
 
 /*
 
