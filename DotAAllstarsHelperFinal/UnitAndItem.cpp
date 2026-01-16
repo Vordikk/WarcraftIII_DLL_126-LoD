@@ -572,8 +572,7 @@ unsigned char* GetUnitAddressFloatsRelated(unsigned char* unitaddr, int step)
 	return 0;
 }
 
-
-float GetUnitHPregen(unsigned char* unitaddr)
+float GetUnitHPMax(unsigned char* unitaddr)
 {
 	float result = 0.0f;
 	if (unitaddr)
@@ -581,8 +580,7 @@ float GetUnitHPregen(unsigned char* unitaddr)
 		unsigned char* offset1 = GetUnitAddressFloatsRelated(unitaddr, 0xA0);
 		if (offset1)
 		{
-
-			result = *(float*)(offset1 + 0x7C);
+			result = *(float*)(offset1 + 0x84);
 		}
 	}
 	return result;
@@ -603,8 +601,36 @@ float GetUnitHP(unsigned char* unitaddr)
 	return result;
 }
 
+float GetUnitHPregen(unsigned char* unitaddr)
+{
+	float result = 0.0f;
+	if (unitaddr)
+	{
+		unsigned char* offset1 = GetUnitAddressFloatsRelated(unitaddr, 0xA0);
+		if (offset1)
+		{
+
+			result = *(float*)(offset1 + 0x7C);
+		}
+	}
+	return result;
+}
+
 _GetUnitFloatStat GetUnitFloatState = NULL;
 
+float GetUnitMPMax(unsigned char* unitaddr)
+{
+	float result = 0.0f;
+	if (unitaddr)
+	{
+		unsigned char* offset1 = GetUnitAddressFloatsRelated(unitaddr, 0xC0);
+		if (offset1)
+		{
+			result = *(float*)(offset1 + 0x84);
+		}
+	}
+	return result;
+}
 
 float GetUnitMP(unsigned char* unitaddr)
 {

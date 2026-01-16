@@ -105,27 +105,6 @@ void __stdcall SetMPBarYOffsetForPlayer(unsigned int playerflag, float herooffse
 	}
 }
 
-std::vector<int> MpBarUnitWhiteList;
-
-int __stdcall SetMpBarWhiteListUnitTypeID(int unitid)
-{
-	MpBarUnitWhiteList.push_back(unitid);
-	return 0;
-}
-
-int __stdcall InMPBarWhiteList(unsigned char* unitaddr)
-{
-	int UnitTypeID = GetTypeId(unitaddr);
-	for (auto& s : MpBarUnitWhiteList)
-	{
-		if (IsClassEqual(UnitTypeID, s))
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
 int protect_integer = 0;
 int protect_integer2 = -1;
 
@@ -181,7 +160,7 @@ int __stdcall  SetMPBarConfigForPlayer(unsigned char* unitaddr)
 		}
 		return 1;
 	}
-	else if (InMPBarWhiteList(unitaddr))
+	else if (GetUnitMPMax(unitaddr)>0)
 	{
 		if (IsTower(unitaddr))
 		{

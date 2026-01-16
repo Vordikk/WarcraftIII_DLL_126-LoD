@@ -1618,15 +1618,11 @@ int __stdcall EnableFeatures(unsigned int Flags)
 
 void __stdcall ClearCustomsBars()
 {
-
 	for (int i = 0; i < 20; i++)
 	{
 		if (!CustomHPBarList[i].empty())
 			CustomHPBarList[i].clear();
 	}
-
-	if (!MpBarUnitWhiteList.empty())
-		MpBarUnitWhiteList.clear();
 }
 
 void __stdcall FreeAllVectors()

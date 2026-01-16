@@ -189,6 +189,8 @@ float GetUnitMPregen(unsigned char* unitaddr);
 float GetUnitHPregen(unsigned char* unitaddr);
 float GetUnitMP(unsigned char* unitaddr);
 float GetUnitHP(unsigned char* unitaddr);
+float GetUnitMPMax(unsigned char* unitaddr);
+float GetUnitHPMax(unsigned char* unitaddr);
 unsigned char* GetUnitAddressFloatsRelated(unsigned char* unitaddr, int step);
 float GetUnitX_real(unsigned char* unitaddr);
 float GetUnitY_real(unsigned char* unitaddr);
@@ -200,9 +202,6 @@ void ManaBarSwitch(int b);
 void PatchOffset(void* addr, void* buffer, unsigned int size);
 PBYTE HookVTableFunction(PDWORD* dwVTable, PBYTE dwHook, int Index);
 PBYTE GetVTableFunction(PDWORD* dwVTable, int Index);
-
-
-extern std::vector<int> MpBarUnitWhiteList;
 
 extern unsigned int hpbarcolorsHero[20];
 extern unsigned int hpbarcolorsUnit[20];
