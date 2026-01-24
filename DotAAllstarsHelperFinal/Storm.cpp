@@ -49,10 +49,10 @@ namespace Storm {
 		StringGetHash = (PROTOTYPE_StringGetHash)GetProcAddress((HMODULE)hModule, (LPCSTR)590);
 		AddrMemAlloc = (void*)GetProcAddress((HMODULE)hModule, (LPCSTR)401);
 
-
+/*
 		MemFree_org = (PROTOTYPE_MemFree)GetProcAddress((HMODULE)hModule, (LPCSTR)403);
 		MH_CreateHook(MemFree_org, &MemFree, reinterpret_cast<void**>(&MemFree_ptr));
-		MH_EnableHook(MemFree_org);
+		MH_EnableHook(MemFree_org);*/
 
 		AddrMemGetSize = (void*)GetProcAddress((HMODULE)hModule, (LPCSTR)404);
 		AddrMemReAlloc = (void*)GetProcAddress((HMODULE)hModule, (LPCSTR)405);
@@ -69,7 +69,7 @@ namespace Storm {
 		return aero::generic_c_call<unsigned short>(AddrFileGetLocale);
 	}
 
-	//TODO Debug°æ±¾¼ÓÉÏµ÷ÊÔÐÅÏ¢
+	//TODO Debugï¿½æ±¾ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 	void* MemAlloc(unsigned int size) {
 		auto retaddr = _ReturnAddress();
 
@@ -132,12 +132,12 @@ namespace Storm {
 			LeakHelperList.erase(leakfound);
 			FounMem = true;
 		}
-		if (!MemFree_ptr)
+		/*if (!MemFree_ptr)
 		{
 			MH_DisableHook(MemFree_org);
 
 			return MemFree_org(addr, sourcename, sourceline, flags);
-		}
+		}*/
 		return MemFree_ptr(addr, sourcename, sourceline, flags);
 	}
 
@@ -265,7 +265,7 @@ void *operator new(size_t size) {
 			return rv;
 		}
 
-		// ·ÖÅä²»³É¹¦£¬ÕÒ³öµ±Ç°³ö´í´¦Àíº¯Êý
+		// ï¿½ï¿½ï¿½ä²»ï¿½É¹ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		new_handler globalhandler = std::set_new_handler(0);
 		std::set_new_handler(globalhandler);
 
