@@ -1764,7 +1764,7 @@ int GetAbilityManacost(unsigned char* pAbil)
 pSimpleButtonPreClickEvent SimpleButtonPreClickEvent_org;
 pSimpleButtonPreClickEvent SimpleButtonPreClickEvent_ptr;
 
-const char* GetPlayerNameWithExceptions(int unitownerslot)
+std::string GetPlayerNameForSentScourge(int unitownerslot)
 {
 	if (unitownerslot == 0)
 	{
@@ -1773,10 +1773,6 @@ const char* GetPlayerNameWithExceptions(int unitownerslot)
 	else if (unitownerslot == 6)
 	{
 		return GetObjectNameByID('n03O')
-	}
-	else
-	{
-		return GetPlayerName(unitownerslot, 1)
 	}
 }
 
@@ -1940,7 +1936,14 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 						SendMessageToChat(PrintAbilState, 0);
 						return 0;
 					case 6:
-						sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerName(unitownerslot, 1), AbilName.c_str());
+						if (unitownerslot == 0 || unitownerslot == 6)
+						{
+							sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameForSentScourge(unitownerslot), AbilName.c_str());
+						}
+						else
+						{
+							sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerName(unitownerslot, 1), AbilName.c_str());
+						}						
 						SendMessageToChat(PrintAbilState, 0);
 						return 0;
 					case 7:
@@ -1972,7 +1975,15 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 
 				if (unitownerslot != localplayeridslot && unitownerslot != 15)
 				{
-					sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerName(unitownerslot, 1), AbilName.c_str());
+					if (unitownerslot == 0 || unitownerslot == 6)
+					{
+						sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameForSentScourge(unitownerslot), AbilName.c_str());
+					}
+					else
+					{
+						sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerName(unitownerslot, 1), AbilName.c_str());
+					}
+					
 				}
 				else
 				{
