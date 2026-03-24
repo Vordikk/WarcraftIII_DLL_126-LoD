@@ -1763,6 +1763,23 @@ int GetAbilityManacost(unsigned char* pAbil)
 
 pSimpleButtonPreClickEvent SimpleButtonPreClickEvent_org;
 pSimpleButtonPreClickEvent SimpleButtonPreClickEvent_ptr;
+
+const char* GetPlayerNameWithExceptions(int unitownerslot)
+{
+	if (unitownerslot == 0)
+	{
+		return GetObjectNameByID('n03N')
+	}
+	else if (unitownerslot == 6)
+	{
+		return GetObjectNameByID('n03O')
+	}
+	else
+	{
+		return GetPlayerName(unitownerslot, 1)
+	}
+}
+
 int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, int a2)
 {
 	/*__try
