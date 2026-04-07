@@ -128,7 +128,7 @@ int __stdcall  SetMPBarConfigForPlayer(unsigned char* unitaddr)
 		return 0;
 
 	int unitslot = GetUnitOwnerSlot(unitaddr);
-	if (unitslot > 15 || unitslot < 0)
+	if (unitslot >= 15 || unitslot < 0)
 		return 0;
 
 	aMPBarSizeX = aMPBarSizeX_default;
