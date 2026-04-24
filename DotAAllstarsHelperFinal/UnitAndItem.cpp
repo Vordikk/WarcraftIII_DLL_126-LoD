@@ -457,12 +457,12 @@ unsigned char** FindUnitAbils(unsigned char* unitaddr, unsigned int* count, int 
 				}
 				pData = GetObjectDataAddr(pData + 0x24);
 			}
-
-			*count = ReturnAbils.size();
 		}
+		*count = ReturnAbils.size();
+		return ReturnAbils.data();
 	}
-
-	return &ReturnAbils[0];
+	*count = 0;
+	return NULL;
 }
 
 
