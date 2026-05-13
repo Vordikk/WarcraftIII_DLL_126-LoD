@@ -1764,10 +1764,21 @@ int GetAbilityManacost(unsigned char* pAbil)
 pSimpleButtonPreClickEvent SimpleButtonPreClickEvent_org;
 pSimpleButtonPreClickEvent SimpleButtonPreClickEvent_ptr;
 
+char* GetPlayerNameCorrectCreeps(int pid)
+{
+	switch (pid)
+	{
+	case 1:
+		return "The Sentinel";
+	case 6:
+		return "The Scourge";
+	default:
+		return GetPlayerName(pid,1);
+	}
+}
+
 int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, int a2)
 {
-	/*__try
-	{*/
 	bool incooldown = false;
 	std::string incooldownmessage;
 
@@ -1924,7 +1935,7 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 						SendMessageToChat(PrintAbilState, 0);
 						return 0;
 					case 6:
-						sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerName(unitownerslot, 1), AbilName.c_str());					
+						sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameCorrectCreeps(unitownerslot, 1), AbilName.c_str());					
 						SendMessageToChat(PrintAbilState, 0);
 						return 0;
 					case 7:
@@ -1956,7 +1967,7 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 
 				if (unitownerslot != localplayeridslot && unitownerslot != 15)
 				{
-					sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerName(unitownerslot, 1), AbilName.c_str());
+					sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameCorrectCreeps(unitownerslot, 1), AbilName.c_str());
 				}
 				else
 				{
