@@ -1935,7 +1935,7 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 						SendMessageToChat(PrintAbilState, 0);
 						return 0;
 					case 6:
-						sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameCorrectCreeps(unitownerslot, 1), AbilName.c_str());					
+						sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameCorrectCreeps(unitownerslot), AbilName.c_str());					
 						SendMessageToChat(PrintAbilState, 0);
 						return 0;
 					case 7:
@@ -1967,7 +1967,7 @@ int __fastcall SimpleButtonPreClickEvent_my(unsigned char* pButton, int unused, 
 
 				if (unitownerslot != localplayeridslot && unitownerslot != 15)
 				{
-					sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameCorrectCreeps(unitownerslot, 1), AbilName.c_str());
+					sprintf_s(PrintAbilState, ItemAbiltPlayerHasItem.c_str(), GetPlayerNameCorrectCreeps(unitownerslot), AbilName.c_str());
 				}
 				else
 				{
