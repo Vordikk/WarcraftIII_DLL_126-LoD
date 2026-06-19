@@ -1768,7 +1768,7 @@ char* GetPlayerNameCorrectCreeps(int pid)
 {
 	switch (pid)
 	{
-	case 1:
+	case 0:
 		return "The Sentinel";
 	case 6:
 		return "The Scourge";
