@@ -256,8 +256,20 @@ int __stdcall Packet_PopReal(int unused)
 	return 0;
 }
 
+//void __stdcall Packet_Send(int unused)
+//{
+//	SendPacket(&BytesToSend[0], BytesToSend.size());
+//	BytesToSend.clear();
+//}
+
 void __stdcall Packet_Send(int unused)
 {
+	if (BytesToSend.size() >= 10)
+	{
+		int packetType = *(int*)&BytesToSend[6];
+		PrintText(("SENDING PACKET TYPE = " + std::to_string(packetType)).c_str());
+	}
+
 	SendPacket(&BytesToSend[0], BytesToSend.size());
 	BytesToSend.clear();
 }
