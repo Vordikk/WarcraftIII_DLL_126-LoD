@@ -1731,6 +1731,7 @@ void __stdcall DisableAllHooks(int)
 	UninitializePacketHandler();
 
 	LatestDownloadedString.clear();
+	LatestDownloadedStringNew.clear();
 
 	//UninitializeDreamDotaAPI();
 	//UninitializeVoiceClient( );

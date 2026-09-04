@@ -336,6 +336,7 @@ extern SetGameAreaFOV SetGameAreaFOV_org, SetGameAreaFOV_ptr;
 std::string SendHttpPostRequest(const std::string& url, const std::string& data);
 std::string SendHttpGetRequest(const std::string& host, const std::string& path);
 extern std::string LatestDownloadedString;
+extern std::string LatestDownloadedStringNew;
 
 
 
@@ -488,3 +489,4 @@ extern bool avaiableNow;
 extern int DownProgress;
 extern int DownStatus;
 extern std::string LatestDownloadedString;
+extern std::string LatestDownloadedStringNew;

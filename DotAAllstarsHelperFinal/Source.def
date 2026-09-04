@@ -9,6 +9,7 @@ SendPostRequest
 SaveNewDotaVersionFromUrl
 GetDownloadStatus
 GetLatestDownloadedString
+GetLatestDownloadedStringNew
 GetDownloadProgress
 GetCurrentMapPath
 SetHPBarColorForPlayer

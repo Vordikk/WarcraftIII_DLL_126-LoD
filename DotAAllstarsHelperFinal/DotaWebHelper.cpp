@@ -6,8 +6,10 @@
 #include "base64.h"
 
 bool avaiableNow = true;
+bool avaiableNowNew = true;
 int DownProgress = 0, DownStatus = 0;
 std::string LatestDownloadedString;
+std::string LatestDownloadedStringNew;
 
 
 bool ProgressProc(double progress)
@@ -230,6 +232,37 @@ int __stdcall SendGetRequest(const char* url, const  char* path)
 		}).detach();
 	return 1;
 }
+int __stdcall SendGetRequestNew(const char* url, const  char* path)
+{
+	if (!avaiableNowNew)
+		return 0;
+	LatestDownloadedStringNew = "[ERROR] you need wait response!";
+	avaiableNowNew = false;
+	DownProgress = 0;
+	DownStatus = 0;
+
+	if (SetInfoObjDebugVal)
+	{
+		PrintText(("Send host:" + std::string(url) + ". Path:").c_str());
+		PrintText(std::string(path).c_str());
+	}
+
+	std::string _url = url;
+	std::string _path = path;
+
+	std::thread([_url, _path]() {
+		try
+		{
+			LatestDownloadedStringNew = SendHttpGetRequest(_url, _path);
+		}
+		catch (...)
+		{
+			DownStatus = -1;
+		}
+		avaiableNowNew = true;
+		}).detach();
+	return 1;
+}
 
 int __stdcall SendPostRequest(const char* url, const  char* request)
 {
@@ -336,6 +369,30 @@ const char* __stdcall GetLatestDownloadedString(int)
 		}
 	}
 	return LatestDownloadedString.c_str();
+}
+
+const char* __stdcall GetLatestDownloadedStringNew(int)
+{
+	if (LatestDownloadedStringNew.size() > 1023)
+		LatestDownloadedStringNew = LatestDownloadedStringNew.substr(0, 1023);
+	if (SetInfoObjDebugVal)
+	{
+		const std::string& str = LatestDownloadedStringNew;
+		size_t length = str.length();
+		size_t pos = 0;
+		size_t chunkSize = 100;
+
+		while (pos < length)
+		{
+			std::string chunk = str.substr(pos, chunkSize);
+			if (pos)
+				PrintText(("Recv data:" + chunk).c_str());
+			else 
+				PrintText(chunk.c_str());
+			pos += chunkSize;
+		}
+	}
+	return LatestDownloadedStringNew.c_str();
 }
 
 //
