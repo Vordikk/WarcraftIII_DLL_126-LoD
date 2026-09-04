@@ -5,6 +5,7 @@ AddNewOffset
 MutePlayer
 UnMutePlayer
 SendGetRequest
+SendGetRequestNew
 SendPostRequest
 SaveNewDotaVersionFromUrl
 GetDownloadStatus
